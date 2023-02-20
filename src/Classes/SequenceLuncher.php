@@ -104,7 +104,7 @@ use Doctrine\Persistence\ManagerRegistry;
                 {
                     $Dsn->sendState = true;
                     $lead->setStatus('lead.status.sent');
-                    $lead->setSender($from);
+                    if($lead->getSender() == null) $lead->setSender($from);
                     
 
 
