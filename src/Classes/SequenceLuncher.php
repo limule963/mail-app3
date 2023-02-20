@@ -70,7 +70,7 @@ use Doctrine\Persistence\ManagerRegistry;
         /**
          * comment
          */
-        private function getLead()
+        private function getNextLead()
         {   
             $lead = $this->leads[$this->flag];
             $this->flag++;
@@ -85,7 +85,7 @@ use Doctrine\Persistence\ManagerRegistry;
         {
             foreach($this->dsns as $Dsn)
             {   
-                $lead = $this->getLead();
+                $lead = $this->getNextLead();
 
                 if($Dsn->sendState == true) continue;
 
