@@ -28,8 +28,8 @@ class Dsn
     #[ORM\Column]
     private ?int $port = null;
 
-    #[ORM\Column]
-    private ?bool $sendState = null;
+    
+    public bool $sendState = false;
 
     public function getId(): ?int
     {
@@ -96,15 +96,5 @@ class Dsn
         return $this;
     }
 
-    public function isSendState(): ?bool
-    {
-        return $this->sendState;
-    }
 
-    public function setSendState(bool $sendState): self
-    {
-        $this->sendState = $sendState;
-
-        return $this;
-    }
 }

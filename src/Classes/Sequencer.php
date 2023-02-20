@@ -1,6 +1,9 @@
 <?php
 
 namespace App\Classes;
+
+use App\Entity\Dsn;
+use App\Controller\CrudControllerHelpers;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 
     class Sequencer
@@ -9,29 +12,35 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
         private $dsn;
         private $leads;
         private $step;
-        private $crud;
-        public function __construct()
+        
+        public function __construct( private CrudControllerHelpers $crud)
         {
             
         }
         
-        public function prepare(array $steps = null,/*Dsn*/ $dsn = null)
+        /**
+         * @var Dsn[] $dsn
+         */
+        public function prepare(array $steps = null, $dsn = null)
         {
-
+            
             foreach($steps as $step)
             {
-                if( $this->isStepActive($step))
+                
+                if( !$this->isStepActive($step)) continue;
                 {
-                     $this->step = $step;
-                     break;
+                    $this->leads = $this->crud->getLeadsByStatus($step->leadStatus);
+                    if(empty($this->leads)) continue;
+                    else
+                    {
+                        $this->step = $step;
+                        break;
+                    }
                 }
             }
 
             $this->dsn = $dsn;
             $this->email = $this->getTemplatedEmail($this->step->getEmail());
-            
-            $this->leads = $this->crud->getLeadsByStatus();
-
             
         }
 
@@ -64,7 +73,7 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
             return $this->leads;
         }
 
-        public function getDsn()
+        public function getDsn():Dsn
         {
             return $this->dsn;
         }
@@ -74,10 +83,7 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
             return $this->email;
         }
 
-        private function setEmail(string $email)
-        {
 
-        }
 
         private function contains($tab,$item)
         {
@@ -99,10 +105,12 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
     
     
         }
+
+        /**step est active si son attribut startTime est inferieur au time actuel */
         private function isStepActive($step):bool
         {
             $startTime = gmmktime($step->startTime);
- 
+            if(time() > $startTime) return true;
             return false;
         }
 

@@ -1,6 +1,7 @@
 <?php
 namespace App\Controller;
 
+use App\Classes\Exception\CrudControllerException;
 use App\Entity\Lead;
 use App\Entity\Step;
 use App\Entity\User;
@@ -35,7 +36,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
         /**
          * Creation Crud
          */
-        public function createStatus($status):Status
+        public function getStatus($status):Status
         {
             $Status = $this->isStatusExist($status);
             if($Status != null) return $Status;
@@ -54,7 +55,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
         public function createLead($name,$emailAddress,$status = STAT::LEAD_STEP_1):Lead
         {
-            $sta = $this->createStatus($status);
+            $sta = $this->getStatus($status);
             return (new Lead)->setStatus($sta)->setName($name)->setEmailAddress($emailAddress);
         }
 
@@ -62,7 +63,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
         public function createLeads(array $leadsData,$status = STAT::LEAD_STEP_1):array
         {
-            $sta = $this->createStatus($status);
+            $sta = $this->getStatus($status);
             $leads = null;
             foreach($leadsData as $lead)
             {
@@ -80,7 +81,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
         public function createStep($name,$subject,$linkToEmail):Step
         {
-            $status = $this->createStatus(STAT::STEP_DRAFT);
+            $status = $this->getStatus(STAT::STEP_DRAFT);
             $email = $this->createEmail($subject,$linkToEmail);
             return (new Step)
                 ->setName($name)
@@ -90,7 +91,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
         }
         // public function createStep($name,$subject,$linkToEmail):Step
         // {
-        //     $status = $this->createStatus(STAT::STEP_DRAFT);
+        //     $status = $this->getStatus(STAT::STEP_DRAFT);
         //     $email = $this->createEmail($subject,$linkToEmail);
         //     return (new Step)
         //         ->setName($name)
@@ -118,7 +119,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
         
         // public function createCompaign($name,array $leads, array $steps)
         // {
-        //     $status = $this->createStatus(STAT::COMPAIGN_DRAFT);
+        //     $status = $this->getStatus(STAT::COMPAIGN_DRAFT);
         //     $newsteps = $this->createSteps($steps);
         //     $newleads = $this->createLeads($leads);
         //     $compaign = (new Compaign)->setName($name)->setStatus($status);
@@ -134,11 +135,17 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
         // }
         public function createCompaign($name)
         {
-            $status = $this->createStatus(STAT::COMPAIGN_DRAFT);
+            $status = $this->getStatus(STAT::COMPAIGN_DRAFT);
 
             $compaign = (new Compaign)->setName($name)->setStatus($status);
 
             return $compaign;
+        }
+
+        private function user()
+        {
+            if($this->getUser() == null) throw new CrudControllerException('User is not connected');
+            return $this->getUser();
         }
 
 
@@ -160,7 +167,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             $compaign = $this->createCompaign($name);
 
             /**@var User $user */
-            $user = $this->getUser();
+            $user = $this->user();
             $user->addCompaign($compaign);
 
             /**@var UserRepository */
@@ -195,7 +202,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
         public function getCompaigns()
         {
             /**@var User */
-            $user = $this->getUser();
+            $user = $this->user();
             $id = $user->getId();
 
             /**@var CompaignRepository */
@@ -218,6 +225,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             $rep = $this->em->getRepository(Compaign::class);
             $compaign =$rep->find($compaignId);
             $compaign->addLeads($leads);
+            $rep->save($compaign,true);
         }
 
         public function updateLead($id,$name,$emailAddress)
@@ -231,7 +239,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
         /**
          * For only system
          */
-        public function updateLead2($lead)
+        public function save($lead)
         {
             /**@var LeadRepository */
             $rep = $this->em->getRepository(Lead::class);
