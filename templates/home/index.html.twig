@@ -8,6 +8,11 @@
     .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
 </style>
 
+{% if error is defined %}
+<div>{{error}}</div>
+
+{% endif %}
+
 <div class="example-wrapper">
     <h1>Hello {{ controller_name }}! ✅</h1>
 

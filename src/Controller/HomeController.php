@@ -13,11 +13,29 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class HomeController extends AbstractController
 {
+
+    public function __construct(private CrudControllerHelpers $crud)
+    {
+        
+    }
     #[Route('/', name: 'app_home')]
     public function index(CompaignLuncher $sender): Response
     {
 
-        
+        try 
+        {
+            $user = $this->crud->user();
+
+            
+
+
+            $error =null;
+        } 
+        catch (\Throwable $th) 
+        {
+            $error = $th->getMessage();
+            return $this->redirectToRoute('app_form_register');
+        }
         // $tab = null;
         // for($i = 0; $i<10; $i++)
         // {
@@ -30,6 +48,20 @@ class HomeController extends AbstractController
         // };
         // usort($tab,$cmp);
         // dd($tab);
+
+        return $this->render('home/index.html.twig', [
+            'controller_name' => 'HomeController',
+            'error'           => $error
+        ]);
+
+
+    }
+
+
+    #[Route('/test',name:'app_test')]
+    public function test()
+    {
+
 
         return $this->render('home/index.html.twig', [
             'controller_name' => 'HomeController',

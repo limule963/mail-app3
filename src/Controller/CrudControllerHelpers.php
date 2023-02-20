@@ -142,7 +142,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             return $compaign;
         }
 
-        private function user()
+        public function user()
         {
             if($this->getUser() == null) throw new CrudControllerException('User is not connected');
             return $this->getUser();
