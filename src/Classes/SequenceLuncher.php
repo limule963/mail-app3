@@ -1,9 +1,11 @@
 <?php
 namespace App\Classes;
 
+use App\Controller\CrudControllerHelpers;
+use App\Entity\Dsn;
+
+
 use App\Entity\Lead;
-
-
 use Symfony\Component\Mime\Email;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ManagerRegistry;
@@ -15,7 +17,7 @@ use Doctrine\Persistence\ManagerRegistry;
     class SequenceLuncher
     {
         /**
-         * @var array
+         * @var Dsn[]
          */
         private $dsns;
 
@@ -30,10 +32,6 @@ use Doctrine\Persistence\ManagerRegistry;
         private $leads;
 
         private $flag = 0;
-        // /**
-        //  * @var Flag
-        //  */
-        // private $flag;
 
         /**
          * @var ObjectManager
@@ -50,7 +48,7 @@ use Doctrine\Persistence\ManagerRegistry;
          */
         private $emailSender;
 
-        public function __construct(ManagerRegistry $doctrine,EmailSender $emailSender)
+        public function __construct(ManagerRegistry $doctrine,EmailSender $emailSender,private CrudControllerHelpers $crud)
         {
             $this->entityManager = $doctrine->getManager();
             $this->emailSender = $emailSender;
@@ -63,19 +61,39 @@ use Doctrine\Persistence\ManagerRegistry;
             $this->sequencer = $sequencer;
             $this->leads = $this->sequencer->getLeads();
             // $this->flag = $this->sequencer->getFlag();
-            $this->dsns = $this->sequencer->getDsn();
+            $this->dsns = $this->sequencer->getDsns();
             $this->email = $this->sequencer->getEmail();
         }
 
-        /**
-         * comment
-         */
-        private function getNextLead()
+ 
+        private function getNextLead():Lead
         {   
             $lead = $this->leads[$this->flag];
             $this->flag++;
             return $lead;
         }
+
+        private function contains($tab,$item)
+        {
+            foreach ($tab as $key => $value) {
+                if($item===$value) return $key;
+            }
+            return false;
+        }
+    
+        private function getNextLeadStatus($tab,$lastStatus)
+        {
+            $count = count($tab);
+            $key=$this->contains($tab,$lastStatus);
+            
+            $key++;
+    
+            if($key >= $count ) return 'lead.complete';
+            return $tab[$key];
+    
+    
+        }
+        
 
 
 
@@ -83,33 +101,36 @@ use Doctrine\Persistence\ManagerRegistry;
 
         public function lunch()
         {
+            /**
+             * 
+             * @var Dsn $Dsn
+             */
             foreach($this->dsns as $Dsn)
             {   
                 $lead = $this->getNextLead();
 
+            
                 if($Dsn->sendState == true) continue;
 
-
+             
                 if($lead->getSender() != null) $dsn = $Dsn->getDsnByEmail($lead->getSender());
                 else $dsn = $Dsn->getDsn();
 
                 
                 $from = $Dsn->getEmail();
 
-                $emailAddress =$lead->getEmailAdress();
+                $emailAddress =$lead->getEmailAddress();
 
                 $this->emailSender->prepare($dsn,$from,$emailAddress,$this->email);
 
                 if($this->emailSender->send())
                 {
                     $Dsn->sendState = true;
-                    $lead->setStatus('lead.status.sent');
+                    $lead->setStatus($this->crud->getStatus('lead.status.sent'));
                     if($lead->getSender() == null) $lead->setSender($from);
                     
-
-
-                    $this->entityManager->persist($lead);
-                    $this->entityManager->flush();
+                    $this->crud->saveLead($lead);
+                 
                 }
 
 

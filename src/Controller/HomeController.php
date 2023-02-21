@@ -25,6 +25,7 @@ class HomeController extends AbstractController
         try 
         {
             $user = $this->crud->user();
+         
 
             
 
@@ -34,7 +35,7 @@ class HomeController extends AbstractController
         catch (\Throwable $th) 
         {
             $error = $th->getMessage();
-            return $this->redirectToRoute('app_form_register');
+            return $this->redirectToRoute('app_login');
         }
         // $tab = null;
         // for($i = 0; $i<10; $i++)

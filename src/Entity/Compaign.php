@@ -31,10 +31,14 @@ class Compaign
     #[ORM\OneToMany(mappedBy: 'compaign', targetEntity: Step::class,cascade:["persist"])]
     private Collection $steps;
 
+    #[ORM\ManyToMany(targetEntity: Dsn::class, inversedBy: 'compaigns',cascade:['persist'])]
+    private Collection $dsns;
+
     public function __construct()
     {
         $this->leads = new ArrayCollection();
         $this->steps = new ArrayCollection();
+        $this->dsns = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -140,6 +144,35 @@ class Compaign
                 $step->setCompaign(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Dsn>
+     */
+    public function getDsns(): Collection
+    {
+        return $this->dsns;
+    }
+
+    public function addDsn(Dsn $dsn): self
+    {
+        if (!$this->dsns->contains($dsn)) {
+            $this->dsns->add($dsn);
+        }
+
+        return $this;
+    }
+
+    public function addDsns($dsns)
+    {
+        foreach($dsns as $dsn) $this->addDsn($dsn);
+    }
+
+    public function removeDsn(Dsn $dsn): self
+    {
+        $this->dsns->removeElement($dsn);
 
         return $this;
     }

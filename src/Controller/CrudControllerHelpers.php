@@ -177,17 +177,27 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             
         }
 
-        public function updateCompaign($id,$name)
+        public function updateCompaign($id,$name = null, array $dsns = null,Status $status =null)
         {
             /**@var CompaignRepository */
             $rep = $this->em->getRepository(Compaign::class);
             
             /**@var Compaign */
             $compaign = $rep->find($id);
-            $compaign->setName($name);
+            if($name!=null) $compaign->setName($name);
+            if(!empty($dsns)) $compaign->addDsns($dsns);
+            if($status!=null) $compaign->setStatus($status);
             $rep->save($compaign,true);
             return $compaign->getId();
             
+        }
+
+        public function saveCompaign(Compaign $compaign)
+        {
+            /**@var CompaignRepository */
+            $rep = $this->em->getRepository(Compaign::class);
+            $rep->save($compaign,true);
+
         }
         
         public function deleteCompaign($id)
@@ -228,18 +238,22 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             $rep->save($compaign,true);
         }
 
-        public function updateLead($id,$name,$emailAddress)
+        public function updateLead($id,$name = null,$emailAddress = null,Status $status = null )
         {   
             /**@var LeadRepository */
             $rep = $this->em->getRepository(Lead::class);
-            $lead = ($rep->find($id))->setName($name)->setEmailAddress($emailAddress);
+            $lead = $rep->find($id);
+            if($name != null) $lead->setName($name);
+            if($emailAddress != null) $lead->setEmailAddress($emailAddress);
+            if($status != null) $lead->setStatus($status);
+                    
             $rep->save($lead,true);
             
         }
         /**
          * For only system
          */
-        public function save($lead)
+        public function saveLead($lead)
         {
             /**@var LeadRepository */
             $rep = $this->em->getRepository(Lead::class);

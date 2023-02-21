@@ -2,10 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use App\Repository\UserRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -27,6 +29,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private ?string $password = null;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Compaign::class,cascade:["persist"])]
+    private Collection $compaigns;
+
+    public function __construct()
+    {
+        $this->compaigns = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -97,4 +107,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
     }
+
+
+    /**
+     * @return Collection<int, Compaign>
+     */
+    public function getCompaigns(): Collection
+    {
+        return $this->compaigns;
+    }
+
+    public function addCompaign(Compaign $compaign): self
+    {
+        if (!$this->compaigns->contains($compaign)) {
+            $this->compaigns->add($compaign);
+            $compaign->setUser($this);
+        }
+
+        return $this;
+    }
+    public function addCompaigns(array $compaigns):self
+    {
+        foreach($compaigns as $compaign)
+        {
+            $this->addCompaign($compaign);
+        }
+        return $this;
+    }
+
+
 }

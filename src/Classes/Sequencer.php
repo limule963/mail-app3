@@ -3,6 +3,8 @@
 namespace App\Classes;
 
 use App\Entity\Dsn;
+use App\Entity\Lead;
+use Symfony\Component\Mime\Email;
 use App\Controller\CrudControllerHelpers;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 
@@ -21,7 +23,7 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
         /**
          * @var Dsn[] $dsn
          */
-        public function prepare(array $steps = null, $dsn = null)
+        public function prepare(array $steps = null,  $dsn = null)
         {
             
             foreach($steps as $step)
@@ -39,9 +41,17 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
                 }
             }
 
+            
+
             $this->dsn = $dsn;
             $this->email = $this->getTemplatedEmail($this->step->getEmail());
             
+        }
+        private function leadStatusManager(array $steps)
+        {
+            foreach ($steps as $key => $value) {
+                $status[] = 'lead.step.'.$key++;
+            }
         }
 
         private function getTemplatedEmail($email)
@@ -68,43 +78,26 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
             
         }
 
-        public function getLeads(array $lead = null)
+        /**@return Lead[] */
+        public function getLeads()
         {
             return $this->leads;
         }
 
-        public function getDsn():Dsn
+        /**@return Dsn[] */
+        public function getDsns()
         {
             return $this->dsn;
         }
 
-        public function getEmail()
+        public function getEmail():Email
         {
             return $this->email;
         }
 
 
 
-        private function contains($tab,$item)
-        {
-            foreach ($tab as $key => $value) {
-                if($item===$value) return $key;
-            }
-            return false;
-        }
-    
-        private function getNextLeadStatus($tab,$lastStatus)
-        {
-            $count = count($tab);
-            $key=$this->contains($tab,$lastStatus);
-            
-            $key++;
-    
-            if($key >= $count ) return 'lead.complete';
-            return $tab[$key];
-    
-    
-        }
+
 
         /**step est active si son attribut startTime est inferieur au time actuel */
         private function isStepActive($step):bool

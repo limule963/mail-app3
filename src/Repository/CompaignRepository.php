@@ -45,12 +45,13 @@ class CompaignRepository extends ServiceEntityRepository
    public function findByUserId($id): array
    {
        return $this->createQueryBuilder('c')
-            ->select('c','s','t')
+            ->select('c','s','t, d')
             ->andWhere('c.user = :val')
             // ->innerJoin('c.user','u')
             // ->innerJoin('c.leads','l')
             ->innerJoin('c.steps','s')
             ->innerJoin('c.status','t')
+            ->join('c.dsns','d')
             ->setParameter('val', $id)
             ->orderBy('c.id', 'ASC')
             // ->setMaxResults($n)

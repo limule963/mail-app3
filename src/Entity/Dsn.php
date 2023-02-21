@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\DsnRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: DsnRepository::class)]
@@ -29,7 +31,16 @@ class Dsn
     private ?int $port = null;
 
     
+
     public bool $sendState = false;
+
+    #[ORM\ManyToMany(targetEntity: Compaign::class, mappedBy: 'dsns')]
+    private Collection $compaigns;
+
+    public function __construct()
+    {
+        $this->compaigns = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -94,6 +105,42 @@ class Dsn
         $this->port = $port;
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Compaign>
+     */
+    public function getCompaigns(): Collection
+    {
+        return $this->compaigns;
+    }
+
+    public function addCompaign(Compaign $compaign): self
+    {
+        if (!$this->compaigns->contains($compaign)) {
+            $this->compaigns->add($compaign);
+            $compaign->addDsn($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCompaign(Compaign $compaign): self
+    {
+        if ($this->compaigns->removeElement($compaign)) {
+            $compaign->removeDsn($this);
+        }
+
+        return $this;
+    }
+
+    public function getDsnByEmail($email):string
+    {
+        return $dsn = 'dsn';
+    }
+    public function getDsn():string
+    {
+        return $dsn = 'dsn';
     }
 
 

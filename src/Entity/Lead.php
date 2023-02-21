@@ -28,6 +28,9 @@ class Lead
     #[ORM\JoinColumn(nullable: false)]
     private ?Status $status = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $sender = null;
+
     
     public function getId(): ?int
     {
@@ -78,6 +81,18 @@ class Lead
     public function setStatus(?Status $status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getSender(): ?string
+    {
+        return $this->sender;
+    }
+
+    public function setSender(?string $sender): self
+    {
+        $this->sender = $sender;
 
         return $this;
     }
