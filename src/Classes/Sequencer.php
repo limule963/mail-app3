@@ -42,6 +42,7 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
             $this->steps = $steps;
 
             if($newStepPriority) array_reverse($steps);
+
             foreach($steps as $step)
             {
                 /**@var Step $step */
@@ -68,7 +69,7 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
         /**@var Step[] $steps */
         private function leadStatusTable($steps)
         {
-            foreach ($steps as $key => $step) {
+            foreach ($steps as $step) {
                 /**@var Step $step */
                 $statusTable[] = $step->leadStatus;
             } 
@@ -98,10 +99,6 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
     
     
         }
-        private function setLeadstatus()
-        {
-
-        }
 
         private function getTemplatedEmail($email):Email
         {
@@ -122,11 +119,7 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
                 ])
             ;
         }
-        public function sequence(array $leads)
-        {
-            
-        }
-
+        
         /**@return Lead[] */
         public function getLeads()
         {
@@ -149,9 +142,11 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 
 
         /**step est active si son attribut startTime est inferieur au time actuel */
+
+        /**@param Step $step */
         private function isStepActive($step):bool
         {
-            $startTime = gmmktime($step->startTime);
+            $startTime = gmmktime($step->startTime->getTimestamp());
             if(time() > $startTime) return true;
             return false;
         }

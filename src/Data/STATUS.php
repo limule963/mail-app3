@@ -25,7 +25,8 @@
 
             COMPAIGN_DRAFT ='compain.draft',
             COMPAIGN_INPROGRESS ='compain.inprogress',
-            COMPAIGN_COMPLETE ='compain.complete'
+            COMPAIGN_COMPLETE ='compain.complete',
+            COMPAIGN_ACTIVE = 'compaign.active'
             ;
 
 

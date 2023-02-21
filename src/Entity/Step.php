@@ -2,8 +2,9 @@
 
 namespace App\Entity;
 
-use App\Repository\StepRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\StepRepository;
 
 #[ORM\Entity(repositoryClass: StepRepository::class)]
 class Step
@@ -15,6 +16,13 @@ class Step
 
     #[ORM\Column(length: 255)]
     private ?string $name = null;
+
+    #[ORM\Column]
+    public int $dayAfterLastStep = 1;
+
+    #[ORM\Column]
+    public ?int $startTime = null;
+
 
     #[ORM\Column(length: 255)]
     public ?string $leadStatus = null;
@@ -80,6 +88,42 @@ class Step
     public function setCompaign(?Compaign $compaign): self
     {
         $this->compaign = $compaign;
+
+        return $this;
+    }
+
+    public function getDayAfterLastStep(): ?int
+    {
+        return $this->dayAfterLastStep;
+    }
+
+    public function setDayAfterLastStep(int $dayAfterLastStep): self
+    {
+        $this->dayAfterLastStep = $dayAfterLastStep;
+
+        return $this;
+    }
+
+    public function getStartTime(): ?int
+    {
+        return $this->startTime;
+    }
+
+    public function setStartTime(int $startTime): self
+    {
+        $this->startTime = $startTime;
+
+        return $this;
+    }
+
+    public function getLeadStatus(): ?string
+    {
+        return $this->leadStatus;
+    }
+
+    public function setLeadStatus(string $leadStatus): self
+    {
+        $this->leadStatus = $leadStatus;
 
         return $this;
     }

@@ -36,7 +36,7 @@ use Doctrine\Persistence\ManagerRegistry;
         /**
          * @var ObjectManager
          */
-        private $entityManager;
+        // private $entityManager;
 
         /**
          * @var Sequencer
@@ -48,21 +48,22 @@ use Doctrine\Persistence\ManagerRegistry;
          */
         private $emailSender;
 
-        public function __construct(ManagerRegistry $doctrine,EmailSender $emailSender,private CrudControllerHelpers $crud)
+        public function __construct(/*ManagerRegistry $doctrine,*/EmailSender $emailSender,private CrudControllerHelpers $crud)
         {
-            $this->entityManager = $doctrine->getManager();
+            // $this->entityManager = $doctrine->getManager();
             $this->emailSender = $emailSender;
 
 
       
         }
-        public function prepare(Sequencer $sequencer)
+        public function prepare(Sequencer $sequencer):self
         {   
             $this->sequencer = $sequencer;
             $this->leads = $this->sequencer->getLeads();
-            // $this->flag = $this->sequencer->getFlag();
             $this->dsns = $this->sequencer->getDsns();
             $this->email = $this->sequencer->getEmail();
+
+            return $this;
         }
 
  
@@ -72,7 +73,14 @@ use Doctrine\Persistence\ManagerRegistry;
             $this->flag++;
             return $lead;
         }
-        
+
+        private function getDsnByEmail($email)
+        {
+            foreach($this->dsns as $dsn)
+            {
+                if($dsn->getEmail() == $email) return $dsn->getDsn();
+            }
+        }
 
 
 
@@ -80,10 +88,7 @@ use Doctrine\Persistence\ManagerRegistry;
 
         public function lunch()
         {
-            /**
-             * 
-             * @var Dsn $Dsn
-             */
+
             foreach($this->dsns as $Dsn)
             {   
                 $lead = $this->getNextLead();
@@ -92,7 +97,7 @@ use Doctrine\Persistence\ManagerRegistry;
                 if($Dsn->sendState == true) continue;
 
              
-                if($lead->getSender() != null) $dsn = $Dsn->getDsnByEmail($lead->getSender());
+                if($lead->getSender() != null) $dsn = $this->getDsnByEmail($lead->getSender());
                 else $dsn = $Dsn->getDsn();
 
                 
@@ -101,13 +106,13 @@ use Doctrine\Persistence\ManagerRegistry;
                 $emailAddress =$lead->getEmailAddress();
 
                 $this->emailSender->prepare($dsn,$from,$emailAddress,$this->email);
-
+                
                 if($this->emailSender->send())
                 {
                     $Dsn->sendState = true;
                     
                     $status =$this->sequencer->getNextLeadStatus($lead->getStatus()->getStatus());
-                    
+
                     $Status = $this->crud->getStatus($status);
                     $lead->setStatus($Status);
                     if($lead->getSender() == null) $lead->setSender($from);
@@ -116,9 +121,9 @@ use Doctrine\Persistence\ManagerRegistry;
                  
                 }
 
-
-                
-
             }
         }
+
+
+
     }

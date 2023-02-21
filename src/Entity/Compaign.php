@@ -37,6 +37,9 @@ class Compaign
     #[ORM\ManyToMany(targetEntity: Dsn::class, inversedBy: 'compaigns',cascade:['persist'])]
     private Collection $dsns;
 
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?Schedule $schedule = null;
+
     public function __construct()
     {
         $this->leads = new ArrayCollection();
@@ -176,6 +179,30 @@ class Compaign
     public function removeDsn(Dsn $dsn): self
     {
         $this->dsns->removeElement($dsn);
+
+        return $this;
+    }
+
+    public function getSchedule(): ?Schedule
+    {
+        return $this->schedule;
+    }
+
+    public function setSchedule(?Schedule $schedule): self
+    {
+        $this->schedule = $schedule;
+
+        return $this;
+    }
+
+    public function isNewStepPriority(): ?bool
+    {
+        return $this->newStepPriority;
+    }
+
+    public function setNewStepPriority(bool $newStepPriority): self
+    {
+        $this->newStepPriority = $newStepPriority;
 
         return $this;
     }

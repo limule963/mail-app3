@@ -149,6 +149,11 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             return $this->getUser();
         }
 
+        public function getSchedule()
+        {
+            
+        }
+
 
         // public function createCompaigns(array $Compaigns)
         // {

@@ -28,7 +28,7 @@ class Dsn
     private ?string $host = null;
 
     #[ORM\Column]
-    private ?int $port = null;
+    private int $port = 587;
 
     
 
@@ -140,8 +140,20 @@ class Dsn
     }
     public function getDsn():string
     {
-        return $dsn = 'dsn';
+        // $dsn =  'smtp://contact@clemaos.com:jC1*rAJ8GGph9@u@mail51.lwspanel.com:587?verify_peer=0';
+
+        $this->host = urlencode($this->host);
+        $this->username = urlencode($this->username);
+        $this->password = urlencode($this->password);
+
+        return $dsn =  'smtp://'
+                . $this->username.":"
+                . $this->password."@"
+                . $this->host.":"
+                . $this->port.'?verify_peer=1';
+                
     }
+    
 
 
 }

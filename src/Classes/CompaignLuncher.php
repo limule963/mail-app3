@@ -13,7 +13,7 @@ use App\Entity\Compaign;
         /**
          * @var Dsn[]
          */
-        private $dsn;
+        private $dsns;
 
         public function __construct(private Sequencer $sequencer,private SequenceLuncher $sequenceLuncher)
         {
@@ -23,7 +23,7 @@ use App\Entity\Compaign;
         public function prepare(Compaign $compaign):self
         {
             $this->compaign = $compaign;
-            $this->dsn = $compaign->getDsns();
+            $this->dsns = $compaign->getDsns();
             $this->steps = $compaign->getSteps();
 
             return $this;
@@ -31,7 +31,7 @@ use App\Entity\Compaign;
 
         public function sequence():self
         {
-            $this->sequencer->prepare($this->steps,$this->dsn,$this->compaign->newStepPriority);
+            $this->sequencer->prepare($this->steps,$this->dsns,$this->compaign->newStepPriority);
 
             return $this;
 
@@ -39,11 +39,8 @@ use App\Entity\Compaign;
 
         public function lunch():self
         {
-            $this->sequenceLuncher->prepare($this->sequencer);
-            $this->sequenceLuncher->lunch();
+            $this->sequenceLuncher->prepare($this->sequencer)->lunch();
 
-            
-            
             return $this;
         }
     }

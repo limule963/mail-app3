@@ -7,9 +7,9 @@ use Symfony\Component\Mailer\Transport;
 
     class EmailSender
     {
-        private $dsn;
-        private $emailAddress;
-        private $from;
+        private string $dsn;
+        private string $emailAddress;
+        private string $from;
 
         /**
          * @var Email
@@ -49,9 +49,9 @@ use Symfony\Component\Mailer\Transport;
                 return true;
 
             }
-            catch (\Exception $e) 
+            catch (\Throwable $th) 
             {
-                $message =  $e->getMessage();
+                $message =  $th->getMessage();
                 return false;
                 
             }

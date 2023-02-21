@@ -17,14 +17,14 @@ class Schedule
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $startTime = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $from = null;
+    #[ORM\Column]
+    private ?int $from = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $to = null;
+    #[ORM\Column]
+    private ?int $to = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $timezone = null;
+    #[ORM\OneToOne(mappedBy: 'schedule', cascade: ['persist', 'remove'])]
+    private ?Compaign $compaign = null;
 
     public function getId(): ?int
     {
@@ -43,38 +43,48 @@ class Schedule
         return $this;
     }
 
-    public function getFromm(): ?string
+    public function getFrom(): ?int
     {
         return $this->from;
     }
 
-    public function setFromm(string $from): self
+    public function setFrom(int $from): self
     {
         $this->from = $from;
 
         return $this;
     }
 
-    public function getToo(): ?string
+    public function getTo(): ?int
     {
         return $this->to;
     }
 
-    public function setToo(string $to): self
+    public function setTo(int $to): self
     {
         $this->to = $to;
 
         return $this;
     }
 
-    public function getTimezone(): ?string
+    public function getCompaign(): ?Compaign
     {
-        return $this->timezone;
+        return $this->compaign;
     }
 
-    public function setTimezone(string $timezone): self
+    public function setCompaign(?Compaign $compaign): self
     {
-        $this->timezone = $timezone;
+        // unset the owning side of the relation if necessary
+        if ($compaign === null && $this->compaign !== null) {
+            $this->compaign->setSchedule(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($compaign !== null && $compaign->getSchedule() !== $this) {
+            $compaign->setSchedule($this);
+        }
+
+        $this->compaign = $compaign;
 
         return $this;
     }

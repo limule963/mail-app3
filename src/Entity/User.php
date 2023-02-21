@@ -135,5 +135,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function removeCompaign(Compaign $compaign): self
+    {
+        if ($this->compaigns->removeElement($compaign)) {
+            // set the owning side to null (unless already changed)
+            if ($compaign->getUser() === $this) {
+                $compaign->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
 
 }
