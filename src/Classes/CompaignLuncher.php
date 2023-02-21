@@ -1,11 +1,18 @@
 <?php
-    namespace App\Classes;
+namespace App\Classes;
+
+use App\Entity\Step;
+use App\Entity\Compaign;
 
     class CompaignLuncher
     {
+        /**@var Compaign */
         private $compaign;
-        private $step;
-        private $lead;
+        /**@var Step[] */
+        private $steps;
+        /**
+         * @var Dsn[]
+         */
         private $dsn;
 
         public function __construct(private Sequencer $sequencer,private SequenceLuncher $sequenceLuncher)
@@ -13,19 +20,18 @@
             
         }
 
-        public function prepare(/*Compaign*/ $compaign):self
+        public function prepare(Compaign $compaign):self
         {
             $this->compaign = $compaign;
-            $this->lead = $compaign->getLead();
-            $this->step = $compaign->getStep();
+            $this->dsn = $compaign->getDsns();
+            $this->steps = $compaign->getSteps();
 
             return $this;
         }
 
         public function sequence():self
         {
-            $this->sequencer->prepare($this->step,$this->dsn);
-            $this->sequencer->sequence($this->lead);
+            $this->sequencer->prepare($this->steps,$this->dsn,$this->compaign->newStepPriority);
 
             return $this;
 

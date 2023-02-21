@@ -81,6 +81,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
         public function createStep($name,$subject,$linkToEmail):Step
         {
+
             $status = $this->getStatus(STAT::STEP_DRAFT);
             $email = $this->createEmail($subject,$linkToEmail);
             return (new Step)
@@ -294,7 +295,11 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             $rep = $this->em->getRepository(Compaign::class);
             $compaign = $rep->find($compaignId);
             $compaign->addStep($step);
+
+            
             $rep->save($compaign,true);
+            $this->leadStatusOrding();
+
         }
 
         public function updateStep($id,$name,$subject,$linkToEmail)
@@ -308,6 +313,31 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             $step->setName($name)->setEmail($email);
             $rep->save($step,true);
             
+        }
+        public function saveStep(Step $step)
+        {
+            /**@var StepRepository */
+            $rep = $this->em->getRepository(Step::class);
+            $rep->save($step,true);
+        }
+        /**@var Step[] $steps */
+
+        public function leadStatusOrding()
+        {
+            /**@var StepRepository */
+            $rep = $this->em->getRepository(Step::class);
+            $steps = $rep->findAll();
+            // $count =count($steps);
+            if($steps!=null)
+            {
+                foreach ($steps as $key => $step) {
+                    $key2 = $key+1;
+                    $step->leadStatus = 'lead.step.'.$key2;
+                    $rep->save($step);
+                    
+                } 
+                $this->em->flush();
+            }
         }
 
         public function deleteStep($id)

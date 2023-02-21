@@ -2,19 +2,30 @@
 
 namespace App\Classes;
 
+use App\Entity\Email as Em;
 use App\Entity\Dsn;
 use App\Entity\Lead;
+use App\Entity\Step;
+use App\Data\STATUS as STAT;
 use Symfony\Component\Mime\Email;
 use App\Controller\CrudControllerHelpers;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 
     class Sequencer
     {
+        /**@var Email */
         private $email;
+
+        /**@var Dsn[] */
         private $dsn;
+
+        /**@var Lead[] */
         private $leads;
-        private $step;
         
+        /**@var Step */
+        private $step;
+
+        private $count;
         public function __construct( private CrudControllerHelpers $crud)
         {
             
@@ -22,19 +33,25 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
         
         /**
          * @var Dsn[] $dsn
+         * @var Step[] $steps
+         *
          */
-        public function prepare(array $steps = null,  $dsn = null)
+        private $steps;
+        public function prepare(array $steps = null,  $dsn = null,$newStepPriority = true)
         {
-            
+            $this->steps = $steps;
+
+            if($newStepPriority) array_reverse($steps);
             foreach($steps as $step)
             {
-                
+                /**@var Step $step */
                 if( !$this->isStepActive($step)) continue;
                 {
                     $this->leads = $this->crud->getLeadsByStatus($step->leadStatus);
                     if(empty($this->leads)) continue;
                     else
                     {
+
                         $this->step = $step;
                         break;
                     }
@@ -47,14 +64,46 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
             $this->email = $this->getTemplatedEmail($this->step->getEmail());
             
         }
-        private function leadStatusManager(array $steps)
+
+        /**@var Step[] $steps */
+        private function leadStatusTable($steps)
         {
-            foreach ($steps as $key => $value) {
-                $status[] = 'lead.step.'.$key++;
-            }
+            foreach ($steps as $key => $step) {
+                /**@var Step $step */
+                $statusTable[] = $step->leadStatus;
+            } 
+                
+            return $statusTable;
         }
 
-        private function getTemplatedEmail($email)
+        private function contains($tab,$item)
+        {
+            foreach ($tab as $key => $value) {
+                if($item===$value) return $key;
+            }
+            return false;
+        }
+    
+        public function getNextLeadStatus($lastStatus):string
+        {   
+            // if($lastStatus ='') return STAT::LEAD_STEP_1;
+            $tab =$this->leadStatusTable($this->steps);
+            $count = count($tab);
+            $key=$this->contains($tab,$lastStatus);
+            
+            $key++;
+    
+            if($key >= $count ) return STAT::LEAD_COMPLETE;
+            return $tab[$key];
+    
+    
+        }
+        private function setLeadstatus()
+        {
+
+        }
+
+        private function getTemplatedEmail($email):Email
         {
             $sbject = $email->getSubject();
             $emailLink = $email->getEmailLink();

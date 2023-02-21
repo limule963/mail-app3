@@ -18,10 +18,10 @@ class Schedule
     private ?\DateTimeInterface $startTime = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $fromm = null;
+    private ?string $from = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $too = null;
+    private ?string $to = null;
 
     #[ORM\Column(length: 255)]
     private ?string $timezone = null;
@@ -45,24 +45,24 @@ class Schedule
 
     public function getFromm(): ?string
     {
-        return $this->fromm;
+        return $this->from;
     }
 
-    public function setFromm(string $fromm): self
+    public function setFromm(string $from): self
     {
-        $this->fromm = $fromm;
+        $this->from = $from;
 
         return $this;
     }
 
     public function getToo(): ?string
     {
-        return $this->too;
+        return $this->to;
     }
 
-    public function setToo(string $too): self
+    public function setToo(string $to): self
     {
-        $this->too = $too;
+        $this->to = $to;
 
         return $this;
     }

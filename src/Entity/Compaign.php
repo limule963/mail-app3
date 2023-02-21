@@ -17,6 +17,9 @@ class Compaign
 
     #[ORM\Column(length: 255)]
     private ?string $name = null;
+    
+    #[ORM\Column]
+    public ?bool $newStepPriority = true;
 
     #[ORM\ManyToOne(inversedBy: 'compaigns')]
     private ?User $user = null;

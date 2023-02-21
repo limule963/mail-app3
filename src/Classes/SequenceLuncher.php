@@ -72,27 +72,6 @@ use Doctrine\Persistence\ManagerRegistry;
             $this->flag++;
             return $lead;
         }
-
-        private function contains($tab,$item)
-        {
-            foreach ($tab as $key => $value) {
-                if($item===$value) return $key;
-            }
-            return false;
-        }
-    
-        private function getNextLeadStatus($tab,$lastStatus)
-        {
-            $count = count($tab);
-            $key=$this->contains($tab,$lastStatus);
-            
-            $key++;
-    
-            if($key >= $count ) return 'lead.complete';
-            return $tab[$key];
-    
-    
-        }
         
 
 
@@ -126,7 +105,11 @@ use Doctrine\Persistence\ManagerRegistry;
                 if($this->emailSender->send())
                 {
                     $Dsn->sendState = true;
-                    $lead->setStatus($this->crud->getStatus('lead.status.sent'));
+                    
+                    $status =$this->sequencer->getNextLeadStatus($lead->getStatus()->getStatus());
+                    
+                    $Status = $this->crud->getStatus($status);
+                    $lead->setStatus($Status);
                     if($lead->getSender() == null) $lead->setSender($from);
                     
                     $this->crud->saveLead($lead);
