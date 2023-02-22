@@ -2,12 +2,13 @@
 
 namespace App\Classes;
 
-use App\Entity\Email as Em;
 use App\Entity\Dsn;
 use App\Entity\Lead;
 use App\Entity\Step;
+use App\Entity\Email as Em;
 use App\Data\STATUS as STAT;
 use Symfony\Component\Mime\Email;
+use App\Repository\LeadRepository;
 use App\Controller\CrudControllerHelpers;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 
@@ -25,19 +26,24 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
         /**@var Step */
         private $step;
 
-        private $count;
+        private $compaignId;
         public function __construct( private CrudControllerHelpers $crud)
         {
             
         }
         
         /**
-         * @var Dsn[] $dsn
          * @var Step[] $steps
          *
          */
         private $steps;
-        public function prepare(array $steps = null,  $dsn = null,$newStepPriority = true)
+        /**
+         * @param Step[] $steps
+         * @param Dsn[] $dsns
+         * @param int $compaignId
+         * @param bool $newStepPriority
+         */
+        public function prepare(array $steps,array $dsns ,$compaignId,$newStepPriority = true )
         {
             $this->steps = $steps;
 
@@ -47,8 +53,9 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
             {
                 /**@var Step $step */
                 if( !$this->isStepActive($step)) continue;
+                else
                 {
-                    $this->leads = $this->crud->getLeadsByStatus($step->leadStatus);
+                    $this->leads = $this->crud->getLeadsByStatus($step->leadStatus,count($dsns));
                     if(empty($this->leads)) continue;
                     else
                     {
@@ -61,9 +68,15 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 
             
 
-            $this->dsn = $dsn;
+            $this->dsn = $dsns;
             $this->email = $this->getTemplatedEmail($this->step->getEmail());
+            $this->compaignId =$compaignId;
+           
             
+        }
+        public function sequence()
+        {
+
         }
 
         /**@var Step[] $steps */
@@ -119,6 +132,10 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
                 ])
             ;
         }
+        private function getLeadsByStatus($status)
+        {
+            return $leads = $this->crud->getLeadsByStatus($status);
+        }
         
         /**@return Lead[] */
         public function getLeads()
@@ -144,9 +161,13 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
         /**step est active si son attribut startTime est inferieur au time actuel */
 
         /**@param Step $step */
-        private function isStepActive($step):bool
+        private function isStepActive(Step $step):bool
         {
-            $startTime = gmmktime($step->startTime->getTimestamp());
+            $schedule = $this->crud->getSchedule($this->compaignId);
+
+            $startTime =$schedule->getStartTime()->getTimestamp() + $step->dayAfterLastStep*3600;
+
+
             if(time() > $startTime) return true;
             return false;
         }

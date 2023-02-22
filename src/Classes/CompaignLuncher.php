@@ -31,7 +31,7 @@ use App\Entity\Compaign;
 
         public function sequence():self
         {
-            $this->sequencer->prepare($this->steps,$this->dsns,$this->compaign->newStepPriority);
+            $this->sequencer->prepare($this->steps,$this->dsns,$this->compaign->getId(),$this->compaign->newStepPriority);
 
             return $this;
 

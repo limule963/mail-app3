@@ -42,15 +42,15 @@ class LeadRepository extends ServiceEntityRepository
    /**
     * @return Lead[] Returns an array of Lead objects
     */
-   public function findByStatus($status): array
+   public function findByStatus($status,$n = 1000): array
    {
        return $this->createQueryBuilder('l')
             ->select('l','s')
-            ->andWhere('l.status = :val')
+            ->andWhere('s.status = :val')
             ->join('l.status','s')
             ->setParameter('val', $status)
             ->orderBy('l.id', 'ASC')
-            // ->setMaxResults(10)
+            ->setMaxResults($n)
             ->getQuery()
             ->getResult()
        ;

@@ -1,20 +1,22 @@
 <?php
 namespace App\Controller;
 
-use App\Classes\Exception\CrudControllerException;
 use App\Entity\Lead;
 use App\Entity\Step;
 use App\Entity\User;
 use App\Entity\Email;
 use App\Entity\Status;
 use App\Entity\Compaign;
+use App\Entity\Schedule;
 use App\Data\STATUS as STAT;
 use App\Repository\LeadRepository;
 use App\Repository\StepRepository;
 use App\Repository\UserRepository;
 use App\Repository\CompaignRepository;
+use App\Repository\ScheduleRepository;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Classes\Exception\CrudControllerException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
     
@@ -149,10 +151,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             return $this->getUser();
         }
 
-        public function getSchedule()
-        {
-            
-        }
+
 
 
         // public function createCompaigns(array $Compaigns)
@@ -183,7 +182,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             
         }
 
-        public function updateCompaign($id,$name = null, array $dsns = null,Status $status =null)
+        public function updateCompaign($id,$name = null, array $dsns = null, Step $step = null, Status $status =null,array $leads =null, Schedule $schedule =null)
         {
             /**@var CompaignRepository */
             $rep = $this->em->getRepository(Compaign::class);
@@ -193,6 +192,10 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             if($name!=null) $compaign->setName($name);
             if(!empty($dsns)) $compaign->addDsns($dsns);
             if($status!=null) $compaign->setStatus($status);
+            if($schedule!=null) $compaign->setSchedule($schedule);
+            if($step!=null) $compaign->addStep($step);
+            if($leads!=null) $compaign->addLeads($leads);
+
             $rep->save($compaign,true);
             return $compaign->getId();
             
@@ -294,15 +297,10 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 //---------------------------------------------------------------------
         public function addStep($compaignId,$name,$subject,$linkToEmail)
         {
-            $step = $this->createStep($name,$subject,$linkToEmail);
-
-            /**@var CompaignRepository */
-            $rep = $this->em->getRepository(Compaign::class);
-            $compaign = $rep->find($compaignId);
-            $compaign->addStep($step);
-
             
-            $rep->save($compaign,true);
+            $step = $this->createStep($name,$subject,$linkToEmail);
+            $this->updateCompaign($compaignId,null,null,$step);
+
             $this->leadStatusOrding();
 
         }
@@ -363,13 +361,36 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 
 
-        /**
-         * Read crud
-         */
+//---------------------------------------------------------------------
+//               SCHEDULE CRUD                                        |
+//---------------------------------------------------------------------
 
 
-        
+        public function getSchedule($compaignId):Schedule
+        {
+            /**@var ScheduleRepository */
+            $rep = $this->em->getRepository(Schedule::class);
+            return $rep->findOneByCompaignId($compaignId);
 
+        }
+
+        public function createSchedule($from,$to, \DateTimeInterface $startTime)
+        {
+            return (new Schedule())->setFrom($from)->setTo($to)->setStartTime($startTime);
+        }
+
+        public function addSchedule($from,$to,\DateTimeInterface $startTime,$compaignId)
+        {
+            $schedule = $this->createSchedule($from,$to,$startTime);
+            $this-> updateCompaign($compaignId,null,null,null,null,null,$schedule);
+
+        }
+        public function saveSchedule(Schedule $schedule)
+        {
+            /**@var ScheduleRepository */
+            $rep = $this->em->getRepository(Schedule::class);
+            $rep->save($schedule,true);
+        }
 
 
 
