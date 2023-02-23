@@ -10,7 +10,9 @@ use Symfony\Component\Mime\Email;
             public Email $email,
             public array $dsns,
             public $sequenceState,
-            public $leadStatusTable = null
+            public $leadStatusTable,
+            public $compaignId,
+            public $stepLeadStatus
 
             )
         {

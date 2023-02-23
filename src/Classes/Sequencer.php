@@ -74,7 +74,9 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
                 $this->email,
                 $compaign->getDsns()->getValues(),
                 $sequenceState,
-                $this->leadStatusTable($this->steps)
+                $this->leadStatusTable($this->steps),
+                $compaign->getId(),
+                $this->step->leadStatus
             );
  
         }

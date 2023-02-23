@@ -74,7 +74,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
         public function createUser()
         {
-            
+
         }
 
 
@@ -240,6 +240,16 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             return $rep->findByCompainId($compaignId);           
         }
 
+        public function getLeadBySender($compaignId,$leadStatus,$sender)
+        {
+            /**@var LeadRepository */
+            $rep = $this->em->getRepository(Lead::class);      
+            return $rep->findOneBySender($compaignId,$leadStatus,$sender);
+
+
+        }
+
+
 
 
 
@@ -384,7 +394,9 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             $rep->save($schedule,true);
         }
 
-
+//---------------------------------------------------------------------
+//               DSN CRUD                                             |
+//---------------------------------------------------------------------
 
 
 

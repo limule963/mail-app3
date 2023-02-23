@@ -10,6 +10,7 @@ use Symfony\Component\Mime\Email;
 use Doctrine\Persistence\ObjectManager;
 use App\Controller\CrudControllerHelpers;
 use App\Data\EmailData;
+use App\Data\STATUS;
 
     class SequenceLuncher
     {
@@ -44,10 +45,12 @@ use App\Data\EmailData;
          * @var EmailSender
          */
         private $emailSender;
+        
+        private $compaignId;
 
-        public $leadStatusTable;
+        private $stepLeadStatus;
 
-        public function __construct(/*ManagerRegistry $doctrine,*/EmailSender $emailSender,private CrudControllerHelpers $crud)
+        public function __construct(EmailSender $emailSender,private CrudControllerHelpers $crud)
         {
             // $this->entityManager = $doctrine->getManager();
             $this->emailSender = $emailSender;
@@ -60,22 +63,29 @@ use App\Data\EmailData;
             $this->leads = $sequence->leads;
             $this->dsns = $sequence->dsns;
             $this->email = $sequence->email;
-            $this->leadStatusTable = $sequence->leadStatusTable;
+            $this->compaignId = $sequence->compaignId;
+            $this->stepLeadStatus = $sequence->stepLeadStatus;
 
+            /**@var Dsn $Dsn */
             foreach($this->dsns as $Dsn)
             {   
-                $lead = $this->getNextLead();
-
-            
+                
                 if($Dsn->sendState == true) continue;
 
-             
-                if($lead->getSender() != null) $dsn = $this->getDsnByEmail($lead->getSender());
-                else $dsn = $Dsn->getDsn();
+                $from = $Dsn->getEmail();
+                
+                if($this->stepLeadStatus == STATUS::LEAD_STEP_1)
+                {
+                    $lead = $this->getNextLead('');
+                    $dsn = $Dsn->getDsn();
+                }
+                else
+                {
+                    $lead = $this->getNextLead($from);
+                    $dsn = $this->getDsnByEmail($lead->getSender());
+                } 
 
                 
-                $from = $Dsn->getEmail();
-
                 $emailAddress =$lead->getEmailAddress();
 
                 $emailData = new EmailData($dsn,$from,$emailAddress,$this->email);
@@ -103,11 +113,15 @@ use App\Data\EmailData;
 
 
 
-        private function getNextLead():Lead
+        // private function getNextLead():Lead
+        // {   
+        //     $lead = $this->leads[$this->flag];
+        //     $this->flag++;
+        //     return $lead;
+        // }
+        private function getNextLead($sender):Lead
         {   
-            $lead = $this->leads[$this->flag];
-            $this->flag++;
-            return $lead;
+            return $this->crud->getLeadBySender($this->compaignId,$this->stepLeadStatus,$sender);
         }
 
         private function getDsnByEmail($email)

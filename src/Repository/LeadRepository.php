@@ -86,13 +86,29 @@ class LeadRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?Lead
-//    {
-//        return $this->createQueryBuilder('l')
-//            ->andWhere('l.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    public function findOneBySender($compaignId,$stepLeadStatus,$sender): ?Lead
+    {
+        return $this->createQueryBuilder('l')
+            ->select('l','s')
+            ->andWhere('l.compaign = :val2')
+            ->andWhere('l.sender = :val')
+            ->andWhere('s.status = :val3')
+            ->join('l.status','s')
+            ->setParameter('val', $sender)
+            ->setParameter('val2', $compaignId)
+            ->setParameter('val3', $stepLeadStatus)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+    public function findOne($compaignId): ?Lead
+    {
+        return $this->createQueryBuilder('l')
+            ->select('l','s')
+            ->andWhere('l.compaign = :val2')
+            ->setParameter('val2', $compaignId)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
 }
