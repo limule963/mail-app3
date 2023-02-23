@@ -26,29 +26,14 @@ class HomeController extends AbstractController
         {
             $user = $this->crud->user();
          
-
-            
-
-
-            $error =null;
+             $error =null;
         } 
         catch (\Throwable $th) 
         {
             $error = $th->getMessage();
             return $this->redirectToRoute('app_login');
         }
-        // $tab = null;
-        // for($i = 0; $i<10; $i++)
-        // {
-        //     $tab[] = new SimpleObject('koff'.$i, $i);
-        // }
-
-        // $cmp = function(string $a,string $b){
-        //     if($a == $b) return 0;
-        //     return ($a<$b) ? 1: -1;
-        // };
-        // usort($tab,$cmp);
-        // dd($tab);
+        
 
         return $this->render('home/index.html.twig', [
             'controller_name' => 'HomeController',
