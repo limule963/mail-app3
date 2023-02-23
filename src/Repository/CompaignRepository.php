@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Compaign;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\DependencyInjection\Compiler\Compiler;
 
 /**
  * @extends ServiceEntityRepository<Compaign>
@@ -40,39 +41,72 @@ class CompaignRepository extends ServiceEntityRepository
     }
 
    /**
-    * @return Compaign[] Returns an array of Compaign objects
+    * @return Compaign Returns null or  Compaign object
     */
-   public function findByUserId($id): array
+   public function findOneById($id):?Compaign
    {
        return $this->createQueryBuilder('c')
-            ->select('c','s','t, d')
-            ->andWhere('c.user = :val')
-            // ->innerJoin('c.user','u')
-            // ->innerJoin('c.leads','l')
-            ->innerJoin('c.steps','s')
-            ->innerJoin('c.status','t')
-            ->join('c.dsns','d')
+            ->andWhere('c.id = :val')
             ->setParameter('val', $id)
-            ->orderBy('c.id', 'ASC')
-            // ->setMaxResults($n)
             ->getQuery()
-            ->getResult()
+            ->getOneOrNullResult()
+            
        ;
    }
-//    /**
-//     * @return Compaign[] Returns an array of Compaign objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('c.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+
+   /**
+    * @return Compaign Returns null or  Compaign object
+    */
+   public function findOneWithData($id):?Compaign
+   {
+       return $this->createQueryBuilder('c')
+            ->select('c','s','t, d','sh')
+            ->andWhere('c.id = :val')
+            ->join('c.steps','s')
+            ->join('c.status','t')
+            ->join('c.dsns','d')
+            ->join('c.schedule','sh')
+            ->setParameter('val', $id)
+            ->getQuery()
+            ->getOneOrNullResult()
+            
+       ;
+   }
+    /**
+        * @return Compaign[] Returns an array of Compaign objects
+        */
+    public function findByUserId($id,$number = 1000): array
+    {
+        
+            return $this->createQueryBuilder('c')
+                        ->andWhere('c.user = :val')
+                        ->setParameter('val', $id)
+                        ->orderBy('c.id', 'ASC')
+                        ->setMaxResults($number)
+                        ->getQuery()
+                        ->getResult()
+        ;
+    }
+    /**
+        * @return Compaign[] Returns an array of Compaign objects
+        */
+    public function findWithDataByUserId($id,$number = 1000): array
+    {
+        
+            return $this->createQueryBuilder('c')
+                        ->select('c','s','t, d','sh')
+                        ->andWhere('c.user = :val')
+                        ->join('c.steps','s')
+                        ->join('c.status','t')
+                        ->join('c.dsns','d')
+                        ->join('c.schedule','sh')
+                        ->setParameter('val', $id)
+                        ->orderBy('c.id', 'ASC')
+                        ->setMaxResults($number)
+                        ->getQuery()
+                        ->getResult()
+        ;
+    }
 
 //    public function findOneBySomeField($value): ?Compaign
 //    {

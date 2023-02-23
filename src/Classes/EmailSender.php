@@ -1,59 +1,38 @@
 <?php
     namespace App\Classes;
 
-use Symfony\Component\Mime\Email;
+use App\Data\EmailData;
+use App\Data\EmailResponse;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mailer\Transport;
 
     class EmailSender
     {
-        private string $dsn;
-        private string $emailAddress;
-        private string $from;
-
-        /**
-         * @var Email
-         */
-
-        private $email;
 
         public function __construct()
         {
             
         }
-        public function prepare(string $dsn, string $from,string $emailAddress,Email $email)
-        {
-            $this->dsn = $dsn;
-            $this->emailAddress = $emailAddress;
-            $this->email = $email;
-            $this->from = $from;
 
-        }
-
-        public function send()
+        public function send(EmailData $ed)
         {
-            $transport = Transport::fromDsn($this->dsn);
+            $transport = Transport::fromDsn($ed->dsn);
             $mailer = new Mailer($transport);
 
-            $email = $this->email
-                ->from($this->from)
-                ->to($this->emailAddress)
+            $email = $ed->email
+                ->from($ed->from)
+                ->to($ed->emailAddress)
             ;
-            
 
             try 
             {
-
                 $mailer ->send($email);
-                
-                return true;
+                return new EmailResponse(true,'Email sent',$ed->from);
 
             }
             catch (\Throwable $th) 
             {
-                $message =  $th->getMessage();
-                return false;
-                
+                return new EmailResponse(false,'Email not sent','',$th->getCode(),$th->getMessage());   
             }
         }
     }

@@ -14,7 +14,6 @@ use App\Repository\StepRepository;
 use App\Repository\UserRepository;
 use App\Repository\CompaignRepository;
 use App\Repository\ScheduleRepository;
-use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Classes\Exception\CrudControllerException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,17 +23,20 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
     class CrudControllerHelpers extends AbstractController
     {
         private $em;
-        private $comprep;
-        private $steprep;
-        private $leadrep;
-        private $userrep;
-
+        private $comprepo;
+        private $steprepo;
+        private $leadrepo;
+        private $userrepo;
+        private $scherepo;
         public function __construct(private UserPasswordHasherInterface $hasher,private ManagerRegistry $doc)
         {
             $this->em = $doc->getManager();
         }
         
-        
+
+//---------------------------------------------------------------------
+//               STATUS_CRUD                                          |
+//---------------------------------------------------------------------
         /**
          * Creation Crud
          */
@@ -48,6 +50,9 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
       
 
+//---------------------------------------------------------------------
+//               EMAIL_CRUD                                           |
+//---------------------------------------------------------------------
         public function createEmail($subject,$linkToEmail):Email
         {
             return (new Email)->setSubject($subject)->setEmailLink($linkToEmail);
@@ -55,95 +60,11 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 
 
-        public function createLead($name,$emailAddress,$status = STAT::LEAD_STEP_1):Lead
-        {
-            $sta = $this->getStatus($status);
-            return (new Lead)->setStatus($sta)->setName($name)->setEmailAddress($emailAddress);
-        }
 
 
-
-        public function createLeads(array $leadsData,$status = STAT::LEAD_STEP_1):array
-        {
-            $sta = $this->getStatus($status);
-            $leads = null;
-            foreach($leadsData as $lead)
-            {
-                $leads[]= (new Lead)->setStatus($sta)
-                                    ->setName($lead['name'])
-                                    ->setEmailAddress($lead['emailAddress'])
-                ;
-
-            }
-            return $leads;
-        }
-
-
-
-
-        public function createStep($name,$subject,$linkToEmail):Step
-        {
-
-            $status = $this->getStatus(STAT::STEP_DRAFT);
-            $email = $this->createEmail($subject,$linkToEmail);
-            return (new Step)
-                ->setName($name)
-                ->setStatus($status)
-                ->setEmail($email)
-                ;
-        }
-        // public function createStep($name,$subject,$linkToEmail):Step
-        // {
-        //     $status = $this->getStatus(STAT::STEP_DRAFT);
-        //     $email = $this->createEmail($subject,$linkToEmail);
-        //     return (new Step)
-        //         ->setName($name)
-        //         ->setStatus($status)
-        //         ->setEmail($email)
-        //         ;
-        // }
-
-
-
-
-        public function createSteps(array $steps):array
-        {
-            $newStep = null;
-            foreach($steps as $step)
-            {
-                $newStep[] = $this->createStep($step['name'],$step['subject'],$step['linkToEmail']);
-
-            }
-            return $newStep;
-        }
-
-
-        
-        
-        // public function createCompaign($name,array $leads, array $steps)
-        // {
-        //     $status = $this->getStatus(STAT::COMPAIGN_DRAFT);
-        //     $newsteps = $this->createSteps($steps);
-        //     $newleads = $this->createLeads($leads);
-        //     $compaign = (new Compaign)->setName($name)->setStatus($status);
-        //     foreach($newleads as $lead)
-        //     {
-        //         $compaign->addLead($lead);
-        //     }
-        //     foreach($newsteps as $step)
-        //     {
-        //         $compaign->addStep($step);
-        //     }
-        //     return $compaign;
-        // }
-        public function createCompaign($name)
-        {
-            $status = $this->getStatus(STAT::COMPAIGN_DRAFT);
-
-            $compaign = (new Compaign)->setName($name)->setStatus($status);
-
-            return $compaign;
-        }
+//---------------------------------------------------------------------
+//               USER_CRUD                                            |
+//---------------------------------------------------------------------
 
         public function user()
         {
@@ -151,22 +72,26 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             return $this->getUser();
         }
 
+        public function createUser()
+        {
+            
+        }
 
 
 
-        // public function createCompaigns(array $Compaigns)
-        // {
-        //     $newCompaigns = null;
-        //     foreach($Compaigns as $compaign)
-        //     {
-        //         $newCompaigns[] = $this->createCompaign($compaign['name'],$compaign['leads'],$compaign['steps']);
-        //     }
 
-        //     return $newCompaigns;
-        // }
+
 //---------------------------------------------------------------------
 //               COMPAIGN_CRUD                                         |
 //---------------------------------------------------------------------
+
+        public function createCompaign($name)
+        {
+            $status = $this->getStatus(STAT::COMPAIGN_DRAFT);
+            return $compaign = (new Compaign)->setName($name)->setStatus($status);
+
+        }
+
         public function addCompaign($name=null)
         {   
             $compaign = $this->createCompaign($name);
@@ -178,10 +103,12 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             /**@var UserRepository */
             $rep = $this->em->getRepository(User::class);
             $rep->save($user,true);
-            return $compaign->getId();
-            
         }
 
+        /**
+         * @param Dsn[] $dsns
+         * @param string $name
+         */
         public function updateCompaign($id,$name = null, array $dsns = null, Step $step = null, Status $status =null,array $leads =null, Schedule $schedule =null)
         {
             /**@var CompaignRepository */
@@ -194,11 +121,8 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             if($status!=null) $compaign->setStatus($status);
             if($schedule!=null) $compaign->setSchedule($schedule);
             if($step!=null) $compaign->addStep($step);
-            if($leads!=null) $compaign->addLeads($leads);
 
             $rep->save($compaign,true);
-            return $compaign->getId();
-            
         }
 
         public function saveCompaign(Compaign $compaign)
@@ -228,14 +152,46 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             $rep = $this->em->getRepository(Compaign::class);
 
             return $rep->findByUserId($id);
+        }
 
-           
+        public function getCompaign($id)
+        {
+            /**@var User */
+            $user = $this->user();
+
+            /**@var CompaignRepository */
+            $rep = $this->em->getRepository(Compaign::class);
+
+            return $rep->findOneById($id);
         }
 
 
 //---------------------------------------------------------------------
 //               LEAD_CRUD                                             |
 //---------------------------------------------------------------------
+
+
+
+
+
+
+        public function createLead($name,$emailAddress,$status = STAT::LEAD_STEP_1):Lead
+        {
+            $sta = $this->getStatus($status);
+            return (new Lead)->setStatus($sta)->setName($name)->setEmailAddress($emailAddress);
+        }
+
+
+        /**@return Lead[] */
+        public function createLeads(array $leadsData):array
+        {
+            foreach($leadsData as $lead)
+            {
+                $leads[]= $this->createLead($lead['name'],$lead['emailAddress']);
+            }
+            return $leads;
+        }
+
         public function addLeads($compaignId, mixed $leads)
         {
             $leads = $this->createLeads($leads);
@@ -277,6 +233,13 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             return $rep->findByStatus($status);
         }
 
+        public function getLeads($compaignId)
+        {
+            /**@var LeadRepository */
+            $rep = $this->em->getRepository(Lead::class);
+            return $rep->findByCompainId($compaignId);           
+        }
+
 
 
 
@@ -295,6 +258,35 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 //---------------------------------------------------------------------
 //               STEP_CRUD                                             |
 //---------------------------------------------------------------------
+
+
+
+        public function createStep($name,$subject,$linkToEmail):Step
+        {
+
+            $status = $this->getStatus(STAT::STEP_DRAFT);
+            $email = $this->createEmail($subject,$linkToEmail);
+            return (new Step)
+                ->setName($name)
+                ->setStatus($status)
+                ->setEmail($email)
+                ;
+        }
+
+
+
+
+        public function createSteps(array $steps):array
+        {
+            $newStep = null;
+            foreach($steps as $step)
+            {
+                $newStep[] = $this->createStep($step['name'],$step['subject'],$step['linkToEmail']);
+
+            }
+            return $newStep;
+        }
+
         public function addStep($compaignId,$name,$subject,$linkToEmail)
         {
             

@@ -1,46 +1,26 @@
 <?php
 namespace App\Classes;
 
-use App\Entity\Step;
+use App\Data\Sequence;
 use App\Entity\Compaign;
 
     class CompaignLuncher
     {
-        /**@var Compaign */
-        private $compaign;
-        /**@var Step[] */
-        private $steps;
-        /**
-         * @var Dsn[]
-         */
-        private $dsns;
 
+        private Sequence $sequence;
         public function __construct(private Sequencer $sequencer,private SequenceLuncher $sequenceLuncher)
         {
             
         }
-
-        public function prepare(Compaign $compaign):self
+        
+        public function sequence(Compaign $compaign):self
         {
-            $this->compaign = $compaign;
-            $this->dsns = $compaign->getDsns();
-            $this->steps = $compaign->getSteps();
-
+            $this->sequencer->sequence($compaign);
             return $this;
         }
 
-        public function sequence():self
+        public function lunch()
         {
-            $this->sequencer->prepare($this->steps,$this->dsns,$this->compaign->getId(),$this->compaign->newStepPriority);
-
-            return $this;
-
-        }
-
-        public function lunch():self
-        {
-            $this->sequenceLuncher->prepare($this->sequencer)->lunch();
-
-            return $this;
+            $this->sequenceLuncher->lunch($this->sequence);
         }
     }

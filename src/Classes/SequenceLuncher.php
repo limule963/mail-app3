@@ -1,18 +1,15 @@
 <?php
 namespace App\Classes;
 
-use App\Controller\CrudControllerHelpers;
 use App\Entity\Dsn;
-
-
 use App\Entity\Lead;
+
+
+use App\Data\Sequence;
 use Symfony\Component\Mime\Email;
 use Doctrine\Persistence\ObjectManager;
-use Doctrine\Persistence\ManagerRegistry;
- 
-
-    
-   
+use App\Controller\CrudControllerHelpers;
+use App\Data\EmailData;
 
     class SequenceLuncher
     {
@@ -39,55 +36,31 @@ use Doctrine\Persistence\ManagerRegistry;
         // private $entityManager;
 
         /**
-         * @var Sequencer
+         * @var Sequence
          */
-        private $sequencer;
+        private $sequence;
 
         /**
          * @var EmailSender
          */
         private $emailSender;
 
+        public $leadStatusTable;
+
         public function __construct(/*ManagerRegistry $doctrine,*/EmailSender $emailSender,private CrudControllerHelpers $crud)
         {
             // $this->entityManager = $doctrine->getManager();
             $this->emailSender = $emailSender;
-
-
       
         }
-        public function prepare(Sequencer $sequencer):self
-        {   
-            $this->sequencer = $sequencer;
-            $this->leads = $this->sequencer->getLeads();
-            $this->dsns = $this->sequencer->getDsns();
-            $this->email = $this->sequencer->getEmail();
 
-            return $this;
-        }
-
- 
-        private function getNextLead():Lead
-        {   
-            $lead = $this->leads[$this->flag];
-            $this->flag++;
-            return $lead;
-        }
-
-        private function getDsnByEmail($email)
+        public function lunch(Sequence $sequence)
         {
-            foreach($this->dsns as $dsn)
-            {
-                if($dsn->getEmail() == $email) return $dsn->getDsn();
-            }
-        }
-
-
-
-        
-
-        public function lunch()
-        {
+            $this->sequence = $sequence;
+            $this->leads = $sequence->leads;
+            $this->dsns = $sequence->dsns;
+            $this->email = $sequence->email;
+            $this->leadStatusTable = $sequence->leadStatusTable;
 
             foreach($this->dsns as $Dsn)
             {   
@@ -105,13 +78,14 @@ use Doctrine\Persistence\ManagerRegistry;
 
                 $emailAddress =$lead->getEmailAddress();
 
-                $this->emailSender->prepare($dsn,$from,$emailAddress,$this->email);
+                $emailData = new EmailData($dsn,$from,$emailAddress,$this->email);
+
+                $emailResponse = $this->emailSender->send($emailData);
                 
-                if($this->emailSender->send())
+                if($emailResponse->succes)
                 {
                     $Dsn->sendState = true;
-                    
-                    $status =$this->sequencer->getNextLeadStatus($lead->getStatus()->getStatus());
+                    $status =$this->sequence->getNextLeadStatus($lead->getStatus()->getStatus());
 
                     $Status = $this->crud->getStatus($status);
                     $lead->setStatus($Status);
@@ -120,10 +94,28 @@ use Doctrine\Persistence\ManagerRegistry;
                     $this->crud->saveLead($lead);
                  
                 }
+                else return $emailResponse;
 
             }
+
+        }
+        
+
+
+
+        private function getNextLead():Lead
+        {   
+            $lead = $this->leads[$this->flag];
+            $this->flag++;
+            return $lead;
         }
 
-
+        private function getDsnByEmail($email)
+        {
+            foreach($this->dsns as $dsn)
+            {
+                if($dsn->getEmail() == $email) return $dsn->getDsn();
+            }
+        }
 
     }

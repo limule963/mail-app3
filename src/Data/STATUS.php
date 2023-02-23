@@ -26,7 +26,10 @@
             COMPAIGN_DRAFT ='compain.draft',
             COMPAIGN_INPROGRESS ='compain.inprogress',
             COMPAIGN_COMPLETE ='compain.complete',
-            COMPAIGN_ACTIVE = 'compaign.active'
+            COMPAIGN_ACTIVE = 'compaign.active',
+
+            SEQUENCE_ONHOLD ='sequence.onhold',
+            SEQUENCE_COMPLETE = 'sequence.complete'
             ;
 
 

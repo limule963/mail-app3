@@ -2,14 +2,14 @@
 
 namespace App\Classes;
 
-use App\Entity\Dsn;
 use App\Entity\Lead;
 use App\Entity\Step;
+use App\Entity\Compaign;
 use App\Entity\Email as Em;
 use App\Data\STATUS as STAT;
 use Symfony\Component\Mime\Email;
-use App\Repository\LeadRepository;
 use App\Controller\CrudControllerHelpers;
+use App\Data\Sequence;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 
     class Sequencer
@@ -17,37 +17,35 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
         /**@var Email */
         private $email;
 
-        /**@var Dsn[] */
-        private $dsn;
-
         /**@var Lead[] */
         private $leads;
         
         /**@var Step */
         private $step;
 
-        private $compaignId;
-        public function __construct( private CrudControllerHelpers $crud)
-        {
-            
-        }
-        
+        private $schedule;
+
         /**
          * @var Step[] $steps
          *
          */
         private $steps;
-        /**
-         * @param Step[] $steps
-         * @param Dsn[] $dsns
-         * @param int $compaignId
-         * @param bool $newStepPriority
-         */
-        public function prepare(array $steps,array $dsns ,$compaignId,$newStepPriority = true )
+        
+        public function __construct( private CrudControllerHelpers $crud)
         {
+            
+        }
+        
+        
+        public function sequence(Compaign $compaign):Sequence
+        {
+            $steps = $compaign->getSteps()->getValues();
             $this->steps = $steps;
+            $dsns = $compaign->getDsns()->getValues();
+            $this->schedule = $compaign->getSchedule();
 
-            if($newStepPriority) array_reverse($steps);
+
+            if($compaign->newStepPriority) array_reverse($steps);
 
             foreach($steps as $step)
             {
@@ -61,23 +59,26 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
                     {
 
                         $this->step = $step;
+                        $sequenceState =STAT::SEQUENCE_ONHOLD;
                         break;
                     }
                 }
             }
+            $sequenceState =STAT::SEQUENCE_COMPLETE;
 
-            
-
-            $this->dsn = $dsns;
             $this->email = $this->getTemplatedEmail($this->step->getEmail());
-            $this->compaignId =$compaignId;
-           
-            
-        }
-        public function sequence()
-        {
+        
 
+            return new Sequence(
+                $this->leads,
+                $this->email,
+                $compaign->getDsns()->getValues(),
+                $sequenceState,
+                $this->leadStatusTable($this->steps)
+            );
+ 
         }
+        
 
         /**@var Step[] $steps */
         private function leadStatusTable($steps)
@@ -90,38 +91,16 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
             return $statusTable;
         }
 
-        private function contains($tab,$item)
-        {
-            foreach ($tab as $key => $value) {
-                if($item===$value) return $key;
-            }
-            return false;
-        }
-    
-        public function getNextLeadStatus($lastStatus):string
-        {   
-            // if($lastStatus ='') return STAT::LEAD_STEP_1;
-            $tab =$this->leadStatusTable($this->steps);
-            $count = count($tab);
-            $key=$this->contains($tab,$lastStatus);
-            
-            $key++;
-    
-            if($key >= $count ) return STAT::LEAD_COMPLETE;
-            return $tab[$key];
-    
-    
-        }
 
-        private function getTemplatedEmail($email):Email
+        private function getTemplatedEmail(Em $email):Email
         {
-            $sbject = $email->getSubject();
+            $subject = $email->getSubject();
             $emailLink = $email->getEmailLink();
 
 
             return $email = (new TemplatedEmail())
                 // ->to(new Address('ryan@example.com'))
-                ->subject($sbject)
+                ->subject($subject)
 
                 // path of the Twig template to render
                 ->htmlTemplate($emailLink)
@@ -132,29 +111,6 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
                 ])
             ;
         }
-        private function getLeadsByStatus($status)
-        {
-            return $leads = $this->crud->getLeadsByStatus($status);
-        }
-        
-        /**@return Lead[] */
-        public function getLeads()
-        {
-            return $this->leads;
-        }
-
-        /**@return Dsn[] */
-        public function getDsns()
-        {
-            return $this->dsn;
-        }
-
-        public function getEmail():Email
-        {
-            return $this->email;
-        }
-
-
 
 
 
@@ -163,12 +119,10 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
         /**@param Step $step */
         private function isStepActive(Step $step):bool
         {
-            $schedule = $this->crud->getSchedule($this->compaignId);
-
+            $schedule = $this->schedule;
             $startTime =$schedule->getStartTime()->getTimestamp() + $step->dayAfterLastStep*3600;
 
-
-            if(time() > $startTime) return true;
+             if(time() > $startTime) return true;
             return false;
         }
 

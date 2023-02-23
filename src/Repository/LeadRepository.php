@@ -58,15 +58,15 @@ class LeadRepository extends ServiceEntityRepository
    /**
     * @return Lead[] Returns an array of Lead objects
     */
-   public function findByCompainId($id): array
+   public function findByCompainId($id,$number = 10): array
    {
        return $this->createQueryBuilder('l')
-            ->select('l','s')
+            // ->select('l','s')
             ->andWhere('l.compaign = :val')
-            ->join('l.status','s')
+            // ->join('l.status','s')
             ->setParameter('val', $id)
             ->orderBy('l.id', 'ASC')
-            // ->setMaxResults(10)
+            ->setMaxResults($number)
             ->getQuery()
             ->getResult()
        ;
