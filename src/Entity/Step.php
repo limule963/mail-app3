@@ -20,12 +20,12 @@ class Step
     #[ORM\Column]
     public int $dayAfterLastStep = 1;
 
-    #[ORM\Column]
-    public ?int $startTime = null;
+    // #[ORM\Column]
+    // public ?int $startTime = null;
 
 
-    #[ORM\Column(length: 255)]
-    public ?string $leadStatus = null;
+    // #[ORM\Column(length: 255)]
+    // public ?string $leadStatus = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
@@ -104,27 +104,17 @@ class Step
         return $this;
     }
 
-    public function getStartTime(): ?int
-    {
-        return $this->startTime;
-    }
 
-    public function setStartTime(int $startTime): self
-    {
-        $this->startTime = $startTime;
+    
+    // public function getLeadStatus(): ?string
+    // {
+    //     return $this->leadStatus;
+    // }
 
-        return $this;
-    }
+    // public function setLeadStatus(string $leadStatus): self
+    // {
+    //     $this->leadStatus = $leadStatus;
 
-    public function getLeadStatus(): ?string
-    {
-        return $this->leadStatus;
-    }
-
-    public function setLeadStatus(string $leadStatus): self
-    {
-        $this->leadStatus = $leadStatus;
-
-        return $this;
-    }
+    //     return $this;
+    // }
 }

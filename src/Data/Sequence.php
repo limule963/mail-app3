@@ -6,13 +6,11 @@ use Symfony\Component\Mime\Email;
     class Sequence
     {
         public function __construct(
-            public array $leads,
             public Email $email,
             public array $dsns,
-            public $sequenceState,
-            public $leadStatusTable,
-            public $compaignId,
-            public $stepLeadStatus
+            public array $leadStatusTable,
+            public int $compaignId,
+            public string $stepStatus
 
             )
         {

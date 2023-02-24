@@ -22,7 +22,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
     class CrudControllerHelpers extends AbstractController
     {
-        private $em;
+        public $em;
         private $comprepo;
         private $steprepo;
         private $leadrepo;
@@ -88,7 +88,9 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
         public function createCompaign($name)
         {
             $status = $this->getStatus(STAT::COMPAIGN_DRAFT);
-            return $compaign = (new Compaign)->setName($name)->setStatus($status);
+            $sch = (new Schedule)->setStartTime(new \DateTimeImmutable())->setFromm(8)->setToo(18);
+
+            return (new Compaign)->setName($name)->setStatus($status)->setSchedule($sch);
 
         }
 
@@ -117,7 +119,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             /**@var Compaign */
             $compaign = $rep->find($id);
             if($name!=null) $compaign->setName($name);
-            if(!empty($dsns)) $compaign->addDsns($dsns);
+            if($dsns != null) $compaign->addDsns($dsns);
             if($status!=null) $compaign->setStatus($status);
             if($schedule!=null) $compaign->setSchedule($schedule);
             if($step!=null) $compaign->addStep($step);
@@ -147,22 +149,23 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             /**@var User */
             $user = $this->user();
             $id = $user->getId();
-
+            
             /**@var CompaignRepository */
             $rep = $this->em->getRepository(Compaign::class);
-
+            
             return $rep->findByUserId($id);
         }
-
-        public function getCompaign($id)
+        
+        public function getCompaign()
         {
             /**@var User */
             $user = $this->user();
+            $id = $user->getId();
 
             /**@var CompaignRepository */
             $rep = $this->em->getRepository(Compaign::class);
 
-            return $rep->findOneById($id);
+            return $rep->findOneByUserId($id,1);
         }
 
 
@@ -175,7 +178,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 
 
-        public function createLead($name,$emailAddress,$status = STAT::LEAD_STEP_1):Lead
+        public function createLead($name,$emailAddress,$status = STAT::STEP_1):Lead
         {
             $sta = $this->getStatus($status);
             return (new Lead)->setStatus($sta)->setName($name)->setEmailAddress($emailAddress);
@@ -226,11 +229,17 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             
         }
 
-        public function getLeadsByStatus($status)
+        public function getLeadsByStatus($compaignId,$status,$n)
         {
             /**@var LeadRepository */
             $rep = $this->em->getRepository(Lead::class);
-            return $rep->findByStatus($status);
+            return $rep->findByStatus($compaignId,$status,$n);
+        }
+        public function getLeadByStatus($compaignId,$status)
+        {
+            /**@var LeadRepository */
+            $rep = $this->em->getRepository(Lead::class);
+            return $rep->findLeadByStatus($compaignId,$status);
         }
 
         public function getLeads($compaignId)
@@ -238,6 +247,12 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             /**@var LeadRepository */
             $rep = $this->em->getRepository(Lead::class);
             return $rep->findByCompainId($compaignId);           
+        }
+        public function getLead($compaignId)
+        {
+            /**@var LeadRepository */
+            $rep = $this->em->getRepository(Lead::class);
+            return $rep->findOneByCompaignId($compaignId);
         }
 
         public function getLeadBySender($compaignId,$leadStatus,$sender)
@@ -303,7 +318,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             $step = $this->createStep($name,$subject,$linkToEmail);
             $this->updateCompaign($compaignId,null,null,$step);
 
-            $this->leadStatusOrding();
+            $this->leadStatusOrding($compaignId);
 
         }
 
@@ -327,17 +342,19 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
         }
         /**@var Step[] $steps */
 
-        public function leadStatusOrding()
+        public function leadStatusOrding($compaignId)
         {
             /**@var StepRepository */
             $rep = $this->em->getRepository(Step::class);
-            $steps = $rep->findAll();
+            $steps = $rep->findByCompaignId($compaignId);
             // $count =count($steps);
-            if($steps!=null)
+            if(!empty($steps))
             {
                 foreach ($steps as $key => $step) {
                     $key2 = $key+1;
-                    $step->leadStatus = 'lead.step.'.$key2;
+                    $status = 'step.'.$key2;
+                    $Status = $this->getStatus($status);
+                    $step->setStatus($Status);
                     $rep->save($step);
                     
                 } 
@@ -378,10 +395,10 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
         public function createSchedule($from,$to, \DateTimeInterface $startTime)
         {
-            return (new Schedule())->setFrom($from)->setTo($to)->setStartTime($startTime);
+            return (new Schedule())->setFromm($from)->setToo($to)->setStartTime($startTime);
         }
 
-        public function addSchedule($from,$to,\DateTimeInterface $startTime,$compaignId)
+        public function addSchedule(int $from,int $to,\DateTimeInterface $startTime,$compaignId)
         {
             $schedule = $this->createSchedule($from,$to,$startTime);
             $this-> updateCompaign($compaignId,null,null,null,null,null,$schedule);

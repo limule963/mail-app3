@@ -4,12 +4,13 @@ namespace App\Classes;
 
 use App\Entity\Lead;
 use App\Entity\Step;
+use App\Data\Sequence;
 use App\Entity\Compaign;
+use App\Entity\Schedule;
 use App\Entity\Email as Em;
 use App\Data\STATUS as STAT;
 use Symfony\Component\Mime\Email;
 use App\Controller\CrudControllerHelpers;
-use App\Data\Sequence;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 
     class Sequencer
@@ -23,6 +24,7 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
         /**@var Step */
         private $step;
 
+        /**@var Schedule */
         private $schedule;
 
         /**
@@ -41,7 +43,6 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
         {
             $steps = $compaign->getSteps()->getValues();
             $this->steps = $steps;
-            $dsns = $compaign->getDsns()->getValues();
             $this->schedule = $compaign->getSchedule();
 
 
@@ -53,30 +54,27 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
                 if( !$this->isStepActive($step)) continue;
                 else
                 {
-                    $this->leads = $this->crud->getLeadsByStatus($step->leadStatus,count($dsns));
-                    if(empty($this->leads)) continue;
+                    $lead = $this->crud->getLeadByStatus($compaign->getId(),$step->getStatus()->getStatus());
+                    if($lead == null) continue;
                     else
                     {
-
                         $this->step = $step;
-                        $sequenceState =STAT::SEQUENCE_ONHOLD;
+                        // $sequenceState =STAT::SEQUENCE_ONHOLD;
                         break;
                     }
                 }
             }
-            $sequenceState =STAT::SEQUENCE_COMPLETE;
+            // $sequenceState =STAT::SEQUENCE_COMPLETE;
 
             $this->email = $this->getTemplatedEmail($this->step->getEmail());
         
 
             return new Sequence(
-                $this->leads,
                 $this->email,
                 $compaign->getDsns()->getValues(),
-                $sequenceState,
                 $this->leadStatusTable($this->steps),
                 $compaign->getId(),
-                $this->step->leadStatus
+                $this->step->getStatus()->getStatus()
             );
  
         }
@@ -87,7 +85,7 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
         {
             foreach ($steps as $step) {
                 /**@var Step $step */
-                $statusTable[] = $step->leadStatus;
+                $statusTable[] = $step->getStatus()->getStatus();
             } 
                 
             return $statusTable;
@@ -121,6 +119,7 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
         /**@param Step $step */
         private function isStepActive(Step $step):bool
         {
+            
             $schedule = $this->schedule;
             $startTime =$schedule->getStartTime()->getTimestamp() + $step->dayAfterLastStep*3600;
 

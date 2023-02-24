@@ -24,27 +24,36 @@ class Compaign
     #[ORM\ManyToOne(inversedBy: 'compaigns')]
     private ?User $user = null;
 
-    #[ORM\OneToMany(mappedBy: 'compaign', targetEntity: Lead::class,cascade:['persist'])]
+    #[ORM\OneToMany(mappedBy: 'compaign', targetEntity: Lead::class,cascade:['persist','remove'])]
     private Collection $leads;
 
     #[ORM\ManyToOne(inversedBy: 'compaigns',cascade:["persist"])]
     #[ORM\JoinColumn(nullable: false)]
     private ?Status $status = null;
 
-    #[ORM\OneToMany(mappedBy: 'compaign', targetEntity: Step::class,cascade:["persist"])]
+    #[ORM\OneToMany(mappedBy: 'compaign', targetEntity: Step::class,cascade:["persist",'remove'])]
     private Collection $steps;
 
-    #[ORM\ManyToMany(targetEntity: Dsn::class, inversedBy: 'compaigns',cascade:['persist'])]
+    // #[ORM\ManyToMany(targetEntity: Dsn::class, inversedBy: 'compaigns',cascade:['persist'])]
+    // private Collection $dsns;
+
+    // #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    // private ?Schedule $schedule = null;
+
+    #[ORM\OneToMany(mappedBy: 'compaign', targetEntity: Dsn::class)]
     private Collection $dsns;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Schedule $schedule = null;
 
+    // #[ORM\OneToOne(inversedBy: "compaign", cascade: ['persist', 'remove'])]
+    // private ?Schedule $schedule = null;
+
     public function __construct()
     {
         $this->leads = new ArrayCollection();
         $this->steps = new ArrayCollection();
-        $this->dsns = new ArrayCollection();
+        // $this->dsns = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -95,7 +104,10 @@ class Compaign
     }
     public function addLeads(array $leads): self
     {
-        foreach($leads as $lead) $this->addLead($lead);
+        foreach($leads as $lead)
+        {
+            $this->addLead($lead);
+        } 
 
         return $this;
     }
@@ -154,6 +166,71 @@ class Compaign
         return $this;
     }
 
+    // /**
+    //  * @return Collection<int, Dsn>
+    //  */
+    // public function getDsns(): Collection
+    // {
+    //     return $this->dsns;
+    // }
+
+    // public function addDsn(Dsn $dsn): self
+    // {
+    //     if (!$this->dsns->contains($dsn)) {
+    //         $this->dsns->add($dsn);
+    //     }
+
+    //     return $this;
+    // }
+
+    // public function addDsns($dsns)
+    // {
+    //     foreach($dsns as $dsn) $this->addDsn($dsn);
+    // }
+
+    // public function removeDsn(Dsn $dsn): self
+    // {
+    //     $this->dsns->removeElement($dsn);
+
+    //     return $this;
+    // }
+
+    // public function getSchedule(): ?Schedule
+    // {
+    //     return $this->schedule;
+    // }
+
+    // public function setSchedule(?Schedule $schedule): self
+    // {
+    //     $this->schedule = $schedule;
+
+    //     return $this;
+    // }
+
+    public function isNewStepPriority(): ?bool
+    {
+        return $this->newStepPriority;
+    }
+
+    public function setNewStepPriority(bool $newStepPriority): self
+    {
+        $this->newStepPriority = $newStepPriority;
+
+        return $this;
+    }
+
+    // public function getSchedule(): ?Schedule
+    // {
+    //     return $this->schedule;
+    // }
+
+    // public function setSchedule(?Schedule $schedule): self
+    // {
+    //     $this->schedule = $schedule;
+
+    //     return $this;
+    // }
+
     /**
      * @return Collection<int, Dsn>
      */
@@ -166,19 +243,26 @@ class Compaign
     {
         if (!$this->dsns->contains($dsn)) {
             $this->dsns->add($dsn);
+            $dsn->setCompaign($this);
         }
 
         return $this;
     }
-
-    public function addDsns($dsns)
+    public function addDsns(array $dsns): self
     {
         foreach($dsns as $dsn) $this->addDsn($dsn);
+
+        return $this;
     }
 
     public function removeDsn(Dsn $dsn): self
     {
-        $this->dsns->removeElement($dsn);
+        if ($this->dsns->removeElement($dsn)) {
+            // set the owning side to null (unless already changed)
+            if ($dsn->getCompaign() === $this) {
+                $dsn->setCompaign(null);
+            }
+        }
 
         return $this;
     }
@@ -191,18 +275,6 @@ class Compaign
     public function setSchedule(?Schedule $schedule): self
     {
         $this->schedule = $schedule;
-
-        return $this;
-    }
-
-    public function isNewStepPriority(): ?bool
-    {
-        return $this->newStepPriority;
-    }
-
-    public function setNewStepPriority(bool $newStepPriority): self
-    {
-        $this->newStepPriority = $newStepPriority;
 
         return $this;
     }

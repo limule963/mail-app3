@@ -2,17 +2,20 @@
 
 namespace App\Controller;
 
-use App\Classes\CompaignLuncher;
-use App\Classes\EmailSender;
-use App\Classes\SequenceLuncher;
-use App\Classes\Sequencer;
-use App\Classes\SimpleObject;
-use App\Data\EmailData;
 use App\Entity\Dsn;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
+use App\Entity\Step;
+use App\Data\EmailData;
+use App\Classes\Sequencer;
+use App\Classes\EmailSender;
+use App\Classes\SimpleObject;
+use App\Classes\CompaignLuncher;
+use App\Classes\SequenceLuncher;
+use App\Entity\Schedule;
+use App\Entity\Test;
 use Symfony\Component\Mime\Email;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class HomeController extends AbstractController
 {
@@ -22,25 +25,38 @@ class HomeController extends AbstractController
         
     }
     #[Route('/', name: 'app_home')]
-    public function index(CompaignLuncher $sender): Response
+    public function index(CrudControllerHelpers $crud): Response
     {
+        // $crud->addCompaign('compagne1');
+        // $compaign = $crud->getCompaign();
+        // dd($compaign);
 
-        try 
-        {
-            $user = $this->crud->user();
-         
-             $error =null;
-        } 
-        catch (\Throwable $th) 
-        {
-            $error = $th->getMessage();
-            return $this->redirectToRoute('app_login');
-        }
-        
+        dd(getdate()['hours']);
+
+        // $crud->deleteCompaign($compaign);
+
+        // $steps = $compaign->getSteps()->getValues();
+
+     
+        // $step = $steps[0];
+        // $status = $step->getStatus();
+        // $sch = (new Schedule)->setStartTime(new \DateTimeImmutable())->setFrom(8)->setTo(18);
+
+        // dd($sch);
+        // $crud->updateCompaign($compaign->getId(),schedule:$sch);
+        // $crud->deleteCompaign($compaign->getId());
+        // dd($compaign,$steps,$status);
+        // $crud->addStep($compaign->getId(),'premier contact','salutation','c://KOFF/mail.html.twig');
+        // $crud->addStep($compaign->getId(),'trie','helo','c://KOFF/mail2.html.twig');
+        // $crud->addStep($compaign->getId(),'finalisation','last chance','c://KOFF/mail3.html.twig');
+        // $crud->addCompaign('compagne3');
+        // $crud->saveSchedule($schedule);    
+
+
 
         return $this->render('home/index.html.twig', [
             'controller_name' => 'HomeController',
-            'error'           => $error
+            
         ]);
 
 

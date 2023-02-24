@@ -20,8 +20,13 @@
     <ul>
         <li>Your controller at <code><a href="{{ 'C:/Users/KOFF/Desktop/EMAIL APP/APP-2/src/Controller/HomeController.php'|file_link(0) }}">src/Controller/HomeController.php</a></code></li>
         <li>Your template at <code><a href="{{ 'C:/Users/KOFF/Desktop/EMAIL APP/APP-2/templates/home/index.html.twig'|file_link(0) }}">templates/home/index.html.twig</a></code></li>
+        {% if code is defined %}
         <li>{{code}}</li>
+        {% endif %}
+        {% if message is defined %}
         <li>{{message}}</li>
+        {% endif %}
+        
     </ul>
 </div>
 {% endblock %}

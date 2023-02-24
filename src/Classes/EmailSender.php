@@ -27,12 +27,12 @@ use Symfony\Component\Mailer\Transport;
             try 
             {
                 $mailer ->send($email);
-                return new EmailResponse(true,'Email sent',$ed->from);
+                return new EmailResponse(true,'Email sent',$ed->from,$ed->emailAddress);
 
             }
             catch (\Throwable $th) 
             {
-                return new EmailResponse(false,'Email not sent','',$th->getCode(),$th->getMessage());   
+                return new EmailResponse(false,'Email not sent','',$ed->emailAddress,$th->getCode(),$th->getMessage());   
             }
         }
     }

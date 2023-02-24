@@ -34,12 +34,15 @@ class Dsn
 
     public bool $sendState = false;
 
-    #[ORM\ManyToMany(targetEntity: Compaign::class, mappedBy: 'dsns')]
-    private Collection $compaigns;
+    #[ORM\ManyToOne(inversedBy: 'dsns')]
+    private ?Compaign $compaign = null;
+
+    // #[ORM\ManyToMany(targetEntity: Compaign::class, mappedBy: 'dsns')]
+    // private Collection $compaigns;
 
     public function __construct()
     {
-        $this->compaigns = new ArrayCollection();
+        // $this->compaigns = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -107,32 +110,32 @@ class Dsn
         return $this;
     }
 
-    /**
-     * @return Collection<int, Compaign>
-     */
-    public function getCompaigns(): Collection
-    {
-        return $this->compaigns;
-    }
+    // /**
+    //  * @return Collection<int, Compaign>
+    //  */
+    // public function getCompaigns(): Collection
+    // {
+    //     return $this->compaigns;
+    // }
 
-    public function addCompaign(Compaign $compaign): self
-    {
-        if (!$this->compaigns->contains($compaign)) {
-            $this->compaigns->add($compaign);
-            $compaign->addDsn($this);
-        }
+    // public function addCompaign(Compaign $compaign): self
+    // {
+    //     if (!$this->compaigns->contains($compaign)) {
+    //         $this->compaigns->add($compaign);
+    //         $compaign->addDsn($this);
+    //     }
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
-    public function removeCompaign(Compaign $compaign): self
-    {
-        if ($this->compaigns->removeElement($compaign)) {
-            $compaign->removeDsn($this);
-        }
+    // public function removeCompaign(Compaign $compaign): self
+    // {
+    //     if ($this->compaigns->removeElement($compaign)) {
+    //         $compaign->removeDsn($this);
+    //     }
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
     public function getDsnByEmail($email):string
     {
@@ -152,6 +155,18 @@ class Dsn
                 . $this->host.":"
                 . $this->port.'?verify_peer=1';
                 
+    }
+
+    public function getCompaign(): ?Compaign
+    {
+        return $this->compaign;
+    }
+
+    public function setCompaign(?Compaign $compaign): self
+    {
+        $this->compaign = $compaign;
+
+        return $this;
     }
     
 

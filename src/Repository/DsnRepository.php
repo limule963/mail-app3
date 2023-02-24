@@ -39,28 +39,28 @@ class DsnRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return Dsn[] Returns an array of Dsn objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('d')
-//            ->andWhere('d.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('d.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    /**
+        * @return Dsn[] Returns an array of Dsn objects
+        */
+    public function findCompainId($compaignId,$n = 50): array
+    {
+        return $this->createQueryBuilder('d')
+            ->andWhere('d.compaign = :val')
+            ->setParameter('val', $$compaignId)
+            ->orderBy('d.id', 'ASC')
+            ->setMaxResults($n)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 
-//    public function findOneBySomeField($value): ?Dsn
-//    {
-//        return $this->createQueryBuilder('d')
-//            ->andWhere('d.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    public function findOneByCompaignId($compaignId): ?Dsn
+    {
+        return $this->createQueryBuilder('d')
+            ->andWhere('d.compaign = :val')
+            ->setParameter('val', $compaignId)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
 }

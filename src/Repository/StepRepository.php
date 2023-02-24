@@ -45,10 +45,10 @@ class StepRepository extends ServiceEntityRepository
    public function findByCompaignId($id,$order = 'ASC'): array
    {
        return $this->createQueryBuilder('s')
-            ->select('s','e','t')
+            // ->select('s','e','t')
             ->andWhere('s.compaign = :val')
-            ->join('s.email','e')
-            ->join('s.status','t')
+            // ->join('s.email','e')
+            // ->join('s.status','t')
             ->setParameter('val', $id)
             ->orderBy('s.id', $order)
         //     ->setMaxResults(10)
@@ -71,13 +71,13 @@ class StepRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?Step
-//    {
-//        return $this->createQueryBuilder('s')
-//            ->andWhere('s.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    public function findOneByCompaignId($compaignId): ?Step
+    {
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.exampleField = :val')
+            ->setParameter('val', $compaignId)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
 }

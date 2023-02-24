@@ -43,10 +43,10 @@ class CompaignRepository extends ServiceEntityRepository
    /**
     * @return Compaign Returns null or  Compaign object
     */
-   public function findOneById($id):?Compaign
+   public function findOneByUserId($id):?Compaign
    {
        return $this->createQueryBuilder('c')
-            ->andWhere('c.id = :val')
+            ->andWhere('c.user = :val')
             ->setParameter('val', $id)
             ->getQuery()
             ->getOneOrNullResult()
@@ -54,24 +54,7 @@ class CompaignRepository extends ServiceEntityRepository
        ;
    }
 
-   /**
-    * @return Compaign Returns null or  Compaign object
-    */
-   public function findOneWithData($id):?Compaign
-   {
-       return $this->createQueryBuilder('c')
-            ->select('c','s','t, d','sh')
-            ->andWhere('c.id = :val')
-            ->join('c.steps','s')
-            ->join('c.status','t')
-            ->join('c.dsns','d')
-            ->join('c.schedule','sh')
-            ->setParameter('val', $id)
-            ->getQuery()
-            ->getOneOrNullResult()
-            
-       ;
-   }
+
     /**
         * @return Compaign[] Returns an array of Compaign objects
         */
@@ -80,26 +63,6 @@ class CompaignRepository extends ServiceEntityRepository
         
             return $this->createQueryBuilder('c')
                         ->andWhere('c.user = :val')
-                        ->setParameter('val', $id)
-                        ->orderBy('c.id', 'ASC')
-                        ->setMaxResults($number)
-                        ->getQuery()
-                        ->getResult()
-        ;
-    }
-    /**
-        * @return Compaign[] Returns an array of Compaign objects
-        */
-    public function findWithDataByUserId($id,$number = 1000): array
-    {
-        
-            return $this->createQueryBuilder('c')
-                        ->select('c','s','t, d','sh')
-                        ->andWhere('c.user = :val')
-                        ->join('c.steps','s')
-                        ->join('c.status','t')
-                        ->join('c.dsns','d')
-                        ->join('c.schedule','sh')
                         ->setParameter('val', $id)
                         ->orderBy('c.id', 'ASC')
                         ->setMaxResults($number)

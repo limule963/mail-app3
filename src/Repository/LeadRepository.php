@@ -42,13 +42,15 @@ class LeadRepository extends ServiceEntityRepository
    /**
     * @return Lead[] Returns an array of Lead objects
     */
-   public function findByStatus($status,$n = 1000): array
+   public function findByStatus($compaignId,$status,$n = 1000): array
    {
        return $this->createQueryBuilder('l')
-            ->select('l','s')
+            // ->select('l','s')
+            ->andWhere('l.compaign = :val2')
             ->andWhere('s.status = :val')
             ->join('l.status','s')
             ->setParameter('val', $status)
+            ->setParameter('val2', $compaignId)
             ->orderBy('l.id', 'ASC')
             ->setMaxResults($n)
             ->getQuery()
@@ -86,10 +88,23 @@ class LeadRepository extends ServiceEntityRepository
 //        ;
 //    }
 
+    public function findOneByStatus($compaignId,$stepLeadStatus): ?Lead
+    {
+        return $this->createQueryBuilder('l')
+            // ->select('l','s')
+            ->andWhere('l.compaign = :val2')
+            ->andWhere('s.status = :val3')
+            ->join('l.status','s')
+            ->setParameter('val2', $compaignId)
+            ->setParameter('val3', $stepLeadStatus)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
     public function findOneBySender($compaignId,$stepLeadStatus,$sender): ?Lead
     {
         return $this->createQueryBuilder('l')
-            ->select('l','s')
+            // ->select('l','s')
             ->andWhere('l.compaign = :val2')
             ->andWhere('l.sender = :val')
             ->andWhere('s.status = :val3')
@@ -101,10 +116,10 @@ class LeadRepository extends ServiceEntityRepository
             ->getOneOrNullResult()
         ;
     }
-    public function findOne($compaignId): ?Lead
+    public function findOneByCompaignId($compaignId): ?Lead
     {
         return $this->createQueryBuilder('l')
-            ->select('l','s')
+            // ->select('l','s')
             ->andWhere('l.compaign = :val2')
             ->setParameter('val2', $compaignId)
             ->getQuery()

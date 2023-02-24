@@ -6,27 +6,26 @@
     {
 
         public const
-            LEAD_COMPLETE = 'lead.complete',
-            LEAD_STEP_1 = 'lead.step.1',
-            LEAD_STEP_2 = 'lead.step.2',
-            LEAD_STEP_3 = 'lead.step.3',
-            LEAD_STEP_4 = 'lead.step.4',
-            LEAD_STEP_5 = 'lead.step.5',
-            LEAD_STEP_6 = 'lead.step.6',
-            LEAD_STEP_7 = 'lead.step.7',
-            LEAD_STEP_8 = 'lead.step.8',
-            LEAD_STEP_9 = 'lead.step.9',
-            LEAD_STEP_10 = 'lead.step.10',
+            LEAD_COMPLETE = 'complete',
+
 
             STEP_DRAFT  = 'step.draft',
-            STEP_ONHOLD  = 'step.onhold',
-            STEP_INPROGRESS  = 'step.inprogress',
-            STEP_COMPLETE  = 'step.complete',
+            STEP_1  = 'step.1',
+            STEP_2  = 'step.2',
+            STEP_3  = 'step.3',
+            STEP_4  = 'step.4',
+            STEP_5  = 'step.5',
+            STEP_6  = 'step.6',
+            STEP_7  = 'step.7',
+            STEP_8  = 'step.8',
+            STEP_9  = 'step.9',
+            STEP_10  = 'step.10',
 
-            COMPAIGN_DRAFT ='compain.draft',
-            COMPAIGN_INPROGRESS ='compain.inprogress',
-            COMPAIGN_COMPLETE ='compain.complete',
+            COMPAIGN_DRAFT ='compaign.draft',
+            COMPAIGN_INPROGRESS ='compaign.inprogress',
+            COMPAIGN_COMPLETE ='compaign.complete',
             COMPAIGN_ACTIVE = 'compaign.active',
+            COMPAIGN_PAUSED = 'compaign.paused',
 
             SEQUENCE_ONHOLD ='sequence.onhold',
             SEQUENCE_COMPLETE = 'sequence.complete'
