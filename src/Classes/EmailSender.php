@@ -3,6 +3,7 @@
 
 use App\Data\EmailData;
 use App\Data\EmailResponse;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mailer\Transport;
 
@@ -21,18 +22,18 @@ use Symfony\Component\Mailer\Transport;
 
             $email = $ed->email
                 ->from($ed->from)
-                ->to($ed->emailAddress)
+                ->to(new Address($ed->emailAddress))
             ;
 
             try 
             {
                 $mailer ->send($email);
-                return new EmailResponse(true,'Email sent',$ed->from,$ed->emailAddress);
+                return new EmailResponse(true,'Email sent',$ed->from,$ed->emailAddress,$ed->stepStatus);
 
             }
             catch (\Throwable $th) 
             {
-                return new EmailResponse(false,'Email not sent','',$ed->emailAddress,$th->getCode(),$th->getMessage());   
+                return new EmailResponse(false,'Email not sent',$ed->from,$ed->emailAddress,$th->getCode(),$th->getMessage());   
             }
         }
     }

@@ -2,6 +2,7 @@
 
 use App\Kernel;
 
+set_time_limit(60);
 require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
 
 return function (array $context) {

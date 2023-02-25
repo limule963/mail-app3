@@ -3,6 +3,7 @@ namespace App\Classes;
 
 use App\Entity\Dsn;
 use App\Entity\Lead;
+use App\Entity\Email as Em;
 
 
 use App\Data\Sequence;
@@ -13,6 +14,7 @@ use App\Data\CompaignResponse;
 use App\Data\EmailData;
 use App\Data\STATUS;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\Mime\BodyRendererInterface;
 
     class SequenceLuncher
     {
@@ -21,22 +23,7 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
          */
         private $dsns;
 
-        /**
-         * @var Email
-         */
-        private $email;
 
-        /**
-         * @var array
-         */
-        private $leads;
-
-        private $flag = 0;
-
-        /**
-         * @var ObjectManager
-         */
-        // private $entityManager;
 
         /**
          * @var Sequence
@@ -50,9 +37,8 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
         
         // private $compaignId;
 
-        private $stepStatus;
 
-        public function __construct(EmailSender $emailSender,private CrudControllerHelpers $crud, private CompaignResponse $cr)
+        public function __construct(EmailSender $emailSender,private CrudControllerHelpers $crud, private CompaignResponse $cr,private BodyRendererInterface $bodyRenderer)
         {
             // $this->entityManager = $doctrine->getManager();
             $this->emailSender = $emailSender;
@@ -72,19 +58,21 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
             {   
                 
                 if($Dsn->sendState == true) continue;
-
+                
                 $from = $Dsn->getEmail();
                 $dsn = $Dsn->getDsn();
                 
-                if($this->stepStatus == STATUS::STEP_1) $lead = $this->getNextLead('');
+                if($sequence->stepStatus == STATUS::STEP_1) $lead = $this->getNextLead();
                 else $lead = $this->getNextLead($from);
 
+                if($lead == null) continue;
+
                 
-                $email = $this->emailFinalizer($sequence->email,$lead);
+                $email = $this->getTemplatedEmail($sequence->email,$lead);
 
                 $emailAddress =$lead->getEmailAddress();
 
-                $emailData = new EmailData($dsn,$from,$emailAddress,$email);
+                $emailData = new EmailData($dsn,$from,$emailAddress,$email,$sequence->stepStatus);
 
                 $emailResponse = $this->emailSender->send($emailData);
                 
@@ -109,24 +97,34 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 
         }
         
-        private function emailFinalizer(TemplatedEmail $email,Lead $lead):Email
-        {
-            return $email->context(
-                ['lead.name'=> $lead->getName()]
-            );
+
+
+        private function getNextLead($sender = ''):Lead|null
+        {   
+            return $this->crud->getLeadBySender($this->sequence->compaignId,$this->sequence->stepStatus,$sender);
         }
 
 
+        private function getTemplatedEmail(Em $email,Lead $lead):Email
+        {
+            $subject = $email->getSubject();
+            $emailLink = $email->getEmailLink();
 
-        // private function getNextLead():Lead
-        // {   
-        //     $lead = $this->leads[$this->flag];
-        //     $this->flag++;
-        //     return $lead;
-        // }
-        private function getNextLead($sender):Lead
-        {   
-            return $this->crud->getLeadBySender($this->sequence->compaignId,$this->sequence->stepStatus,$sender);
+            $email = (new TemplatedEmail())
+                // ->to(new Address('ryan@example.com'))
+                ->subject($subject)
+
+                // path of the Twig template to render
+                ->htmlTemplate($emailLink)
+
+                // pass variables (name => value) to the template
+                ->context([
+                    'lead' => $lead
+                ])
+            ;
+            $this->bodyRenderer->render($email);
+
+            return $email;
         }
 
         // private function getDsnByEmail($email)
@@ -136,5 +134,7 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
         //         if($dsn->getEmail() == $email) return $dsn->getDsn();
         //     }
         // }
+
+ 
 
     }

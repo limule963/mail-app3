@@ -33,9 +33,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Compaign::class,cascade:["persist"])]
     private Collection $compaigns;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Dsn::class,cascade:['persist'])]
+    private Collection $dsns;
+
     public function __construct()
     {
         $this->compaigns = new ArrayCollection();
+        $this->dsns = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -141,6 +145,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($compaign->getUser() === $this) {
                 $compaign->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Dsn>
+     */
+    public function getDsns(): Collection
+    {
+        return $this->dsns;
+    }
+
+    public function addDsn(Dsn $dsn): self
+    {
+        if (!$this->dsns->contains($dsn)) {
+            $this->dsns->add($dsn);
+            $dsn->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDsn(Dsn $dsn): self
+    {
+        if ($this->dsns->removeElement($dsn)) {
+            // set the owning side to null (unless already changed)
+            if ($dsn->getUser() === $this) {
+                $dsn->setUser(null);
             }
         }
 

@@ -71,6 +71,15 @@ class CompaignRepository extends ServiceEntityRepository
         ;
     }
 
+    public function findOneByName($name): ?Compaign
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.name = :val')
+            ->setParameter('val', $name)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
 //    public function findOneBySomeField($value): ?Compaign
 //    {
 //        return $this->createQueryBuilder('c')

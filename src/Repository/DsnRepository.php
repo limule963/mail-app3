@@ -42,11 +42,11 @@ class DsnRepository extends ServiceEntityRepository
     /**
         * @return Dsn[] Returns an array of Dsn objects
         */
-    public function findCompainId($compaignId,$n = 50): array
+    public function findByCompaignId($compaignId,$n = 50): array
     {
         return $this->createQueryBuilder('d')
             ->andWhere('d.compaign = :val')
-            ->setParameter('val', $$compaignId)
+            ->setParameter('val', $compaignId)
             ->orderBy('d.id', 'ASC')
             ->setMaxResults($n)
             ->getQuery()
@@ -54,13 +54,14 @@ class DsnRepository extends ServiceEntityRepository
         ;
     }
 
-    public function findOneByCompaignId($compaignId): ?Dsn
+    public function findByUserId($userId,$number = 50 )
     {
         return $this->createQueryBuilder('d')
-            ->andWhere('d.compaign = :val')
-            ->setParameter('val', $compaignId)
+            ->andWhere('d.user = :val')
+            ->setParameter('val', $userId)
+            ->setMaxResults($number)
             ->getQuery()
-            ->getOneOrNullResult()
+            ->getResult()
         ;
     }
 }

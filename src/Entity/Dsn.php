@@ -37,6 +37,9 @@ class Dsn
     #[ORM\ManyToOne(inversedBy: 'dsns')]
     private ?Compaign $compaign = null;
 
+    #[ORM\ManyToOne(inversedBy: 'dsns')]
+    private ?User $user = null;
+
     // #[ORM\ManyToMany(targetEntity: Compaign::class, mappedBy: 'dsns')]
     // private Collection $compaigns;
 
@@ -137,23 +140,22 @@ class Dsn
     //     return $this;
     // }
 
-    public function getDsnByEmail($email):string
-    {
-        return $dsn = 'dsn';
-    }
     public function getDsn():string
     {
         // $dsn =  'smtp://contact@clemaos.com:jC1*rAJ8GGph9@u@mail51.lwspanel.com:587?verify_peer=0';
 
-        $this->host = urlencode($this->host);
-        $this->username = urlencode($this->username);
-        $this->password = urlencode($this->password);
+        $username = urlencode($this->username);
+        $password = urlencode($this->password);
+        $host = urlencode($this->host);
+        $port = $this->port;
 
-        return $dsn =  'smtp://'
-                . $this->username.":"
-                . $this->password."@"
-                . $this->host.":"
-                . $this->port.'?verify_peer=1';
+        $dsn =  'smtp://'
+                . $username.":"
+                . $password."@"
+                . $host.":"
+                . $port.'?verify_peer=1';
+                
+        return $dsn;
                 
     }
 
@@ -165,6 +167,18 @@ class Dsn
     public function setCompaign(?Compaign $compaign): self
     {
         $this->compaign = $compaign;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }

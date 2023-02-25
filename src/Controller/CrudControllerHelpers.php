@@ -1,6 +1,7 @@
 <?php
 namespace App\Controller;
 
+use App\Entity\Dsn;
 use App\Entity\Lead;
 use App\Entity\Step;
 use App\Entity\User;
@@ -9,6 +10,7 @@ use App\Entity\Status;
 use App\Entity\Compaign;
 use App\Entity\Schedule;
 use App\Data\STATUS as STAT;
+use App\Repository\DsnRepository;
 use App\Repository\LeadRepository;
 use App\Repository\StepRepository;
 use App\Repository\UserRepository;
@@ -72,9 +74,13 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             return $this->getUser();
         }
 
-        public function createUser()
+        public function updateUser($userId, $name = null,$email = null ,$password= null,Dsn $dsn = null,)
         {
-
+            /**@var UserRepository */
+            $rep = $this->em->getRepository(User::class);
+            $user = $rep->find($userId); 
+            if($dsn!=null) $user->addDsn($dsn);
+            $rep->save($user,true);
         }
 
 
@@ -88,7 +94,9 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
         public function createCompaign($name)
         {
             $status = $this->getStatus(STAT::COMPAIGN_DRAFT);
+            
             $sch = (new Schedule)->setStartTime(new \DateTimeImmutable())->setFromm(8)->setToo(18);
+
 
             return (new Compaign)->setName($name)->setStatus($status)->setSchedule($sch);
 
@@ -111,7 +119,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
          * @param Dsn[] $dsns
          * @param string $name
          */
-        public function updateCompaign($id,$name = null, array $dsns = null, Step $step = null, Status $status =null,array $leads =null, Schedule $schedule =null)
+        public function updateCompaign($id,$name = null,  mixed $dsns = null, Step $step = null, Status $status =null,array $leads =null, Schedule $schedule =null)
         {
             /**@var CompaignRepository */
             $rep = $this->em->getRepository(Compaign::class);
@@ -119,7 +127,11 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             /**@var Compaign */
             $compaign = $rep->find($id);
             if($name!=null) $compaign->setName($name);
-            if($dsns != null) $compaign->addDsns($dsns);
+            if($dsns instanceof Dsn && $dsns != null) $compaign->addDsn($dsns);
+            else
+            {
+                if($dsns != null) $compaign->addDsns($dsns);
+            }
             if($status!=null) $compaign->setStatus($status);
             if($schedule!=null) $compaign->setSchedule($schedule);
             if($step!=null) $compaign->addStep($step);
@@ -144,7 +156,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
         }
 
-        public function getCompaigns()
+        public function getCompaigns($number)
         {
             /**@var User */
             $user = $this->user();
@@ -153,7 +165,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             /**@var CompaignRepository */
             $rep = $this->em->getRepository(Compaign::class);
             
-            return $rep->findByUserId($id);
+            return $rep->findByUserId($id,$number);
         }
         
         public function getCompaign()
@@ -165,7 +177,8 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             /**@var CompaignRepository */
             $rep = $this->em->getRepository(Compaign::class);
 
-            return $rep->findOneByUserId($id,1);
+            $c = $rep->findByUserId($id,1);
+            return $c[0];
         }
 
 
@@ -197,12 +210,17 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
         public function addLeads($compaignId, mixed $leads)
         {
-            $leads = $this->createLeads($leads);
-
+            
             /**@var CompaignRepository */
             $rep = $this->em->getRepository(Compaign::class);
             $compaign =$rep->find($compaignId);
-            $compaign->addLeads($leads);
+            
+            if($leads instanceof Lead)$compaign->addLead($leads);
+            else 
+            {
+                $compaign->addLeads($leads);
+                $leads = $this->createLeads($leads);
+            }
             $rep->save($compaign,true);
         }
 
@@ -235,11 +253,14 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             $rep = $this->em->getRepository(Lead::class);
             return $rep->findByStatus($compaignId,$status,$n);
         }
-        public function getLeadByStatus($compaignId,$status)
+        public function getLeadByStatus($compaignId,$status):Lead|null
         {
             /**@var LeadRepository */
             $rep = $this->em->getRepository(Lead::class);
-            return $rep->findLeadByStatus($compaignId,$status);
+            $leads = $rep->findByStatus($compaignId,$status,1);
+            if($leads==null) return null;
+            else return $leads[0];
+
         }
 
         public function getLeads($compaignId)
@@ -252,18 +273,25 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
         {
             /**@var LeadRepository */
             $rep = $this->em->getRepository(Lead::class);
-            return $rep->findOneByCompaignId($compaignId);
+            $leads = $rep->findByCompaignId($compaignId,1);
+            return $leads[0];
         }
 
-        public function getLeadBySender($compaignId,$leadStatus,$sender)
+        public function getLeadBySender($compaignId,$leadStatus,$sender):Lead|null
         {
             /**@var LeadRepository */
             $rep = $this->em->getRepository(Lead::class);      
-            return $rep->findOneBySender($compaignId,$leadStatus,$sender);
-
-
+            $leads = $rep->findBySender($compaignId,$leadStatus,$sender,1);
+            if( $leads == null) return null;
+            else  return $leads[0];
         }
-
+        
+        public function getLeadsBySender($compaignId,$leadStatus,$sender,$number)
+        {
+            /**@var LeadRepository */
+            $rep = $this->em->getRepository(Lead::class);      
+            return $rep->findBySender($compaignId,$leadStatus,$sender,$number);
+        }
 
 
 
@@ -446,4 +474,55 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             if($Status != null) return $Status;
             else return null;
         }
+
+
+//---------------------------------------------------------------------
+//               DSN_CRUD                                            |
+//---------------------------------------------------------------------
+
+        public function createDsn($email,$username,$password,$host,$port)
+        {
+            // /**@var DsnRepository */
+            // $rep = $this->em->getRepository(Dsn::class);
+            return (new Dsn)->setEmail($email)->setUsername($username)
+                            ->setPassword($password)->setHost($host)
+                            ->setPort($port)
+                            ;
+        }
+
+        public function addDsnToCompaign($compaignId, mixed $dsnData)
+        {
+            if(!$dsnData instanceof Dsn) $dsn = $this->createDsn($dsnData['email'],$dsnData['password'],$dsnData['email'],$dsnData['host'],$dsnData['port']);
+            $dsn = $dsnData;
+            $this->updateCompaign($compaignId,dsns:$dsn);
+        }
+
+        public function getCompaignDsns($compaignId,$number = 50)
+        {
+            /**@var DsnRepository */
+            $rep = $this->em->getRepository(Dsn::class);
+            return $rep->findByCompaignId($compaignId,$number);
+        }
+        public function getUserDsns($number = 50)
+        {
+            /**@var DsnRepository */
+            $rep = $this->em->getRepository(Dsn::class);
+
+            /**@var User */
+            $user = $this->getUser();
+            $userId = $user->getId();
+            return $rep->findByUserId($userId,$number);
+        }
+
+        public function addDsnToUser($dsnData)
+        {
+            if(!$dsnData instanceof Dsn) $dsn = $this->createDsn($dsnData['email'],$dsnData['password'],$dsnData['email'],$dsnData['host'],$dsnData['port']);
+            $dsn = $dsnData;
+            /**@var User */
+            $user = $this->getUser();
+            $this->updateUser(userId:$user->getId(), dsn:$dsn);
+        }
+
+
+
     }

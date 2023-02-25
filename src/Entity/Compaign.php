@@ -40,7 +40,7 @@ class Compaign
     // #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     // private ?Schedule $schedule = null;
 
-    #[ORM\OneToMany(mappedBy: 'compaign', targetEntity: Dsn::class)]
+    #[ORM\OneToMany(mappedBy: 'compaign', targetEntity: Dsn::class,cascade:['persist'])]
     private Collection $dsns;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]

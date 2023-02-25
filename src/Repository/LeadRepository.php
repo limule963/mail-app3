@@ -60,7 +60,7 @@ class LeadRepository extends ServiceEntityRepository
    /**
     * @return Lead[] Returns an array of Lead objects
     */
-   public function findByCompainId($id,$number = 10): array
+   public function findByCompaignId($id,$number = 10): array
    {
        return $this->createQueryBuilder('l')
             // ->select('l','s')
@@ -88,42 +88,50 @@ class LeadRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-    public function findOneByStatus($compaignId,$stepLeadStatus): ?Lead
+    // public function findOneByStatus($compaignId,$stepLeadStatus): ?Lead
+    // {
+    //     return $this->createQueryBuilder('l')
+    //         // ->select('l','s')
+    //         ->andWhere('l.compaign = :val2')
+    //         ->andWhere('s.status = :val3')
+    //         ->join('l.status','s')
+    //         ->setParameter('val2', $compaignId)
+    //         ->setParameter('val3', $stepLeadStatus)
+    //         ->getQuery()
+    //         ->getOneOrNullResult()
+    //     ;
+    // }
+
+
+    public function findBySender($compaignId,$stepLeadStatus,$sender, $number = 10)
     {
-        return $this->createQueryBuilder('l')
+        $query = $this->createQueryBuilder('l')
             // ->select('l','s')
             ->andWhere('l.compaign = :val2')
             ->andWhere('s.status = :val3')
             ->join('l.status','s')
             ->setParameter('val2', $compaignId)
             ->setParameter('val3', $stepLeadStatus)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->setMaxResults($number)
+            ;
+        if($sender !='')
+        {
+            $query->andWhere('l.sender = :val')
+                ->setParameter('val', $sender);
+        }
+        
+        return $query->getQuery()
+                ->getResult();
     }
-    public function findOneBySender($compaignId,$stepLeadStatus,$sender): ?Lead
-    {
-        return $this->createQueryBuilder('l')
-            // ->select('l','s')
-            ->andWhere('l.compaign = :val2')
-            ->andWhere('l.sender = :val')
-            ->andWhere('s.status = :val3')
-            ->join('l.status','s')
-            ->setParameter('val', $sender)
-            ->setParameter('val2', $compaignId)
-            ->setParameter('val3', $stepLeadStatus)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    public function findOneByCompaignId($compaignId): ?Lead
-    {
-        return $this->createQueryBuilder('l')
-            // ->select('l','s')
-            ->andWhere('l.compaign = :val2')
-            ->setParameter('val2', $compaignId)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
+
+    // public function findOneByCompaignId($compaignId): ?Lead
+    // {
+    //     return $this->createQueryBuilder('l')
+    //         // ->select('l','s')
+    //         ->andWhere('l.compaign = :val2')
+    //         ->setParameter('val2', $compaignId)
+    //         ->getQuery()
+    //         ->getOneOrNullResult()
+    //     ;
+    // }
 }

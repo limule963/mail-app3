@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Data;
-use Symfony\Component\Mime\Email;
+
+use App\Entity\Email;
 
     class Sequence
     {
