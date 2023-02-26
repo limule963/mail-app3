@@ -1,6 +1,7 @@
 <?php
 
-namespace App\Data;
+namespace App\AppMailer\Data;
+
 
 
     class CompaignResponse
@@ -13,15 +14,6 @@ namespace App\Data;
             {
                 $this->stat[] = $em;
                 $this->stat['compaignStatus'] = $compaignState;
-                // $this->stat[] = [
-                //     'email' => $em->leadEmail,
-                //     'status'=> $em->message,
-                //     'sender'=>$em->sender,
-                //     'step'=>$em->stepStatus,
-                //     'throw Message' =>$em->throwMessage,
-                //     'compaignStatus'=>$compaignState
-                // ];
-
             }
             else 
             $this->stat['compaignStatus'] = $compaignState;

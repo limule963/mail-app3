@@ -1,17 +1,14 @@
 <?php
 
-namespace App\Classes;
+namespace App\AppMailer\Sender;
 
-use App\Entity\Lead;
+
 use App\Entity\Step;
-use App\Data\Sequence;
 use App\Entity\Compaign;
 use App\Entity\Schedule;
-use App\Entity\Email as Em;
-use App\Data\STATUS as STAT;
-use Symfony\Component\Mime\Email;
+use App\AppMailer\Data\STATUS as STAT;
+use App\AppMailer\Data\Sequence;
 use App\Controller\CrudControllerHelpers;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mime\BodyRendererInterface;
 
     class Sequencer

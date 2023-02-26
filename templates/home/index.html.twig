@@ -28,7 +28,10 @@
         {% endif %}
 
         <pre>
-            {{ dump(cr) }}
+            {% if cr is defined %}
+                {{ dump(cr) }}
+            
+            {% endif %}
         </pre>
         
     </ul>

@@ -9,7 +9,7 @@ use App\Entity\Email;
 use App\Entity\Status;
 use App\Entity\Compaign;
 use App\Entity\Schedule;
-use App\Data\STATUS as STAT;
+use App\AppMailer\Data\STATUS as STAT;
 use App\Repository\DsnRepository;
 use App\Repository\LeadRepository;
 use App\Repository\StepRepository;
@@ -17,7 +17,7 @@ use App\Repository\UserRepository;
 use App\Repository\CompaignRepository;
 use App\Repository\ScheduleRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use App\Classes\Exception\CrudControllerException;
+use App\AppMAiler\Exceptions\CrudControllerException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
     

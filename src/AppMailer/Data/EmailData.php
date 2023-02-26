@@ -1,5 +1,6 @@
 <?php
-namespace App\Data;
+namespace App\AppMailer\Data;
+
 
 use App\Entity\Lead;
 use App\Entity\Email;

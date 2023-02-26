@@ -1,18 +1,18 @@
 <?php
-namespace App\Classes;
+    namespace App\AppMailer\Sender;
+
+
+
+
 
 use App\Entity\Dsn;
 use App\Entity\Lead;
-use App\Entity\Email as Em;
-
-
-use App\Data\Sequence;
-use Symfony\Component\Mime\Email;
-use Doctrine\Persistence\ObjectManager;
+use App\Entity\Email;
+use App\AppMailer\Data\STATUS;
+use App\AppMailer\Data\Sequence;
+use App\AppMailer\Data\EmailData;
+use App\AppMailer\Data\CompaignResponse;
 use App\Controller\CrudControllerHelpers;
-use App\Data\CompaignResponse;
-use App\Data\EmailData;
-use App\Data\STATUS;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mime\BodyRendererInterface;
 
@@ -77,21 +77,11 @@ use Symfony\Component\Mime\BodyRendererInterface;
                 if($emailResponse->succes)
                 {
                     $Dsn->sendState = true;
-                    $status =$this->sequence->getNextLeadStatus($lead->getStatus()->getStatus());
-
-                    $Status = $this->crud->getStatus($status);
-                    $lead->setStatus($Status);
-                    if($lead->getSender() == '') $lead->setSender($from);
                     
-                    $this->crud->saveLead($lead);
-                 
+                    $this->prepareForNextCall($lead,$from,true);
+                    
                 }
-                else 
-                {
-                    $lead->setSender($from.'|Not Send');
-                    $this->crud->saveLead($lead);
-
-                }
+                else $this->prepareForNextCall($lead,$from,false);
 
                 $this->cr->setStat($emailResponse,$sequence->compaignState);
 
@@ -99,6 +89,25 @@ use Symfony\Component\Mime\BodyRendererInterface;
 
             return $this->cr;
             
+
+        }
+
+
+        private function prepareForNextCall(Lead $lead,$from,bool $isMailSend)
+        {
+            $status =$this->sequence->getNextLeadStatus($lead->getStatus()->getStatus());
+            $Status = $this->crud->getStatus($status);
+            $lead->setStatus($Status);
+
+            if($isMailSend) 
+            {
+                if($lead->getSender() == '') $lead->setSender($from);
+
+            }
+            else $lead->setSender($from.'|Not Send');
+
+
+            $this->crud->saveLead($lead);
 
         }
         
@@ -110,7 +119,7 @@ use Symfony\Component\Mime\BodyRendererInterface;
         }
 
 
-        private function getTemplatedEmail(Em $email,Lead $lead):Email
+        private function getTemplatedEmail(Email $email,Lead $lead):TemplatedEmail
         {
             $subject = $email->getSubject();
             $emailLink = $email->getEmailLink();

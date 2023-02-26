@@ -1,13 +1,15 @@
 <?php
-    namespace App\Classes;
+namespace App\AppMailer\Sender;
+    
 
 use App\Entity\Lead;
-use App\Data\EmailData;
-use App\Data\EmailResponse;
 use App\Entity\Email;
+use App\AppMailer\Data\EmailData;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mailer\Mailer;
+use App\AppMailer\Data\EmailResponse;
 use Symfony\Component\Mailer\Transport;
+use Symfony\Component\Mime\Part\DataPart;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mime\BodyRendererInterface;
 
@@ -25,9 +27,8 @@ use Symfony\Component\Mime\BodyRendererInterface;
             $mailer = new Mailer($transport);
 
             $email = $this->getTemplatedEmail($ed->email,$ed->lead,$ed->from,$ed->senderName);
+
             // dd($email);
-
-
 
             try 
             {
@@ -37,14 +38,14 @@ use Symfony\Component\Mime\BodyRendererInterface;
             }
             catch (\Throwable $th) 
             {
-                return new EmailResponse(false,'Email not sent',$ed->from,$ed->lead->getEmailAddress(),$th->getCode(),$th->getMessage());   
+                return new EmailResponse(false,'Email not sent',$ed->from,$ed->lead->getEmailAddress(),$ed->stepStatus,$th->getCode(),$th->getMessage());   
             }
         }
 
 
 
 
-        private function getTemplatedEmail(Email $email,Lead $lead,string $from,string $senderName):TemplatedEmail
+        private function getTemplatedEmail(Email $email,Lead $lead,string $from,string $senderName,bool $addTracker= false):TemplatedEmail
         {
             $subject = $email->getSubject();
             $emailLink = $email->getEmailLink();
@@ -57,10 +58,9 @@ use Symfony\Component\Mime\BodyRendererInterface;
                 ->subject($subject)
                 ->from(new Address($from,$senderName))
                 ->to(new Address($emailAddress,$lead->getName()))
-
-
                 // path of the Twig template to render
                 ->htmlTemplate($emailLink)
+                ->addPart((new DataPart(fopen('https://aykode.com/images/8601571909526073.png', 'r'), 'image1', 'image/png'))->asInline())
 
                 // pass variables (name => value) to the template
                 ->context([

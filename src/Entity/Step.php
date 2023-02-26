@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use App\Data\STATUS as STAT;
+use App\AppMailer\Data\STATUS as STAT;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\StepRepository;

@@ -1,5 +1,6 @@
 <?php
-    namespace App\Classes\Exception;
+namespace App\AppMailer\Exceptions;
+    
 
 use Exception;
 

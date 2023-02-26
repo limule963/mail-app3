@@ -1,11 +1,13 @@
 
+{% extends "base.html.twig" %}
 
+{% block body %}
     <!doctype html>
     <html>
 
     
         <body>
-            <h1>hellooo {{lead.name}}</h1>
+            <h1>hellooo et bonjour {{lead.name}}</h1>
             <p class = 'grey'>
                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex dolorem earum, quam hic nam accusamus similique voluptas unde enim quas pariatur nobis dolores doloremque numquam accusantium. Dicta porro sapiente rem.
             </p>
@@ -18,7 +20,7 @@
             </div>
             <h1>Welcome {{ email.toName }}!</h1>
             <p>Vous Recevez ce message parce que votre email {{lead.emailAddress}} est abonné au newsletter</p>
-            <img src="https://aykode.com/images/8601571909526073.png" alt="img2">
             
         </body>
     </html>
+{% endblock %}

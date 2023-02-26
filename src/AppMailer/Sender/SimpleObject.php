@@ -1,5 +1,6 @@
 <?php
-    namespace App\Classes;
+namespace App\AppMailer\Sender;
+    
     class SimpleObject
     {
         public $name;

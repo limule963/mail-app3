@@ -1,6 +1,7 @@
 <?php
     
-    namespace App\Data;
+namespace App\AppMailer\Data;
+    
 
     class EmailResponse
     {

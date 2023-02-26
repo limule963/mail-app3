@@ -3,18 +3,18 @@
 namespace App\Controller;
 
 use App\Entity\Dsn;
-use App\Data\STATUS;
+use App\AppMailer\Data\STATUS;
 use App\Entity\Lead;
 use App\Entity\Step;
 use App\Entity\Test;
 use Twig\Environment;
-use App\Data\EmailData;
+use App\AppMailer\Data\EmailData;
 use App\Entity\Schedule;
-use App\Classes\Sequencer;
-use App\Classes\EmailSender;
-use App\Classes\SimpleObject;
-use App\Classes\CompaignLuncher;
-use App\Classes\SequenceLuncher;
+use App\AppMailer\Sender\Sequencer;
+use App\AppMailer\Sender\EmailSender;
+use App\AppMailer\Sender\SimpleObject;
+use App\AppMailer\Sender\CompaignLuncher;
+use App\AppMailer\Sender\SequenceLuncher;
 use App\Repository\DsnRepository;
 use Symfony\Component\Mime\Email;
 use Twig\Loader\FilesystemLoader;
@@ -68,56 +68,21 @@ class HomeController extends AbstractController
         ]);
     }
 
+    #[Route('em',name:'app_em')]
+    public function em(CrudControllerHelpers $crud)
+    {
+
+        return $this->render('mail/mail20.html.twig',[
+        ]);
+    }
+
 
     #[Route('/test',name:'app_test')]
     public function test(DsnRepository $rep,EmailSender $em,Environment $twig,BodyRendererInterface $bodyRenderer)
     {
 
-        $Dsn = (new Dsn)->setEmail('contact@clemaos.com')->setUsername('contact@clemaos.com')
-                        ->setPassword('jC1*rAJ8GGph9@u')->setHost('mail51.lwspanel.com')->setPort(587);
-        $dsn2 = $Dsn->getDsn();
-        $Dsn = $rep->find(9);
-        // dd($Dsn);
-        $dsn = $Dsn->getDsn();
-        dd($dsn,$dsn2);
-        
-        // dd($dsn);
-        
-        $lead = (new Lead)->setName('clemaos')->setEmailAddress('clemaos@yahoo.fr');
-        $email = (new TemplatedEmail())
-                ->subject('Hello')
-                ->htmlTemplate('mail/mail17.html.twig')
-                
-                ->context([
-                    'lead'=>$lead
-
-                ])
-
-        ;
-        $bodyRenderer->render($email);
-        // dd($email);
-
-
- 
-
-
-
-
-        $from =$Dsn->getEmail();
-
-        $to = 'clemaos@yahoo.fr';
-        $emailData = new EmailData($dsn,$from,$to,$email,'');
-
-        // dd($emailData);
-
-        $emailResponse = $em->send($emailData);
-
-
-
         return $this->render('home/index.html.twig', [
-            'controller_name' => 'HomeController',
-            'code'=>$emailResponse->code,
-            'message'=>$emailResponse->message. ' '.$emailResponse->throwMessage
+
         ]);
     }
 }

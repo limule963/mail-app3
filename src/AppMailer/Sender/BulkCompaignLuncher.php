@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Classes;
+namespace App\AppMailer\Sender;
 
-use App\Data\STATUS as STAT;
-use App\Entity\Compaign;
+
 
     class BulkCompaignLuncher
     {

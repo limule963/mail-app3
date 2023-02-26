@@ -3,6 +3,8 @@ twig:
 
     paths: 
         '%kernel.project_dir%/public/assets/css': styles
+        '%kernel.project_dir%/public/assets/images': images
+        '%kernel.project_dir%/public/assets/templates': 
 
 when@test:
     twig:

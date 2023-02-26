@@ -4,3 +4,9 @@ h1 {
 .grey{
     color: grey;
 }
+.flex{
+    display:flex ;
+    justify-content: center;
+    align-items: center;
+    color: rgba(205, 245, 140, 0.753);
+}

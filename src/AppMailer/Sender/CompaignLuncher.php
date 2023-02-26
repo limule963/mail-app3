@@ -1,10 +1,11 @@
 <?php
-namespace App\Classes;
+namespace App\AppMailer\Sender;
+
 
 use App\Controller\CrudControllerHelpers;
-use App\Data\CompaignResponse;
-use App\Data\Sequence;
-use App\Data\STATUS;
+use App\AppMailer\Data\CompaignResponse;
+use App\AppMailer\Data\Sequence;
+use App\AppMailer\Data\STATUS;
 use App\Entity\Compaign;
 
     class CompaignLuncher
