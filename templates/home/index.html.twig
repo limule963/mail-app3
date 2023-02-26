@@ -26,6 +26,10 @@
         {% if message is defined %}
         <li>{{message}}</li>
         {% endif %}
+
+        <pre>
+            {{ dump(cr) }}
+        </pre>
         
     </ul>
 </div>

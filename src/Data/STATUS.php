@@ -6,10 +6,13 @@
     {
 
         public const
-            LEAD_COMPLETE = 'complete',
+            LEAD_COMPLETE = 'lead.complete',
+            LEAD_FAIL = 'lead.fail',
 
 
             STEP_DRAFT  = 'step.draft',
+            STEP_COMPLETE = 'step.complete',
+            STEP_ACTIVE = 'step.active',
             STEP_1  = 'step.1',
             STEP_2  = 'step.2',
             STEP_3  = 'step.3',

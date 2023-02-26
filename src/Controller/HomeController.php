@@ -34,97 +34,22 @@ class HomeController extends AbstractController
         
     }
     #[Route('/', name: 'app_home')]
-    public function index(DsnRepository $rep,CrudControllerHelpers $crud, Sequencer $seq,SequenceLuncher $sl): Response
+    public function index(CompaignLuncher $cl,CrudControllerHelpers $crud, Sequencer $seq,SequenceLuncher $sl): Response
     {
 
-        // $dsnDatas = [
-        //     [
-        //         'email'=> 'contact@aykode.com',
-        //         'username' => 'contact@aykode.com', 
-        //         'password'=> 'dF4_pxe9t!5q_wa',
-        //         'host'=> 'mail56.lwspanel.com',
-        //         'port'=>587 
-        //     ],
-        //     [
-        //         'email'=> 'contact@crubeo.fr',
-        //         'username' => 'contact@crubeo.fr', 
-        //         'password'=> 'rS1*aahSMZhKq9q',
-        //         'host'=> 'mail52.lwspanel.com',
-        //         'port'=>587 
-        //     ],
-        //     [
-        //         'email'=> 'contact@clemaos.com',
-        //         'username' => 'contact@clemaos.com', 
-        //         'password'=> 'jC1*rAJ8GGph9@u',
-        //         'host'=> 'mail51.lwspanel.com',
-        //         'port'=>587 
-        //     ]
-        // ];
-        // foreach($dsnDatas as $dsnData) $crud->addDsnToUser($dsnData);
-        // dd('done');
 
-        
-        // $dsns = $crud->getUserDsns();
-        
-        // foreach($dsns as $dsn) $crud->addDsnToCompaign($compaign->getId(),$dsn);
-        
-        // dd($dsns);
-        
-        
-        // dd($compaign);
-        // $dsns = $crud->getCompaignDsns($compaign->getId());
-        // dd($dsns);
-        // // foreach($dsnDatas as $dsnData) $crud->addDsnToCompaign($compaign->getId(),$dsnData);
-        // dd('done');
-        // // $crud->addCompaign('compagne1');
-        // $dsns = $crud->getCompaignDsns($compaign->getId());
-        // dd($dsns);
-        // $dsn = $rep->find(9);
-        // dd($dsn);
-        
         $compaign = $crud->getCompaign();
+        $compaign->setStatus($this->crud->getStatus(STATUS::COMPAIGN_ACTIVE));
 
-        $sequence = $seq->sequence($compaign);
-        $cr = $sl->lunch($sequence);
-        dd($cr);
+        $cr = $cl->sequence($compaign)->lunch();
 
-
-        // $crud->addLeads($compaign->getId(),$crud->createLead('alice','alice.brunett44@gmail.com'));
-        // $crud->addLeads($compaign->getId(),$crud->createLead('koff','kofazia@gmail.com'));
-        // $crud->addLeads($compaign->getId(),$crud->createLead('clemaos','clemaos@yahoo.fr'));
-        // $crud->addLeads($compaign->getId(),$crud->createLead('koffi azialoame','koffi.azialoame@yahoo.com'));
-
-
-    
-        // $crud->addStep($compaign->getId(),'informer','bonjour','mail17.html.twig');
-        // $crud->addStep($compaign->getId(),'proceder','bonjour','mail16.html.twig');
-        dd($compaign);
-
-        // dd(getdate()['hours']);
-
-        // $crud->deleteCompaign($compaign);
-
-        // $steps = $compaign->getSteps()->getValues();
-
-     
-        // $step = $steps[0];
-        // $status = $step->getStatus();
-        // $sch = (new Schedule)->setStartTime(new \DateTimeImmutable())->setFrom(8)->setTo(18);
-
-        // dd($sch);
-        // $crud->updateCompaign($compaign->getId(),schedule:$sch);
-        // $crud->deleteCompaign($compaign->getId());
-        // dd($compaign,$steps,$status);
-        // $crud->addStep($compaign->getId(),'premier contact','salutation','c://KOFF/mail.html.twig');
-        // $crud->addStep($compaign->getId(),'trie','helo','c://KOFF/mail2.html.twig');
-        // $crud->addStep($compaign->getId(),'finalisation','last chance','c://KOFF/mail3.html.twig');
-        // $crud->addCompaign('compagne3');
-        // $crud->saveSchedule($schedule);    
-
-
+        // $sequence = $seq->sequence($compaign);
+        // $cr = $sl->lunch($sequence);
+        // dd($cr);
 
         return $this->render('home/index.html.twig', [
             'controller_name' => 'HomeController',
+            'cr'=>$cr
             
         ]);
 

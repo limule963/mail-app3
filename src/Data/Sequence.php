@@ -6,16 +6,18 @@ use App\Entity\Email;
 
     class Sequence
     {
+        public string $sequenceStatus;
         public function __construct(
-            public Email $email,
-            public array $dsns,
-            public array $leadStatusTable,
-            public int $compaignId,
-            public string $stepStatus
+            public ?Email $email,
+            public ?array $dsns,
+            public ?array $leadStatusTable,
+            public ?int $compaignId,
+            public ?string $stepStatus,
+            public ?string $compaignState
 
             )
         {
-            
+            $this->sequenceStatus = STATUS::SEQUENCE_ONHOLD;
         }
 
         private function contains($tab,$item)

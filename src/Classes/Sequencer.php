@@ -28,44 +28,56 @@ use Symfony\Component\Mime\BodyRendererInterface;
          */
         private $steps;
         
+        private $compaignId;
+
         public function __construct( private CrudControllerHelpers $crud,private BodyRendererInterface $bodyRenderer)
         {
             
         }
         
         
-        public function sequence(Compaign $compaign):Sequence
+        public function sequence(Compaign $compaign):Sequence|null
         {
             $steps = $compaign->getSteps()->getValues();
             $this->steps = $steps;
             $this->schedule = $compaign->getSchedule();
+            $this->compaignId = $compaign->getId();
+
             
-            if($compaign->newStepPriority)  $steps = array_reverse($steps);
+            if($compaign->newStepPriority)
+            {
+                $steps = array_reverse($steps);
+            }  
+
+            $this->stepManager($steps,$compaign->newStepPriority);
 
             foreach($steps as $step)
             {
-                /**@var Step $step */
-                if( !$this->isStepActive($step)) continue;
+                // $lead = $this->crud->getLeadsByStatus($compaign->getId(),$step->getStatus()->getStatus(),1);
+                // if(empty($lead)) continue;
+                if($step->stepState == STAT::STEP_COMPLETE) continue;
+                if(!$this->isStepDoJob($step)) continue;
                 else
                 {
-                    $lead = $this->crud->getLeadsByStatus($compaign->getId(),$step->getStatus()->getStatus(),1);
-                    if(empty($lead)) continue;
-                    else
-                    {
-                        $this->step = $step;
-                        // $sequenceState =STAT::SEQUENCE_ONHOLD;
-                        return new Sequence(
-                                $this->step->getEmail(),
-                                $compaign->getDsns()->getValues(),
-                                $this->leadStatusTable($this->steps),
-                                $compaign->getId(),
-                                $this->step->getStatus()->getStatus()
-                         );
-                        break;
-                    }
+                    $this->step = $step;
+                    // $sequenceState =STAT::SEQUENCE_ONHOLD;
+                    return new Sequence(
+                            $step->getEmail(),
+                            $compaign->getDsns()->getValues(),
+                            $this->leadStatusTable($this->steps),
+                            $compaign->getId(),
+                            $step->getStatus()->getStatus(),
+                            $compaign->getStatus()->getStatus()
+                        );
+                    break;
                 }
+                
             }
-            // $sequenceState =STAT::SEQUENCE_COMPLETE;
+            $status = $this->crud->getStatus(STAT::COMPAIGN_COMPLETE);
+            $compaign->setStatus($status);
+            $this->crud->saveCompaign($compaign);
+
+            return null;
             
         
 
@@ -73,6 +85,38 @@ use Symfony\Component\Mime\BodyRendererInterface;
  
         }
         
+
+        private function isStepDoJob(Step $step)
+        {
+            $lead = $this->crud->getLeadsByStatus($this->compaignId,$step->getStatus()->getStatus(),1);
+            $active = $this->isStepActive($step);
+            if(empty($lead) && $active == true) return false;
+            return true;
+
+        }
+
+        /**@param Step[] $steps */
+        private function stepManager(array $steps,bool $newStepPriority)
+        {
+            foreach ($steps as $key => $step)
+            {
+                if($step->stepState == STAT::STEP_COMPLETE) continue;
+                
+                $doJob = $this->isStepDoJob($step);
+                
+                if($step->getStatus()->getStatus()==STAT::STEP_1 && $doJob == false)
+                {
+                    $step->stepState = STAT::STEP_COMPLETE;
+                    continue;
+                }
+                if($key == 0) continue;
+                
+                if($newStepPriority == true) $key++;
+                else $key--;
+                if($steps[$key]->stepState == STAT::STEP_COMPLETE && $doJob == false) $step->stepState = STAT::STEP_COMPLETE;
+
+            }
+        }
 
         /**@var Step[] $steps */
         private function leadStatusTable($steps)
@@ -95,9 +139,10 @@ use Symfony\Component\Mime\BodyRendererInterface;
         /**@param Step $step */
         private function isStepActive(Step $step):bool
         {
-            
             $schedule = $this->schedule;
+
             $startTime =$schedule->getStartTime()->getTimestamp() + $step->dayAfterLastStep*3600;
+            // dd($startTime,time());
 
              if(time() > $startTime) return true;
             return false;

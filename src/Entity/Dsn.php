@@ -40,6 +40,9 @@ class Dsn
     #[ORM\ManyToOne(inversedBy: 'dsns')]
     private ?User $user = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $name = null;
+
     // #[ORM\ManyToMany(targetEntity: Compaign::class, mappedBy: 'dsns')]
     // private Collection $compaigns;
 
@@ -179,6 +182,18 @@ class Dsn
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(?string $name): self
+    {
+        $this->name = $name;
 
         return $this;
     }

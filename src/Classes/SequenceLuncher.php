@@ -45,8 +45,9 @@ use Symfony\Component\Mime\BodyRendererInterface;
       
         }
 
-        public function lunch(Sequence $sequence)
+        public function lunch(?Sequence $sequence)
         {
+            if($sequence == null) return null;
             $this->sequence = $sequence;
             $this->dsns = $sequence->dsns;
             // $this->email = $sequence->email;
@@ -61,18 +62,15 @@ use Symfony\Component\Mime\BodyRendererInterface;
                 
                 $from = $Dsn->getEmail();
                 $dsn = $Dsn->getDsn();
+                $senderName = $Dsn->getName();
                 
                 if($sequence->stepStatus == STATUS::STEP_1) $lead = $this->getNextLead();
                 else $lead = $this->getNextLead($from);
 
                 if($lead == null) continue;
 
-                
-                $email = $this->getTemplatedEmail($sequence->email,$lead);
 
-                $emailAddress =$lead->getEmailAddress();
-
-                $emailData = new EmailData($dsn,$from,$emailAddress,$email,$sequence->stepStatus);
+                $emailData = new EmailData($dsn,$from,$lead,$sequence->email,$senderName,$sequence->stepStatus);
 
                 $emailResponse = $this->emailSender->send($emailData);
                 
@@ -88,7 +86,14 @@ use Symfony\Component\Mime\BodyRendererInterface;
                     $this->crud->saveLead($lead);
                  
                 }
-                $this->cr->setStat($emailResponse);
+                else 
+                {
+                    $lead->setSender($from.'|Not Send');
+                    $this->crud->saveLead($lead);
+
+                }
+
+                $this->cr->setStat($emailResponse,$sequence->compaignState);
 
             }
 
