@@ -51,7 +51,7 @@ use Symfony\Component\Mime\BodyRendererInterface;
             $emailLink = $email->getEmailLink();
 
             $emailAddress = $lead->getEmailAddress();
-            
+            $tracker =$addTracker;
 
             $email = (new TemplatedEmail())
                 // ->to(new Address('ryan@example.com'))
@@ -64,7 +64,8 @@ use Symfony\Component\Mime\BodyRendererInterface;
 
                 // pass variables (name => value) to the template
                 ->context([
-                    'lead' => $lead
+                    'lead' => $lead,
+                    'tracker'=> $tracker
                 ])
             ;
             $this->bodyRenderer->render($email);

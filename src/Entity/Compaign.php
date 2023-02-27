@@ -46,6 +46,9 @@ class Compaign
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Schedule $schedule = null;
 
+    #[ORM\Column(nullable:true)]
+    private ?\DateTimeImmutable $createAt = null;
+
     // #[ORM\OneToOne(inversedBy: "compaign", cascade: ['persist', 'remove'])]
     // private ?Schedule $schedule = null;
 
@@ -275,6 +278,18 @@ class Compaign
     public function setSchedule(?Schedule $schedule): self
     {
         $this->schedule = $schedule;
+
+        return $this;
+    }
+
+    public function getCreateAt(): ?\DateTimeImmutable
+    {
+        return $this->createAt;
+    }
+
+    public function setCreateAt(\DateTimeImmutable $createAt): self
+    {
+        $this->createAt = $createAt;
 
         return $this;
     }

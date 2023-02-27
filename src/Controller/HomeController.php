@@ -3,21 +3,22 @@
 namespace App\Controller;
 
 use App\Entity\Dsn;
-use App\AppMailer\Data\STATUS;
 use App\Entity\Lead;
 use App\Entity\Step;
 use App\Entity\Test;
 use Twig\Environment;
-use App\AppMailer\Data\EmailData;
 use App\Entity\Schedule;
+use App\AppMailer\Data\STATUS;
+use App\AppMailer\Data\EmailData;
+use App\Repository\DsnRepository;
+use Symfony\Component\Mime\Email;
+use Twig\Loader\FilesystemLoader;
+use SecIT\ImapBundle\Service\Imap;
 use App\AppMailer\Sender\Sequencer;
 use App\AppMailer\Sender\EmailSender;
 use App\AppMailer\Sender\SimpleObject;
 use App\AppMailer\Sender\CompaignLuncher;
 use App\AppMailer\Sender\SequenceLuncher;
-use App\Repository\DsnRepository;
-use Symfony\Component\Mime\Email;
-use Twig\Loader\FilesystemLoader;
 use Symfony\Bridge\Twig\Mime\BodyRenderer;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Response;
@@ -84,5 +85,95 @@ class HomeController extends AbstractController
         return $this->render('home/index.html.twig', [
 
         ]);
+    }
+
+    #[Route('/imap',name:'app_imap')]
+    public function imap()
+    {
+        $connexions = [
+            'clemaos'=>[
+                
+                'mailbox'=>"{mail51.lwspanel.com:993/imap/ssl}INBOX",
+                'username'=>'contact@clemaos.com',
+                'password'=>'jC1*rAJ8GGph9@u',
+                'attachments_dir'=> "%kernel.project_dir%/var/imap/attachments",
+                'server_encoding'=> "UTF-8",
+                'create_attachments_dir_if_not_exists'=>true, // default true
+                'created_attachments_dir_permissions'=> 777  // default 770
+            ],
+
+            'aykode'=>[
+                'mailbox'=>"{mail56.lwspanel.com:993/imap/ssl}INBOX",
+                'username'=>'contact@aykode.com',
+                'password'=>'dF4_pxe9t!5q_wa',
+                'attachments_dir'=> "%kernel.project_dir%/var/imap/attachments",
+                'server_encoding'=> "UTF-8",
+                'create_attachments_dir_if_not_exists'=>true, // default true
+                'created_attachments_dir_permissions'=> 777  // default 770
+
+            ],
+            
+            'crubeo'=>[
+                'mailbox'=>"{mail52.lwspanel.com:993/imap/ssl}INBOX",
+                'username'=>'contact@crubeo.fr',
+                'password'=>'rS1*aahSMZhKq9q',
+                'attachments_dir'=> "%kernel.project_dir%/var/imap/attachments",
+                'server_encoding'=> "UTF-8",
+                'create_attachments_dir_if_not_exists'=>true, // default true
+                'created_attachments_dir_permissions'=> 777  // default 770
+            ]
+        ];
+
+        $imap = new Imap($connexions);
+        $con = $imap->get('clemaos');
+        // $isConnectable = $imap->testConnection('clemaos');
+        // $mailboxInfos = $con->getMailboxInfo();
+        $con->setImapSearchOption(SE_FREE);
+        $mailIds = $con->searchMailbox('SINCE 2023-02-26');
+        // $folders = $con->getMailboxes();
+        // $con->switchMailbox('koff');
+        // $con->renameMailbox('koff','Azia');
+        // $con->createMailbox('Azia');
+        // $lf= $con->getMailboxes();
+        // $mail = $con->getMail(8,false);
+        
+        $con->disconnect();
+        dd($mailIds);
+        // $con->subscribeMailbox('Azia');
+        // $con->renameMailbox("Azia","Koffi");
+        // $con->deleteMailbox('Azia',true);
+        // dd($con->getMailsInfo($mailIds));
+        // dd($lf);
+        // dd($con->getImapSearchOption());
+        // dd($folders);
+        // dd($mailboxInfos);
+
+        return $this->render('home/index.html.twig',[
+            "controller_name"=>'HomeController',
+            'cr'=>$mail
+        ]);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 }

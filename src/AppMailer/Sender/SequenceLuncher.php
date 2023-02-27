@@ -95,17 +95,25 @@ use Symfony\Component\Mime\BodyRendererInterface;
 
         private function prepareForNextCall(Lead $lead,$from,bool $isMailSend)
         {
-            $status =$this->sequence->getNextLeadStatus($lead->getStatus()->getStatus());
-            $Status = $this->crud->getStatus($status);
-            $lead->setStatus($Status);
-
+            
             if($isMailSend) 
             {
-                if($lead->getSender() == '') $lead->setSender($from);
-
+                if($lead->getSender() == '') 
+                {
+                    
+                    $status =$this->sequence->getNextLeadStatus($lead->getStatus()->getStatus());
+                    $Status = $this->crud->getStatus($status);
+                    $lead->setStatus($Status);
+                    $lead->setSender($from);
+                }
             }
-            else $lead->setSender($from.'|Not Send');
-
+            else 
+            {
+                $status = STATUS::LEAD_FAIL;
+                $Status = $this->crud->getStatus($status);
+                $lead->setStatus($Status);
+                $lead->setSender($from.'|Not Send');
+            }
 
             $this->crud->saveLead($lead);
 

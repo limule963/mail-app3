@@ -9,6 +9,7 @@ use App\Entity\Schedule;
 use App\AppMailer\Data\STATUS as STAT;
 use App\AppMailer\Data\Sequence;
 use App\Controller\CrudControllerHelpers;
+use phpDocumentor\Reflection\Types\This;
 use Symfony\Component\Mime\BodyRendererInterface;
 
     class Sequencer
@@ -41,12 +42,12 @@ use Symfony\Component\Mime\BodyRendererInterface;
             $this->compaignId = $compaign->getId();
 
             
-            if($compaign->newStepPriority)
-            {
-                $steps = array_reverse($steps);
-            }  
+            // if($compaign->newStepPriority)
+            // {
+            //     $steps = array_reverse($steps);
+            // }  
 
-            $this->stepManager($steps,$compaign->newStepPriority);
+            $steps =  $this->stepManager($steps,$compaign->newStepPriority);
 
             foreach($steps as $step)
             {
@@ -70,6 +71,7 @@ use Symfony\Component\Mime\BodyRendererInterface;
                 }
                 
             }
+
             $status = $this->crud->getStatus(STAT::COMPAIGN_COMPLETE);
             $compaign->setStatus($status);
             $this->crud->saveCompaign($compaign);
@@ -104,15 +106,24 @@ use Symfony\Component\Mime\BodyRendererInterface;
                 if($step->getStatus()->getStatus()==STAT::STEP_1 && $doJob == false)
                 {
                     $step->stepState = STAT::STEP_COMPLETE;
+                    $this->crud->saveStep($step);
                     continue;
                 }
                 if($key == 0) continue;
                 
                 if($newStepPriority == true) $key++;
                 else $key--;
-                if($steps[$key]->stepState == STAT::STEP_COMPLETE && $doJob == false) $step->stepState = STAT::STEP_COMPLETE;
+                if($steps[$key]->stepState == STAT::STEP_COMPLETE && $doJob == false) 
+                {
+                    $step->stepState = STAT::STEP_COMPLETE;
+                    $this->crud->saveStep($step);
+                }
 
+                
             }
+
+            if($newStepPriority) return array_reverse($steps);
+            else return $steps;
         }
 
         /**@var Step[] $steps */

@@ -1,0 +1,8 @@
+imap:
+    connections: 
+            example_connection:
+                mailbox: "{outlook.office365.com:993/imap/ssl/authuser=first.last@example.com/user=shared_account}Root/Folder"
+                username: "email@example.com"
+                password: "password"
+                attachments_dir: "%kernel.project_dir%/var/imap/attachments"
+                server_encoding: "UTF-8"
