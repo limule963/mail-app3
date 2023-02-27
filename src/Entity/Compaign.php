@@ -46,7 +46,7 @@ class Compaign
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Schedule $schedule = null;
 
-    #[ORM\Column(nullable:true)]
+    #[ORM\Column]
     private ?\DateTimeImmutable $createAt = null;
 
     // #[ORM\OneToOne(inversedBy: "compaign", cascade: ['persist', 'remove'])]
