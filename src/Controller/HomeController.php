@@ -6,6 +6,7 @@ use App\Entity\Dsn;
 use App\Entity\Lead;
 use App\Entity\Step;
 use App\Entity\Test;
+use App\Entity\User;
 use Twig\Environment;
 use App\Entity\Schedule;
 use App\AppMailer\Data\STATUS;
@@ -35,11 +36,48 @@ class HomeController extends AbstractController
         
     }
     #[Route('/', name: 'app_home')]
-    public function index(CompaignLuncher $cl,CrudControllerHelpers $crud, Sequencer $seq,SequenceLuncher $sl): Response
+    public function index(CompaignLuncher $cl, Sequencer $seq,SequenceLuncher $sl): Response
     {
+        
+    /**@var User */
+        $user = $this->getUser();
+        $userId = $user->getId();
+        
+        $dsn = $this->crud->getUserDsn($userId,9);
+        
+        $imap = new Imap($dsn->getConnexion());
+        
+        $test = $imap->testConnection($dsn->getConnexionName());
+        
+        
+        
+        $con = $imap->get($dsn->getConnexionName());
+        // $con->switchMailbox('inbox');
+        $mailIds =$con->searchMailbox();
+        $folders = $con->getListingFolders();
+        $ids = $con->sortMails(SORT_DESC,false);
+        $mail = $con->getMail(3,false)->textHtml;
+        dd($test,$folders,$mailIds,$ids,$mail);
 
 
-        $compaign = $crud->getCompaign();
+        $stamp = $dsn->getCreateAt()->getTimestamp();
+        $date =getdate($stamp);
+        $criteria = 'since '.$date['year'].'-'.$date['mon'].'-'.$date['mday'];
+        // dd($criteria);
+        
+        $mid =$con->searchMailbox(criteria:$criteria);
+        
+        dd($mid,$con->getMail(1,false),$con->getMail(8,false)->date);
+        
+        
+        
+        
+        
+        
+        
+
+        $compaign = $this->crud->getCompaign($userId,9);
+
         $compaign->setStatus($this->crud->getStatus(STATUS::COMPAIGN_ACTIVE));
 
         $cr = $cl->sequence($compaign)->lunch();
@@ -61,7 +99,6 @@ class HomeController extends AbstractController
     {
         // $crud->addCompaign('koff');
 
-        $compaign = $crud->getCompaign();
         $leads = $crud->getLeadBySender(7,'step.1','');
         dd($leads);
         return $this->render('home/index.html.twig',[
@@ -139,18 +176,11 @@ class HomeController extends AbstractController
         
         $con->disconnect();
         dd($mailIds);
-        // $con->subscribeMailbox('Azia');
-        // $con->renameMailbox("Azia","Koffi");
-        // $con->deleteMailbox('Azia',true);
-        // dd($con->getMailsInfo($mailIds));
-        // dd($lf);
-        // dd($con->getImapSearchOption());
-        // dd($folders);
-        // dd($mailboxInfos);
+        
 
         return $this->render('home/index.html.twig',[
             "controller_name"=>'HomeController',
-            'cr'=>$mail
+            'cr'=>''
         ]);
 
 

@@ -74,12 +74,28 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             return $this->getUser();
         }
 
-        public function updateUser($userId, $name = null,$email = null ,$password= null,Dsn $dsn = null,)
+
+        public function get_User($userId):User
+        {
+             /**@var UserRepository */
+            $rep = $this->em->getRepository(User::class);  
+            return $rep->find($userId); 
+        }
+
+        public function updateUser($userId,$email = null ,$password= null,Dsn $dsn = null,)
         {
             /**@var UserRepository */
             $rep = $this->em->getRepository(User::class);
             $user = $rep->find($userId); 
+
             if($dsn!=null) $user->addDsn($dsn);
+            if($email!=null) $user->setEmail($email);
+            if($password!=null)
+            {
+                $newpass = $this->hasher->hashPassword($user,$password);
+                $user->setPassword($newpass);
+            }
+
             $rep->save($user,true);
         }
 
@@ -102,17 +118,17 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
         }
 
-        public function addCompaign($name=null)
+        public function addCompaign($userId,$name)
         {   
             $compaign = $this->createCompaign($name);
 
-            /**@var User $user */
-            $user = $this->user();
-            $user->addCompaign($compaign);
 
-            /**@var UserRepository */
-            $rep = $this->em->getRepository(User::class);
+            $user = $this->get_User($userId);
+            $user->addCompaign($compaign);
+            /**@UserRepository */
+            $rep= $this->em->getRepository(User::class);
             $rep->save($user,true);
+            return $compaign;
         }
 
         /**
@@ -168,17 +184,17 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             return $rep->findByUserId($id,$number);
         }
         
-        public function getCompaign()
+        public function getCompaign($userId,$compaignId)
         {
             /**@var User */
-            $user = $this->user();
+            $user = $this->get_User($userId);
             $id = $user->getId();
 
             /**@var CompaignRepository */
             $rep = $this->em->getRepository(Compaign::class);
 
-            $c = $rep->findByUserId($id,1);
-            return $c[0];
+            $c = $rep->find($compaignId);
+            return $c;
         }
 
 
@@ -503,15 +519,24 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             $rep = $this->em->getRepository(Dsn::class);
             return $rep->findByCompaignId($compaignId,$number);
         }
-        public function getUserDsns($number = 50)
+
+        public function getUserDsns($userId,$number = 50)
+        {
+            /**@var DsnRepository */
+            $rep = $this->em->getRepository(Dsn::class);
+            
+            $user = $this->get_User($userId);
+            $userId = $user->getId();
+            return $rep->findByUserId($userId,$number);
+        }
+        public function getUserDsn($userId,$dsnId)
         {
             /**@var DsnRepository */
             $rep = $this->em->getRepository(Dsn::class);
 
-            /**@var User */
-            $user = $this->getUser();
+            $user = $this->get_User($userId);
             $userId = $user->getId();
-            return $rep->findByUserId($userId,$number);
+            return $rep->find($dsnId);
         }
 
         public function addDsnToUser($dsnData)

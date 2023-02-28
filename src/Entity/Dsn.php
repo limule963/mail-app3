@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\DsnRepository;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -43,12 +44,33 @@ class Dsn
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $name = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $username2 = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $password2 = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $host2 = null;
+
+    #[ORM\Column(length: 255)]
+    private ?int $port2 = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $connexionName = null;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $createAt = null;
+
     // #[ORM\ManyToMany(targetEntity: Compaign::class, mappedBy: 'dsns')]
     // private Collection $compaigns;
 
     public function __construct()
     {
-        // $this->compaigns = new ArrayCollection();
+        // $this->compaigns = new ArrayCollection()
+        if($this->createAt == '') $this->createAt = new DateTimeImmutable();
+
+
     }
 
     public function getId(): ?int
@@ -116,32 +138,7 @@ class Dsn
         return $this;
     }
 
-    // /**
-    //  * @return Collection<int, Compaign>
-    //  */
-    // public function getCompaigns(): Collection
-    // {
-    //     return $this->compaigns;
-    // }
-
-    // public function addCompaign(Compaign $compaign): self
-    // {
-    //     if (!$this->compaigns->contains($compaign)) {
-    //         $this->compaigns->add($compaign);
-    //         $compaign->addDsn($this);
-    //     }
-
-    //     return $this;
-    // }
-
-    // public function removeCompaign(Compaign $compaign): self
-    // {
-    //     if ($this->compaigns->removeElement($compaign)) {
-    //         $compaign->removeDsn($this);
-    //     }
-
-    //     return $this;
-    // }
+ 
 
     public function getDsn():string
     {
@@ -160,6 +157,23 @@ class Dsn
                 
         return $dsn;
                 
+    }
+
+    public function getConnexion():array
+    {
+        return [
+
+            $this->connexionName =>[
+                    
+                'mailbox'=>"{".$this->host2.":".$this->port2."/imap/ssl}" ,
+                'username'=>$this->username2,
+                'password'=>$this->password2,
+                'attachments_dir'=> "%kernel.project_dir%/var/imap/attachments",
+                'server_encoding'=> "UTF-8",
+                'create_attachments_dir_if_not_exists'=>true, // default true
+                'created_attachments_dir_permissions'=> 777  // default 770
+            ]
+        ];
     }
 
     public function getCompaign(): ?Compaign
@@ -194,6 +208,78 @@ class Dsn
     public function setName(?string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getUsername2(): ?string
+    {
+        return $this->username2;
+    }
+
+    public function setUsername2(string $username2): self
+    {
+        $this->username2 = $username2;
+
+        return $this;
+    }
+
+    public function getPassword2(): ?string
+    {
+        return $this->password2;
+    }
+
+    public function setPassword2(string $password2): self
+    {
+        $this->password2 = $password2;
+
+        return $this;
+    }
+
+    public function getHost2(): ?string
+    {
+        return $this->host2;
+    }
+
+    public function setHost2(string $host2): self
+    {
+        $this->host2 = $host2;
+
+        return $this;
+    }
+
+    public function getPort2(): ?string
+    {
+        return $this->port2;
+    }
+
+    public function setPort2(string $port2): self
+    {
+        $this->port2 = $port2;
+
+        return $this;
+    }
+
+    public function getConnexionName(): ?string
+    {
+        return $this->connexionName;
+    }
+
+    public function setConnexionName(string $connexionName): self
+    {
+        $this->connexionName = $connexionName;
+
+        return $this;
+    }
+
+    public function getCreateAt(): ?\DateTimeImmutable
+    {
+        return $this->createAt;
+    }
+
+    public function setCreateAt(\DateTimeImmutable $createAt): self
+    {
+        $this->createAt = $createAt;
 
         return $this;
     }

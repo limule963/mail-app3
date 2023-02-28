@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\CompaignRepository;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -57,6 +58,8 @@ class Compaign
         $this->leads = new ArrayCollection();
         $this->steps = new ArrayCollection();
         // $this->dsns = new ArrayCollection();
+        if($this->createAt == '') $this->createAt = new DateTimeImmutable();
+        
     }
 
     public function getId(): ?int

@@ -1,47 +1,41 @@
 <?php
 
 namespace App\AppMailer\Receiver;
+
+use App\Entity\Dsn;
 use PhpImap\Mailbox;
+use App\AppMailer\Data\Connexion;
 use SecIT\ImapBundle\Service\Imap;
 
 
     class Receiver
     {
+        public const INBOX = 'INBOX';
+        public const SENT = 'Sent';
+        public const DRAFTS = 'Drafts';
+        public const JUNK = 'Junk';
 
         public function __construct()
         {
             
         }
 
-        public function test()
+        public function getMail(Connexion $connexion)
         {
 
-            $connexions = [
-                'clemaos'=>[
-                    
-                    'mailbox'=>"{mail51.lwspanel.com:993/imap/ssl}INBOX",
-                    'username'=>'contact@clemaos.com',
-                    'password'=>'jC1*rAJ8GGph9@u'
-                ],
+        $dsn = $connexion->dsn;
+        $folder = $connexion->folder;
 
-                'aykode'=>[
-                    'mailbox'=>"{mail56.lwspanel.com:993/imap/ssl}INBOX",
-                    'username'=>'contact@aykode.com',
-                    'password'=>'dF4_pxe9t!5q_wa'
+        $imap = new Imap($dsn->getConnexion());
+        $con = $imap->get($dsn->getConnexionName());
 
-                ],
-                
-                'crubeo'=>[
-                    'mailbox'=>"{mail52.lwspanel.com:993/imap/ssl}INBOX",
-                    'username'=>'contact@crubeo.fr',
-                    'password'=>'rS1*aahSMZhKq9q'
-                ]
-            ];
+        $stamp = $dsn->getCreateAt()->getTimestamp();
+        $date =getdate($stamp);
 
-            $imap = new Imap($connexions);
-            $mailbox = $imap->get('clemaos');
-            $isConnectable = $imap->testConnection('clemaos');
-            
+        $con->switchMailbox($folder);
+        $criteria = 'since '.$date['year'].'-'.$date['mon'].'-'.$date['mday'];
+        $mailIds = $con->searchMailbox($criteria);
+
 
 
         }
