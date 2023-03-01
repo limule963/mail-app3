@@ -8,13 +8,13 @@ namespace App\AppMailer\Data;
         
         public bool $succes;
         public string $message;
-        public string $throwMessage;
+        public ?string $throwMessage;
         public string $sender;
         public int $code;
-        public string $leadEmail;
-        public string $stepStatus;
+        public ?string $leadEmail;
+        public ?string $stepStatus;
 
-        public function __construct($succes,$message,$sender,$leadEmail,$stepStatus= '',int $code = 1,$throwMessage ='')
+        public function __construct($succes,$message,$sender,$leadEmail = null,$stepStatus= '',int $code = 1,$throwMessage ='')
         {
             $this->succes = $succes;
             $this->message =$message;

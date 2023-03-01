@@ -2,41 +2,75 @@
 
 namespace App\AppMailer\Receiver;
 
-use App\Entity\Dsn;
-use PhpImap\Mailbox;
 use App\AppMailer\Data\Connexion;
+use App\AppMailer\Data\EmailResponse;
+use App\AppMailer\Data\Mail;
 use SecIT\ImapBundle\Service\Imap;
 
 
     class Receiver
     {
-        public const INBOX = 'INBOX';
-        public const SENT = 'Sent';
-        public const DRAFTS = 'Drafts';
-        public const JUNK = 'Junk';
 
+        /**@var Mail[] */
+        public $mails;
+        
         public function __construct()
         {
-            
+
         }
 
         public function getMail(Connexion $connexion)
         {
 
-        $dsn = $connexion->dsn;
-        $folder = $connexion->folder;
+            $dsn = $connexion->dsn;
+            $folder = $connexion->folder;
+            $criteria = $connexion->criteria;
+            $imap = new Imap($dsn->getConnexion());
 
-        $imap = new Imap($dsn->getConnexion());
-        $con = $imap->get($dsn->getConnexionName());
+            $test = $imap->testConnection($dsn->getConnexionName());
+            
+            if(!$test) return new EmailResponse(false,'Connexion fail',$dsn->getEmail(),'');
+            
+            $con = $imap->get($dsn->getConnexionName());
 
-        $stamp = $dsn->getCreateAt()->getTimestamp();
-        $date =getdate($stamp);
-
-        $con->switchMailbox($folder);
-        $criteria = 'since '.$date['year'].'-'.$date['mon'].'-'.$date['mday'];
-        $mailIds = $con->searchMailbox($criteria);
-
-
-
+            // $stamp = $dsn->getCreateAt()->getTimestamp();
+            // $date =getdate($stamp);
+            // $criteria = 'since '.$date['year'].'-'.$date['mon'].'-'.$date['mday'];
+            
+            try
+            {
+                $mailIds = $con->switchMailbox($folder)->sortMails(searchCriteria:$criteria);
+                foreach($mailIds as $id)
+                {
+                    $mail2 = new Mail;
+                    $mail = $con->getMail($id);
+                    $mail2->subject = $mail->subject;
+                    $mail2->from = $mail->fromAddress;
+                    $mail2->to = $mail->toString;
+                    $mail2->isRecent = $mail->isRecent;
+                    $mail2->isFlagged = $mail->isFlagged;
+                    $mail2->isAnswered = $mail->isAnswered;
+                    $mail2->isDraft = $mail->isDraft;
+                    $mail2->isSeen = $mail->isSeen;
+                    $mail2->textHtml = $mail->textHtml;
+                    $mail2->textPlain = $mail->textPlain;
+                    $mail2->isDeleted = $mail->isDeleted;
+                    $mail2->date = $mail->date;
+                    // $mail2->udate = $mail->udate;
+                    $this->mails[] = $mail2;
+                    
+                }
+                $con->disconnect();
+                
+                return $this->mails;
+            }
+            catch(\Throwable $th)
+            {
+                return new EmailResponse(false,'mail Not Receive',$dsn->getEmail(),throwMessage:$th->getMessage());
+            }
+            
         }
+
+
+        
     }   

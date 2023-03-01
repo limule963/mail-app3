@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\AppMailer\Data\Connexion;
 use App\Entity\Dsn;
 use App\Entity\Lead;
 use App\Entity\Step;
@@ -11,17 +12,21 @@ use Twig\Environment;
 use App\Entity\Schedule;
 use App\AppMailer\Data\STATUS;
 use App\AppMailer\Data\EmailData;
+use App\AppMailer\Data\FOLDER;
+use App\AppMailer\Data\Mail;
 use App\Repository\DsnRepository;
 use Symfony\Component\Mime\Email;
 use Twig\Loader\FilesystemLoader;
 use SecIT\ImapBundle\Service\Imap;
 use App\AppMailer\Sender\Sequencer;
+use App\AppMailer\Receiver\Receiver;
 use App\AppMailer\Sender\EmailSender;
 use App\AppMailer\Sender\SimpleObject;
 use App\AppMailer\Sender\CompaignLuncher;
 use App\AppMailer\Sender\SequenceLuncher;
 use Symfony\Bridge\Twig\Mime\BodyRenderer;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use App\AppMailer\Receiver\AllFolderReceiver;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Config\TwigExtra\CssinlinerConfig;
 use Symfony\Component\Routing\Annotation\Route;
@@ -36,14 +41,33 @@ class HomeController extends AbstractController
         
     }
     #[Route('/', name: 'app_home')]
-    public function index(CompaignLuncher $cl, Sequencer $seq,SequenceLuncher $sl): Response
+    public function index(CompaignLuncher $cl, Sequencer $seq,SequenceLuncher $sl,AllFolderReceiver $allrec,Receiver $rec): Response
     {
         
-    /**@var User */
+        if($this->getUser() == null) return $this->redirectToRoute('app_login') ;
         $user = $this->getUser();
+        /**@var User $user*/
         $userId = $user->getId();
+
         
         $dsn = $this->crud->getUserDsn($userId,9);
+        
+        // $receiver = new Receiver(new Mail);
+        // $receiver2 = new Receiver(new Mail);
+
+        // $mails1 =$receiver->getMail((new Connexion)->set($dsn,FOLDER::INBOX));
+        // $mails2 =$receiver2->getMail((new Connexion)->set($dsn,FOLDER::SENT));
+
+        // $mails1=  $rec->getMail((new Connexion)->set($dsn,FOLDER::INBOX));
+        $mails2=  $rec->getMail((new Connexion)->set($dsn,'from clemaos@yahoo.fr',FOLDER::INBOX));
+        dd($mails2);
+        // dd($mails1,$mails2);
+
+        $mails  = $allrec->receive($dsn);
+
+        dd($mails);
+
+
         
         $imap = new Imap($dsn->getConnexion());
         
@@ -52,12 +76,24 @@ class HomeController extends AbstractController
         
         
         $con = $imap->get($dsn->getConnexionName());
-        // $con->switchMailbox('inbox');
-        $mailIds =$con->searchMailbox();
         $folders = $con->getListingFolders();
-        $ids = $con->sortMails(SORT_DESC,false);
-        $mail = $con->getMail(3,false)->textHtml;
-        dd($test,$folders,$mailIds,$ids,$mail);
+        dd($folders);
+        // $con->renameMailbox('koff','koffa');
+        // $con->subscribeMailbox('koffa');
+        // $con->switchMailbox('Sent');
+        $mailIds =$con->searchMailbox();
+        // $mailIds3 = $con->switchMailbox('Drafts')->searchMailbox();
+        // $infos3 = $con->getMailsInfo($mailIds3);
+        // dd('done',$mailIds3,$infos3);
+        $mailIds2 = $con->sortMails();
+        $infos = $con->getMailsInfo($mailIds);
+        $infos2 = $con->getMailsInfo($mailIds2);
+        $mail = $con->getMail($mailIds2[0],false)->subject;
+        
+        $con->disconnect();
+        dd($mailIds,$mailIds2,$infos,$infos2,$mail);
+
+        // dd($test,$folders,$mailIds,$ids,$mail);
 
 
         $stamp = $dsn->getCreateAt()->getTimestamp();
