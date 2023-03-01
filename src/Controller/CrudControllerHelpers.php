@@ -18,8 +18,10 @@ use App\Repository\CompaignRepository;
 use App\Repository\ScheduleRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use App\AppMAiler\Exceptions\CrudControllerException;
+use App\Entity\Mail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use App\Repository\MailRepository;
     
 
     class CrudControllerHelpers extends AbstractController
@@ -240,7 +242,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             $rep->save($compaign,true);
         }
 
-        public function updateLead($id,$name = null,$emailAddress = null,Status $status = null )
+        public function updateLead($id,$name = null,$emailAddress = null,Status $status = null, Mail $mail = null )
         {   
             /**@var LeadRepository */
             $rep = $this->em->getRepository(Lead::class);
@@ -248,6 +250,8 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             if($name != null) $lead->setName($name);
             if($emailAddress != null) $lead->setEmailAddress($emailAddress);
             if($status != null) $lead->setStatus($status);
+
+            if($mail != null) $lead->addMail($mail);
                     
             $rep->save($lead,true);
             
@@ -285,12 +289,12 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             $rep = $this->em->getRepository(Lead::class);
             return $rep->findByCompainId($compaignId);           
         }
-        public function getLead($compaignId)
+        public function getLeadsByCompaign($compaignId)
         {
             /**@var LeadRepository */
             $rep = $this->em->getRepository(Lead::class);
-            $leads = $rep->findByCompaignId($compaignId,1);
-            return $leads[0];
+            $leads = $rep->findByCompaignId($compaignId,10);
+            return $leads;
         }
 
         public function getLeadBySender($compaignId,$leadStatus,$sender):Lead|null
@@ -306,8 +310,15 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
         {
             /**@var LeadRepository */
             $rep = $this->em->getRepository(Lead::class);      
-            return $rep->findBySender($compaignId,$leadStatus,$sender,$number);
+            return  $rep->findBySender($compaignId,$leadStatus,$sender,$number);
         }
+
+        // public function getLead($id)
+        // {
+        //     /**@var LeadRepository */
+        //     $rep = $this->em->getRepository(Lead::class);  
+        //     return $rep->find($id);  
+        // }
 
 
 
@@ -547,7 +558,44 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             $user = $this->getUser();
             $this->updateUser(userId:$user->getId(), dsn:$dsn);
         }
+        public function updateDsn($id,$mail = null)
+        {
+            /**@var DsnRepository */
+            $rep = $this->em->getRepository(Dsn::class);
+            $dsn = $rep->find($id);
+            if($mail!= null) $dsn->addMail($mail);
+            $rep->save($dsn,true);
+        }
 
 
+
+//---------------------------------------------------------------------
+//               MAIL CRUD                                            |
+//---------------------------------------------------------------------
+        public function createMail(string $fromAddress,string $toAddress,string $date,int $mailId, string $folder,
+                                    Lead $mailLead,Dsn $dsn,)
+        {
+            $mail = new Mail;
+            return $mail->setMailId($mailId)->setFolder($folder)->setMailLead($mailLead)->setDsn($dsn);
+        }
+        public function addMail(mixed $mail)
+        {
+            /**@var MailRepository  */
+            $rep = $this->em->getRepository(Mail::class);
+
+            // if($mail instanceof Mail) $rep->save($mail,true);
+            
+            $mail =  $this->createMail($mail['fromAddress'],$mail['toAddress'],$mail['date'],$mail['mailId'],
+                                        $mail['folder'],$mail['mailLead'],$mail['dsn']);
+            $rep->save($mail,true);
+            
+        }
+
+        public function saveMail(Mail $mail)
+        {
+            /**@var MailRepository  */
+            $rep = $this->em->getRepository(Mail::class);
+            $rep->save($mail,true);
+        }
 
     }

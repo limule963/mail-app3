@@ -62,6 +62,9 @@ class Dsn
     #[ORM\Column]
     private ?\DateTimeImmutable $createAt = null;
 
+    #[ORM\OneToMany(mappedBy: 'dsn', targetEntity: Mail::class,cascade:['persist','remove'],orphanRemoval:true)]
+    private Collection $mails;
+
     // #[ORM\ManyToMany(targetEntity: Compaign::class, mappedBy: 'dsns')]
     // private Collection $compaigns;
 
@@ -69,6 +72,7 @@ class Dsn
     {
         // $this->compaigns = new ArrayCollection()
         if($this->createAt == '') $this->createAt = new DateTimeImmutable();
+        $this->mails = new ArrayCollection();
 
 
     }
@@ -280,6 +284,36 @@ class Dsn
     public function setCreateAt(\DateTimeImmutable $createAt): self
     {
         $this->createAt = $createAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Mail>
+     */
+    public function getMails(): Collection
+    {
+        return $this->mails;
+    }
+
+    public function addMail(Mail $mail): self
+    {
+        if (!$this->mails->contains($mail)) {
+            $this->mails->add($mail);
+            $mail->setDsn($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMail(Mail $mail): self
+    {
+        if ($this->mails->removeElement($mail)) {
+            // set the owning side to null (unless already changed)
+            if ($mail->getDsn() === $this) {
+                $mail->setDsn(null);
+            }
+        }
 
         return $this;
     }

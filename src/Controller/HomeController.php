@@ -14,6 +14,7 @@ use App\AppMailer\Data\STATUS;
 use App\AppMailer\Data\EmailData;
 use App\AppMailer\Data\FOLDER;
 use App\AppMailer\Data\Mail;
+use App\AppMailer\Receiver\AllDsnReceiver;
 use App\Repository\DsnRepository;
 use Symfony\Component\Mime\Email;
 use Twig\Loader\FilesystemLoader;
@@ -41,7 +42,7 @@ class HomeController extends AbstractController
         
     }
     #[Route('/', name: 'app_home')]
-    public function index(CompaignLuncher $cl, Sequencer $seq,SequenceLuncher $sl,AllFolderReceiver $allrec,Receiver $rec): Response
+    public function index(  AllDsnReceiver $alldsnRec, CompaignLuncher $cl, Sequencer $seq,SequenceLuncher $sl,AllFolderReceiver $allrec,Receiver $rec): Response
     {
         
         if($this->getUser() == null) return $this->redirectToRoute('app_login') ;
@@ -49,78 +50,15 @@ class HomeController extends AbstractController
         /**@var User $user*/
         $userId = $user->getId();
 
-        
-        $dsn = $this->crud->getUserDsn($userId,9);
-        
-        // $receiver = new Receiver(new Mail);
-        // $receiver2 = new Receiver(new Mail);
 
-        // $mails1 =$receiver->getMail((new Connexion)->set($dsn,FOLDER::INBOX));
-        // $mails2 =$receiver2->getMail((new Connexion)->set($dsn,FOLDER::SENT));
-
-        // $mails1=  $rec->getMail((new Connexion)->set($dsn,FOLDER::INBOX));
-        $mails2=  $rec->getMail((new Connexion)->set($dsn,'from clemaos@yahoo.fr',FOLDER::INBOX));
-        dd($mails2);
-        // dd($mails1,$mails2);
-
-        $mails  = $allrec->receive($dsn);
-
-        dd($mails);
-
-
-        
-        $imap = new Imap($dsn->getConnexion());
-        
-        $test = $imap->testConnection($dsn->getConnexionName());
-        
-        
-        
-        $con = $imap->get($dsn->getConnexionName());
-        $folders = $con->getListingFolders();
-        dd($folders);
-        // $con->renameMailbox('koff','koffa');
-        // $con->subscribeMailbox('koffa');
-        // $con->switchMailbox('Sent');
-        $mailIds =$con->searchMailbox();
-        // $mailIds3 = $con->switchMailbox('Drafts')->searchMailbox();
-        // $infos3 = $con->getMailsInfo($mailIds3);
-        // dd('done',$mailIds3,$infos3);
-        $mailIds2 = $con->sortMails();
-        $infos = $con->getMailsInfo($mailIds);
-        $infos2 = $con->getMailsInfo($mailIds2);
-        $mail = $con->getMail($mailIds2[0],false)->subject;
-        
-        $con->disconnect();
-        dd($mailIds,$mailIds2,$infos,$infos2,$mail);
-
-        // dd($test,$folders,$mailIds,$ids,$mail);
-
-
-        $stamp = $dsn->getCreateAt()->getTimestamp();
-        $date =getdate($stamp);
-        $criteria = 'since '.$date['year'].'-'.$date['mon'].'-'.$date['mday'];
-        // dd($criteria);
-        
-        $mid =$con->searchMailbox(criteria:$criteria);
-        
-        dd($mid,$con->getMail(1,false),$con->getMail(8,false)->date);
-        
-        
-        
-        
-        
-        
-        
-
-        $compaign = $this->crud->getCompaign($userId,9);
+        $compaign = $this->crud->getCompaign($userId,7);
 
         $compaign->setStatus($this->crud->getStatus(STATUS::COMPAIGN_ACTIVE));
 
         $cr = $cl->sequence($compaign)->lunch();
 
-        // $sequence = $seq->sequence($compaign);
-        // $cr = $sl->lunch($sequence);
-        // dd($cr);
+
+    
 
         return $this->render('home/index.html.twig', [
             'controller_name' => 'HomeController',
@@ -241,5 +179,29 @@ class HomeController extends AbstractController
 
 
 
+    }
+
+    private function isEmailAnswered(Dsn $dsn,Lead $lead,AllFolderReceiver $allrec)
+    {
+        $stamp = $dsn->getCreateAt()->getTimestamp();
+        $date =getdate($stamp);
+        $criteria = 'SINCE '.$date['year'].'-'.$date['mon'].'-'.$date['mday'];
+        $criteria = $criteria.' '. 'FROM '.$lead->getEmailAddress();
+
+
+        $mails = $allrec->receive($dsn,$criteria);
+        // dd($mails);
+        foreach($mails as $key => $mail)
+        {
+            if($key == FOLDER::JUNK)
+            {
+                if($mails[FOLDER::JUNK] != null ) return true;
+            }
+            else if($key == FOLDER::INBOX)
+            {
+                if($mails[FOLDER::INBOX] != null) return true;
+            }
+        }
+        return false;
     }
 }

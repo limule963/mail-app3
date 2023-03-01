@@ -2,12 +2,14 @@
 namespace App\AppMailer\Sender;
     
 
+use App\Entity\Dsn;
 use App\Entity\Lead;
 use App\Entity\Email;
 use App\AppMailer\Data\EmailData;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mailer\Mailer;
 use App\AppMailer\Data\EmailResponse;
+use App\AppMailer\Data\FOLDER;
 use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mime\Part\DataPart;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -72,4 +74,6 @@ use Symfony\Component\Mime\BodyRendererInterface;
 
             return $email;
         }
+
+
     }

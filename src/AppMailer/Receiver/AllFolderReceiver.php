@@ -4,11 +4,12 @@
 use App\Entity\Dsn;
 use App\AppMailer\Data\FOLDER;
 use App\AppMailer\Data\Connexion;
+use App\AppMailer\Data\EmailResponse;
 
     class AllFolderReceiver
     {
         private $folders =[
-            FOLDER::SENT,
+            FOLDER::JUNK,
             FOLDER::INBOX,
 
         ] ;
@@ -18,19 +19,23 @@ use App\AppMailer\Data\Connexion;
         {
         }
 
-        public function receive(Dsn $dsn)
+        public function receive(Dsn $dsn,$criteria ='')
         {
-            $criteria = $this->getCriteria($dsn);
+            if ($criteria == '') $criteria = $this->getCriteria($dsn);
 
             foreach($this->folders as $key => $folder)
             {
                
                 $mails = (new Receiver)->getMail( $this->connex->set($dsn,$criteria,$folder)); 
+                if($mails instanceof EmailResponse) return $mails;
                 $this->mails[$folder]=$mails;       
                 $mails = null;
                 
             }
-
+            // foreach($this->mails as $mail)
+            // {
+            //     if($mail instanceof EmailResponse) return $mail;
+            // }
             return $this->mails;
         }
 
@@ -38,7 +43,10 @@ use App\AppMailer\Data\Connexion;
         {
             $stamp = $dsn->getCreateAt()->getTimestamp();
             $date =getdate($stamp);
-            return 'since '.$date['year'].'-'.$date['mon'].'-'.$date['mday'];           
+            
+            return 'since '.$date['year'].'-'.$date['mon'].'-'.$date['mday']; 
+
+                    
         }
 
 

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\LeadRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: LeadRepository::class)]
@@ -30,6 +32,14 @@ class Lead
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $sender = null;
+
+    #[ORM\OneToMany(mappedBy: 'mailLead', targetEntity: Mail::class, orphanRemoval: true)]
+    private Collection $mail;
+
+    public function __construct()
+    {
+        $this->mail = new ArrayCollection();
+    }
 
     
     public function getId(): ?int
@@ -93,6 +103,45 @@ class Lead
     public function setSender(?string $sender): self
     {
         $this->sender = $sender;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Mail>
+     */
+    public function getMail(): Collection
+    {
+        return $this->mail;
+    }
+
+    public function addMail(Mail $mail): self
+    {
+        if (!$this->mail->contains($mail)) {
+            $this->mail->add($mail);
+            $mail->setMailLead($this);
+        }
+
+        return $this;
+    }
+    /**@param Mail[] */
+    public function addMails(array $mails): self
+    {
+        foreach($mails as $mail)
+        {
+            $this->addMail($mail);
+        }
+        return $this;
+    }
+
+    public function removeMail(Mail $mail): self
+    {
+        if ($this->mail->removeElement($mail)) {
+            // set the owning side to null (unless already changed)
+            if ($mail->getMailLead() === $this) {
+                $mail->setMailLead(null);
+            }
+        }
 
         return $this;
     }

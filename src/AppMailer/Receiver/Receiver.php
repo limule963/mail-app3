@@ -44,6 +44,7 @@ use SecIT\ImapBundle\Service\Imap;
                 {
                     $mail2 = new Mail;
                     $mail = $con->getMail($id);
+                    // if($mail == null) continue;
                     $mail2->subject = $mail->subject;
                     $mail2->from = $mail->fromAddress;
                     $mail2->to = $mail->toString;
@@ -56,6 +57,7 @@ use SecIT\ImapBundle\Service\Imap;
                     $mail2->textPlain = $mail->textPlain;
                     $mail2->isDeleted = $mail->isDeleted;
                     $mail2->date = $mail->date;
+                    $mail2->mid = $mail->id;
                     // $mail2->udate = $mail->udate;
                     $this->mails[] = $mail2;
                     

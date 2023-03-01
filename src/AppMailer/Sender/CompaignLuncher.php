@@ -6,6 +6,7 @@ use App\Controller\CrudControllerHelpers;
 use App\AppMailer\Data\CompaignResponse;
 use App\AppMailer\Data\Sequence;
 use App\AppMailer\Data\STATUS;
+use App\AppMailer\Receiver\AllFolderReceiver;
 use App\Entity\Compaign;
 
     class CompaignLuncher
@@ -16,7 +17,7 @@ use App\Entity\Compaign;
         private $fromm;
         private $too;
         
-        public function __construct(private Sequencer $sequencer,private SequenceLuncher $sequenceLuncher,private CrudControllerHelpers $crud)
+        public function __construct(private AllFolderReceiver $allrec,private Sequencer $sequencer,private SequenceLuncher $sequenceLuncher,private CrudControllerHelpers $crud)
         {
             
         }
@@ -46,5 +47,9 @@ use App\Entity\Compaign;
             $cr = new CompaignResponse;
             $cr->setStat(null,$this->compaignStatus);
             return $cr;
+        }
+
+        private function getMails()
+        {
         }
     }

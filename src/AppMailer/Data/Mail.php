@@ -4,7 +4,8 @@
 
     class Mail
     {
-      
+        
+        public int $mid;
         public string $subject;
         public string $from;
         public string $to;

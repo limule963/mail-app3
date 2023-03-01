@@ -2,6 +2,7 @@
 namespace App\AppMailer\Data;
 
 
+use App\Entity\Dsn;
 use App\Entity\Lead;
 use App\Entity\Email;
     
