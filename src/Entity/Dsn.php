@@ -172,7 +172,7 @@ class Dsn
                 'mailbox'=>"{".$this->host2.":".$this->port2."/imap/ssl}" ,
                 'username'=>$this->username2,
                 'password'=>$this->password2,
-                'attachments_dir'=> "%kernel.project_dir%/var/imap/attachments",
+                'attachments_dir'=> "../var/imap/attachments",
                 'server_encoding'=> "UTF-8",
                 'create_attachments_dir_if_not_exists'=>true, // default true
                 'created_attachments_dir_permissions'=> 777  // default 770
