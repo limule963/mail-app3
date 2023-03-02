@@ -45,8 +45,7 @@ use App\Entity\Compaign;
         private function getStat()
         {
             $cr = new CompaignResponse;
-            $cr->setStat(null,$this->compaignStatus);
-            return $cr;
+            return  $cr->setCompagneState($this->compaignStatus);
         }
 
         private function getMails()

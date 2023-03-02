@@ -28,11 +28,15 @@ use App\AppMailer\Sender\SequenceLuncher;
 use Symfony\Bridge\Twig\Mime\BodyRenderer;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use App\AppMailer\Receiver\AllFolderReceiver;
+use DateTimeImmutable;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Config\TwigExtra\CssinlinerConfig;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Mime\BodyRendererInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Polyfill\Intl\Idn\Info;
+
+use function PHPSTORM_META\map;
 
 class HomeController extends AbstractController
 {
@@ -69,14 +73,39 @@ class HomeController extends AbstractController
 
     }
     #[Route('pp',name:'app_pp')]
-    public function pp(CrudControllerHelpers $crud)
+    public function pp(CrudControllerHelpers $crud,AllDsnReceiver $alldsnRec,Receiver $rec,Connexion $connect)
     {
-        // $crud->addCompaign('koff');
+        /**@var User $user */
+        $user = $this->getUser();
+        $dsns = $user->getDsns()->getValues();
+        /**@var Dsn */
+        // $dsn = $dsns[2];
+        // $date = new DateTimeImmutable();
+        // $connect->set($dsn,'SUBJECT Re  FROM clemaos@yahoo.fr SINCE 2023-03-01');
+        // dd($dsn,$connect);
 
-        $leads = $crud->getLeadBySender(7,'step.1','');
-        dd($leads);
+
+        // $imap = new Imap($dsn->getConnexion());
+        // $rec2 = $imap->get($dsn->getConnexionName());
+
+        // $mailIds = $rec2->switchMailbox('inbox')->sortMails(searchCriteria:'all');
+        // $infos = $rec2->getMailsInfo($mailIds);
+        // dd($mailIds,$infos);
+
+        
+        // $mails = $rec->getMail($connect);
+        // dd($mails);
+        $mails = $alldsnRec->getMails($dsns,1);
+        dd($mails);
+
+
+
+
+
+
         return $this->render('home/index.html.twig',[
-            'controller_name'=>'HomeController'
+            'controller_name'=>'HomeController',
+            'cr'=>$mails
         ]);
     }
 

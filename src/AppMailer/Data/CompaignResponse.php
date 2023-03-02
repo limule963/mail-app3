@@ -8,15 +8,18 @@ namespace App\AppMailer\Data;
     {
         public array $stat;
 
-        public function setStat(?EmailResponse $em,$compaignState)
+        public function setResponse(?EmailResponse $em):self
         {
             if($em != null)
             {
                 $this->stat[] = $em;
-                $this->stat['compaignStatus'] = $compaignState;
             }
-            else 
-            $this->stat['compaignStatus'] = $compaignState;
+            return $this;
 
+        }
+        public function setCompagneState($compaignState):self
+        {
+            $this->stat['compaignStatus'] = $compaignState;
+            return $this;
         }
     }

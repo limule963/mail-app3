@@ -19,14 +19,15 @@ use App\AppMailer\Data\EmailResponse;
         {
         }
 
-        public function receive(Dsn $dsn,$criteria ='')
+        public function receive(Dsn $dsn,mixed $criteria='')
         {
-            if ($criteria == '') $criteria = $this->getCriteria($dsn);
+            if($criteria == '') $criteria = $this->getCriteria($dsn);
+            if($criteria == 1) $criteria = $this->getCriteria($dsn);
 
             foreach($this->folders as $key => $folder)
             {
                
-                $mails = (new Receiver)->getMail( $this->connex->set($dsn,$criteria,$folder)); 
+                $mails = (new Receiver)->receive( $this->connex->set($dsn,$criteria,$folder)); 
                 if($mails instanceof EmailResponse) return $mails;
                 $this->mails[$folder]=$mails;       
                 $mails = null;
@@ -41,12 +42,15 @@ use App\AppMailer\Data\EmailResponse;
 
         private function getCriteria(Dsn $dsn)
         {
+
             $stamp = $dsn->getCreateAt()->getTimestamp();
             $date =getdate($stamp);
-            
-            return 'since '.$date['year'].'-'.$date['mon'].'-'.$date['mday']; 
-
-                    
+            $criteria = 'SUBJECT Re '
+                        .'SINCE '.$date['year'].'-'.$date['mon'].'-'.$date['mday'].' '
+                        // .'FROM '.$dsn->getEmail();
+                     ;   
+                        
+            return $criteria;            
         }
 
 

@@ -71,13 +71,13 @@ use Symfony\Component\Mime\BodyRendererInterface;
 
                 if($lead == null) continue;
 
-                // if($this->isEmailAnswered($lead)) 
-                // {
-                //     $Status  = $this->crud->getStatus(STATUS::LEAD_COMPLETE);
-                //     $lead->setStatus($Status);
-                //     $this->crud->saveLead($lead,true);
-                //     continue;
-                // }
+                if($this->isEmailAnswered($lead)) 
+                {
+                    $Status  = $this->crud->getStatus(STATUS::LEAD_COMPLETE);
+                    $lead->setStatus($Status);
+                    $this->crud->saveLead($lead,true);
+                    continue;
+                }
 
 
                 $emailData = new EmailData($dsn,$from,$lead,$sequence->email,$senderName,$sequence->stepStatus);
@@ -93,11 +93,11 @@ use Symfony\Component\Mime\BodyRendererInterface;
                 }
                 else $this->prepareForNextCall($lead,$from,false);
 
-                $this->cr->setStat($emailResponse,$sequence->compaignState);
+                $this->cr->setResponse($emailResponse);
 
             }
 
-            return $this->cr;
+            return $this->cr->setCompagneState($sequence->compaignState);
             
 
         }
@@ -142,7 +142,7 @@ use Symfony\Component\Mime\BodyRendererInterface;
         
         private function isEmailAnswered(Lead $lead)
         {
-            if($lead->getMail()->getValues() != null) return true;
+            if(!empty($lead->getMail()->getValues())) return true;
             return false;
         }
         // private function isEmailAnswered(Dsn $dsn,Lead $lead)
