@@ -88,6 +88,17 @@ class LeadRepository extends ServiceEntityRepository
 //        ;
 //    }
 
+        public function findOneByEmailAddress($compaignId,$emailAddress): ?Lead
+        {
+            return $this->createQueryBuilder('l')
+                ->andWhere('l.compaign = :val2')
+                ->andWhere('l.emailAddress = :val3')
+                ->setParameter('val2', $compaignId)
+                ->setParameter('val3', $emailAddress)
+                ->getQuery()
+                ->getOneOrNullResult()
+            ;
+        }
     // public function findOneByStatus($compaignId,$stepLeadStatus): ?Lead
     // {
     //     return $this->createQueryBuilder('l')

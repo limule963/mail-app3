@@ -2,41 +2,45 @@
 
 namespace App\Controller;
 
-use App\AppMailer\Data\Connexion;
 use App\Entity\Dsn;
 use App\Entity\Lead;
 use App\Entity\Step;
 use App\Entity\Test;
 use App\Entity\User;
 use Twig\Environment;
+use DateTimeImmutable;
 use App\Entity\Schedule;
-use App\AppMailer\Data\STATUS;
-use App\AppMailer\Data\EmailData;
-use App\AppMailer\Data\FOLDER;
 use App\AppMailer\Data\Mail;
-use App\AppMailer\Receiver\AllDsnReceiver;
+use App\AppMailer\Data\FOLDER;
+use App\AppMailer\Data\STATUS;
+use function PHPSTORM_META\map;
+use App\AppMailer\Data\Connexion;
+use App\AppMailer\Data\EmailData;
+use App\AppMailer\Data\MailData;
 use App\Repository\DsnRepository;
 use Symfony\Component\Mime\Email;
 use Twig\Loader\FilesystemLoader;
 use SecIT\ImapBundle\Service\Imap;
 use App\AppMailer\Sender\Sequencer;
+use Symfony\Polyfill\Intl\Idn\Info;
 use App\AppMailer\Receiver\Receiver;
 use App\AppMailer\Sender\EmailSender;
 use App\AppMailer\Sender\SimpleObject;
 use App\AppMailer\Sender\CompaignLuncher;
 use App\AppMailer\Sender\SequenceLuncher;
+use App\AppMailer\Receiver\AllDsnReceiver;
 use Symfony\Bridge\Twig\Mime\BodyRenderer;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use App\AppMailer\Receiver\AllFolderReceiver;
-use DateTimeImmutable;
+use App\AppMailer\Receiver\CompaignMailSaver;
+use App\AppMailer\Receiver\ImapCurl;
+use App\AppMailer\Receiver\MailSaver;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Config\TwigExtra\CssinlinerConfig;
 use Symfony\Component\Routing\Annotation\Route;
+
 use Symfony\Component\Mime\BodyRendererInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Polyfill\Intl\Idn\Info;
-
-use function PHPSTORM_META\map;
 
 class HomeController extends AbstractController
 {
@@ -73,11 +77,25 @@ class HomeController extends AbstractController
 
     }
     #[Route('pp',name:'app_pp')]
-    public function pp(CrudControllerHelpers $crud,AllDsnReceiver $alldsnRec,Receiver $rec,Connexion $connect)
+    public function pp(ImapCurl $ic, MailData $md, MailSaver $ms ,CompaignMailSaver $cms,CrudControllerHelpers $crud,AllDsnReceiver $alldsnRec,Receiver $rec,Connexion $connect,AllFolderReceiver $allrec)
     {
         /**@var User $user */
         $user = $this->getUser();
-        $dsns = $user->getDsns()->getValues();
+        $compaign = $this->crud->getCompaign($user->getId(),7);
+        $dsns = $compaign->getDsns()->getValues();
+        $dsn  = $dsns[2];
+        // $lead = $this->crud->getLeadByEmailAddress(7,'clemaos@yahoo.fr');
+        // $response = $ic->send('All');
+        // $mails =$allrec->receive($dsn,'UID 22');
+        // dd($response);
+        $cms->save($dsns,7,1);
+
+        // $ms->saveMails($md->set($dsn,7,1));
+
+
+        // dd($compaign,$dsns,$lead,$mails);
+        // $dsns = $user->getDsns()->getValues();
+
         /**@var Dsn */
         // $dsn = $dsns[2];
         // $date = new DateTimeImmutable();
@@ -95,8 +113,8 @@ class HomeController extends AbstractController
         
         // $mails = $rec->getMail($connect);
         // dd($mails);
-        $mails = $alldsnRec->getMails($dsns,1);
-        dd($mails);
+        // $mails = $alldsnRec->getMails($dsns,1);
+        // dd($mails);
 
 
 
@@ -105,7 +123,7 @@ class HomeController extends AbstractController
 
         return $this->render('home/index.html.twig',[
             'controller_name'=>'HomeController',
-            'cr'=>$mails
+            // 'cr'=>$mails
         ]);
     }
 

@@ -103,6 +103,7 @@ use SecIT\ImapBundle\Service\Imap;
                     $mail2->setSubject($mail->subject);
                     $mail2->setDate($mail->date);
                     $mail2->setToAddress($dsn->getEmail());
+                    $mail2->setDsn($dsn);
                     $this->mails[] = $mail2;
                     
                 }

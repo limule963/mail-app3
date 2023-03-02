@@ -259,13 +259,14 @@ use App\Repository\MailRepository;
         /**
          * For only system
          */
-        public function saveLead($lead)
+        public function saveLead($lead,bool $flush = true)
         {
             /**@var LeadRepository */
             $rep = $this->em->getRepository(Lead::class);
-            $rep->save($lead,true);
+            $rep->save($lead,$flush);
             
         }
+
 
         public function getLeadsByStatus($compaignId,$status,$n)
         {
@@ -313,12 +314,19 @@ use App\Repository\MailRepository;
             return  $rep->findBySender($compaignId,$leadStatus,$sender,$number);
         }
 
-        // public function getLead($id)
-        // {
-        //     /**@var LeadRepository */
-        //     $rep = $this->em->getRepository(Lead::class);  
-        //     return $rep->find($id);  
-        // }
+        public function getLead($id)
+        {
+            /**@var LeadRepository */
+            $rep = $this->em->getRepository(Lead::class);  
+            return $rep->find($id);  
+        }
+
+        public function getLeadByEmailAddress($compaignId,$emailAddress):?Lead
+        {
+            /**@var LeadRepository */
+            $rep = $this->em->getRepository(Lead::class);
+            return $rep->findOneByEmailAddress($compaignId,$emailAddress);
+        }
 
 
 
@@ -389,11 +397,11 @@ use App\Repository\MailRepository;
             $rep->save($step,true);
             
         }
-        public function saveStep(Step $step)
+        public function saveStep(Step $step,bool $flush =true)
         {
             /**@var StepRepository */
             $rep = $this->em->getRepository(Step::class);
-            $rep->save($step,true);
+            $rep->save($step,$flush);
         }
         /**@var Step[] $steps */
 
@@ -459,11 +467,11 @@ use App\Repository\MailRepository;
             $this-> updateCompaign($compaignId,null,null,null,null,null,$schedule);
 
         }
-        public function saveSchedule(Schedule $schedule)
+        public function saveSchedule(Schedule $schedule,bool $flush =true)
         {
             /**@var ScheduleRepository */
             $rep = $this->em->getRepository(Schedule::class);
-            $rep->save($schedule,true);
+            $rep->save($schedule,$flush);
         }
 
 //---------------------------------------------------------------------
@@ -591,11 +599,11 @@ use App\Repository\MailRepository;
             
         }
 
-        public function saveMail(Mail $mail)
+        public function saveMail(Mail $mail,bool $flush =true)
         {
             /**@var MailRepository  */
             $rep = $this->em->getRepository(Mail::class);
-            $rep->save($mail,true);
+            $rep->save($mail,$flush);
         }
 
     }

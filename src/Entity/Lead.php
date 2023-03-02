@@ -33,7 +33,7 @@ class Lead
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $sender = null;
 
-    #[ORM\OneToMany(mappedBy: 'mailLead', targetEntity: Mail::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'mailLead', targetEntity: Mail::class, orphanRemoval: true,cascade:['persist','remove'])]
     private Collection $mail;
 
     public function __construct()
