@@ -4,43 +4,33 @@ namespace App\Controller;
 
 use App\Entity\Dsn;
 use App\Entity\Lead;
-use App\Entity\Step;
-use App\Entity\Test;
 use App\Entity\User;
 use Twig\Environment;
-use DateTimeImmutable;
-use App\Entity\Schedule;
-use App\AppMailer\Data\Mail;
 use App\AppMailer\Data\FOLDER;
 use App\AppMailer\Data\STATUS;
-use function PHPSTORM_META\map;
 use App\AppMailer\Data\Connexion;
-use App\AppMailer\Data\EmailData;
 use App\AppMailer\Data\MailData;
 use App\Repository\DsnRepository;
-use Symfony\Component\Mime\Email;
-use Twig\Loader\FilesystemLoader;
 use SecIT\ImapBundle\Service\Imap;
 use App\AppMailer\Sender\Sequencer;
-use Symfony\Polyfill\Intl\Idn\Info;
 use App\AppMailer\Receiver\Receiver;
 use App\AppMailer\Sender\EmailSender;
-use App\AppMailer\Sender\SimpleObject;
 use App\AppMailer\Sender\CompaignLuncher;
 use App\AppMailer\Sender\SequenceLuncher;
 use App\AppMailer\Receiver\AllDsnReceiver;
-use Symfony\Bridge\Twig\Mime\BodyRenderer;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use App\AppMailer\Receiver\AllFolderReceiver;
 use App\AppMailer\Receiver\CompaignMailSaver;
 use App\AppMailer\Receiver\ImapCurl;
 use App\AppMailer\Receiver\MailSaver;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Config\TwigExtra\CssinlinerConfig;
 use Symfony\Component\Routing\Annotation\Route;
 
 use Symfony\Component\Mime\BodyRendererInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Serializer\Encoder\CsvEncoder;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 class HomeController extends AbstractController
 {
@@ -50,7 +40,7 @@ class HomeController extends AbstractController
         
     }
     #[Route('/', name: 'app_home')]
-    public function index(  AllDsnReceiver $alldsnRec, CompaignLuncher $cl, Sequencer $seq,SequenceLuncher $sl,AllFolderReceiver $allrec,Receiver $rec): Response
+    public function index( AllDsnReceiver $alldsnRec, CompaignLuncher $cl, Sequencer $seq,SequenceLuncher $sl,AllFolderReceiver $allrec,Receiver $rec): Response
     {
         
         if($this->getUser() == null) return $this->redirectToRoute('app_login') ;
@@ -58,19 +48,59 @@ class HomeController extends AbstractController
         /**@var User $user*/
         $userId = $user->getId();
 
+        $encoders = [new CsvEncoder(),new JsonEncoder() ];
+        $normalizers = [new ObjectNormalizer()];
+        $serializer = new Serializer($normalizers,$encoders);
 
-        $compaign = $this->crud->getCompaign($userId,7);
+        // $lead =(new Lead)->setName('azialoame')->setEmailAddress('kofazia@gmail.com');
 
-        $compaign->setStatus($this->crud->getStatus(STATUS::COMPAIGN_ACTIVE));
+        // $leadCsv = $serializer->serialize($lead,'csv');
+        // dd($leadCsv);
+        // $cr = $leadCsv;
 
-        $cr = $cl->sequence($compaign)->lunch();
+        // $compaign = $this->crud->getCompaign($userId,7);
+
+        // $compaign->setStatus($this->crud->getStatus(STATUS::COMPAIGN_ACTIVE));
+        // $cr = $cl->sequence($compaign)->lunch();
+
+        $encoder = new CsvEncoder();
+        $data = file_get_contents('leads.csv','csv');
+        // $data2 = $serializer->deserialize($data,Lead::class,'csv') ;
+        $data2 = $encoder->decode($data,'csv');
+        // $data2 = $encoder->encode($data,'csv');
+        $normalizer = new ObjectNormalizer();
+
+        foreach($data2 as $data) $leads[] = $normalizer->denormalize($data,Lead::class);
+
+        dd($data2,$leads);
+
+        $fichier = 'leads.csv';
+
+        $leads = [
+            [
+                'name'=>'mawuelom',
+                'email'=>'kofazia@gmail.com'
+            ],
+            [
+                'name'=>'kokou',
+                'email'=>'kokou@gmail.com'
+            ],
+            [
+                'name'=>'koffi',
+                'email'=>'koffi@gmail.com'
+            ],
+            [
+                'name'=>'kodzo',
+                'email'=>'kodzo@gmail.com'
+            ],
+        ];
 
 
     
 
         return $this->render('home/index.html.twig', [
             'controller_name' => 'HomeController',
-            'cr'=>$cr
+            // 'cr'=>$cr
             
         ]);
 

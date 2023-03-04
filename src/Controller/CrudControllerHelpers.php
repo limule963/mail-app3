@@ -22,7 +22,8 @@ use App\Entity\Mail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Repository\MailRepository;
-    
+use Symfony\Component\Serializer\Encoder\CsvEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
     class CrudControllerHelpers extends AbstractController
     {
@@ -137,7 +138,7 @@ use App\Repository\MailRepository;
          * @param Dsn[] $dsns
          * @param string $name
          */
-        public function updateCompaign($id,$name = null,  mixed $dsns = null, Step $step = null, Status $status =null,array $leads =null, Schedule $schedule =null)
+        public function updateCompaign($id,$name = null,  mixed $dsns = null, Step $step = null, Status $status =null,mixed $leads =null, Schedule $schedule =null)
         {
             /**@var CompaignRepository */
             $rep = $this->em->getRepository(Compaign::class);
@@ -145,14 +146,22 @@ use App\Repository\MailRepository;
             /**@var Compaign */
             $compaign = $rep->find($id);
             if($name!=null) $compaign->setName($name);
+
             if($dsns instanceof Dsn && $dsns != null) $compaign->addDsn($dsns);
             else
             {
                 if($dsns != null) $compaign->addDsns($dsns);
             }
+
             if($status!=null) $compaign->setStatus($status);
             if($schedule!=null) $compaign->setSchedule($schedule);
             if($step!=null) $compaign->addStep($step);
+
+            if($leads instanceof Lead && $leads!=null) $compaign->addLead($leads);
+            else
+            {
+                if($leads!=null) $compaign->addLeads($leads);
+            }
 
             $rep->save($compaign,true);
         }
@@ -241,6 +250,17 @@ use App\Repository\MailRepository;
             }
             $rep->save($compaign,true);
         }
+        public function addLeadsByCsv($compaignId,$filename)
+        {
+            $normalizer = new ObjectNormalizer();
+            $encoder = new CsvEncoder();
+            $data = file_get_contents($filename);
+            $dataDecode = $encoder->decode($data,'csv');
+            foreach($dataDecode as $lead) $leads[]=$normalizer->denormalize($lead,Lead::class);
+            $this->updateCompaign(id:$compaignId,leads:$leads);
+            
+        }
+        
 
         public function updateLead($id,$name = null,$emailAddress = null,Status $status = null, Mail $mail = null )
         {   
