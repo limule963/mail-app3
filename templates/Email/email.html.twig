@@ -1,0 +1,145 @@
+{% extends 'Email/base.html.twig' %}
+
+{% block title %} Email {% endblock %}
+
+{% block style %}<link rel="stylesheet" href={{asset("assets/css/email_style.css")}}>{% endblock %}
+
+{% block section %}
+        <section class = "mt-5">
+            <div class="section-header d-flex align-items-center">
+                <h1 class="section-title me-auto">Email</h1>
+                <a class="btn btn-primary " href = {{path('app_email_add')}}>Add Email</a>
+            </div>
+
+            <div class="section-body mt-5">
+                
+
+                {% for label,messages in app.flashes %}
+                <div class="alert alert-{{label}}" role="alert">
+
+                    {% for message in messages %}
+                
+                    {{message}}
+                </div>
+                
+                {% endfor %}
+
+                {% endfor %}
+
+
+
+                {% for item in app.user.dsns %} 
+                <div class="section-item row mb-5" id ={{item.id}}>
+                    <div class="section-item1 d-flex align-items-center justify-content-start col-4">
+                        <span class = "me-auto ">{{item.email}}</span><img class="push" src={{asset('assets/images/svg/paper-plane.svg')}} height="15px" alt="I"><span >0</span>
+                    </div>
+                    <div class="section-item2 d-flex align-items-center justify-content-center col">
+                        <div>
+                            <img src={{asset('assets/images/svg/fire.svg')}} height="15px" alt="I"><span>0</span>
+                        </div>
+                        <div>
+                            <img src={{asset('assets/images/svg/inbox-in-svgrepo-com.svg')}}  height="15px" alt="I"><span>0</span>
+                        </div>
+                        <div>
+                            <img src={{asset('assets/images/svg/bolt.svg')}} height="15px" alt="I"><span>0</span>
+                        </div>
+                        <div>
+                            <img src={{asset('assets/images/svg/plus-xxs-svgrepo-com.svg')}} height="15px" alt="I"><span>0</span>
+                        </div>
+
+                    </div>
+                    <div class="section-item3 d-flex align-items-center justify-content-between col-2">
+                        <a href=""><img src={{asset('assets/images/target.png')}} height="15px" alt="i"></a>
+                        <a href=""><img src={{asset('assets/images/fire1.png')}} height="15px" alt="i"></a>
+                        <a data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight" href=""><img src={{asset('assets/images/setting.png')}} height="15px" alt="i"></a>
+
+
+                        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+                            <div class="offcanvas-header">
+                                <h5 id="offcanvasRightLabel">Config</h5>
+                                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                            </div>
+                            <div class="offcanvas-body">
+                                ...
+                            </div>
+                        </div>
+                        
+                        {% set idd = 'deldsn'~ item.id %}
+                        <a data-bs-toggle="modal" data-bs-target={{"#" ~ idd}}  href = {{"#" ~ idd}} ><img src={{asset('assets/images/svg/trash.svg')}} height="15px" alt="i"></a>
+
+
+                            <div class="modal fade" id={{idd}} tabindex="-1" aria-labelledby={{"#" ~ idd}} aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id={{idd}}>Confirmation</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Do you want to delete the Email?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <a type="button" class="btn btn-primary" href= {{ path('app_email_delete', {'id': item.id}) }} >Delete</a>
+                                </div>
+                                </div>
+                            </div>
+                            </div>
+
+
+                    </div>
+                </div>
+                {% endfor %}
+    
+            </div>
+
+        </section>
+
+
+<!-- Modal -->
+
+
+
+
+<!-- Modal -->
+{# <div class=" modal fade" id="dsnform" tabindex="-1" aria-labelledby="dsnform" aria-hidden="true">
+
+  <div class="modal-dialog modal-dialog-scrollable">
+
+        {% for label,messages in app.flashes %}
+        <div class="alert alert-{{label}}" role="alert">
+
+            {% for message in messages %}
+        
+            {{message}}
+        </div>
+        
+        {% endfor %}
+
+        {% endfor %}
+
+    <div class="modal-content">
+
+      <div class="modal-header">
+
+        <h5 class="modal-title" id="dsnform">Add Email</h5>
+
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        {{form(form)}} 
+      </div>
+
+
+    </div>
+  </div>
+</div> #}
+
+
+
+
+
+
+
+{% endblock %}

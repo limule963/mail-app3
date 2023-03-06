@@ -16,7 +16,7 @@ use App\Entity\Email;
 
         // public Email $email;
 
-        public function __construct(public string $dsn,public string $from,  public Lead $lead, public Email $email,public string $senderName, public string $stepStatus)
+        public function __construct(public string $dsn,public string $from,  public Lead $lead, public ?Email $email,public ?string $senderName, public ?string $stepStatus)
         {
             
         }

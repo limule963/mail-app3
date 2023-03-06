@@ -62,7 +62,7 @@ use Symfony\Component\Mime\BodyRendererInterface;
                 ->to(new Address($emailAddress,$lead->getName()))
                 // path of the Twig template to render
                 ->htmlTemplate($emailLink)
-                ->addPart((new DataPart(fopen('https://aykode.com/images/8601571909526073.png', 'r'), 'image1', 'image/png'))->asInline())
+                // ->addPart((new DataPart(fopen('https://aykode.com/images/8601571909526073.png', 'r'), 'image1', 'image/png'))->asInline())
 
                 // pass variables (name => value) to the template
                 ->context([

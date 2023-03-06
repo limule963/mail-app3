@@ -54,10 +54,9 @@ class Dsn
     private ?string $host2 = null;
 
     #[ORM\Column(length: 255)]
-    private ?int $port2 = null;
+    private int $port2 = 993;
 
-    #[ORM\Column(length: 255)]
-    private ?string $connexionName = null;
+
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createAt = null;
@@ -167,7 +166,7 @@ class Dsn
     {
         return [
 
-            $this->connexionName =>[
+            $this->getConnexionName() =>[
                     
                 'mailbox'=>"{".$this->host2.":".$this->port2."/imap/ssl}" ,
                 'username'=>$this->username2,
@@ -266,15 +265,9 @@ class Dsn
 
     public function getConnexionName(): ?string
     {
-        return $this->connexionName;
+        return $this->email;
     }
 
-    public function setConnexionName(string $connexionName): self
-    {
-        $this->connexionName = $connexionName;
-
-        return $this;
-    }
 
     public function getCreateAt(): ?\DateTimeImmutable
     {

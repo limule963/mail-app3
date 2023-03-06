@@ -48,33 +48,6 @@ class HomeController extends AbstractController
         /**@var User $user*/
         $userId = $user->getId();
 
-        $encoders = [new CsvEncoder(),new JsonEncoder() ];
-        $normalizers = [new ObjectNormalizer()];
-        $serializer = new Serializer($normalizers,$encoders);
-
-        // $lead =(new Lead)->setName('azialoame')->setEmailAddress('kofazia@gmail.com');
-
-        // $leadCsv = $serializer->serialize($lead,'csv');
-        // dd($leadCsv);
-        // $cr = $leadCsv;
-
-        // $compaign = $this->crud->getCompaign($userId,7);
-
-        // $compaign->setStatus($this->crud->getStatus(STATUS::COMPAIGN_ACTIVE));
-        // $cr = $cl->sequence($compaign)->lunch();
-
-        $encoder = new CsvEncoder();
-        $data = file_get_contents('leads.csv','csv');
-        // $data2 = $serializer->deserialize($data,Lead::class,'csv') ;
-        $data2 = $encoder->decode($data,'csv');
-        // $data2 = $encoder->encode($data,'csv');
-        $normalizer = new ObjectNormalizer();
-
-        foreach($data2 as $data) $leads[] = $normalizer->denormalize($data,Lead::class);
-
-        dd($data2,$leads);
-
-        $fichier = 'leads.csv';
 
         $leads = [
             [
@@ -95,6 +68,41 @@ class HomeController extends AbstractController
             ],
         ];
 
+        $this->crud->addLeadsByfile(7,'leads.json','json');
+        $encoders = [new CsvEncoder(),new JsonEncoder() ];
+        $normalizers = [new ObjectNormalizer()];
+        $serializer = new Serializer($normalizers,$encoders);
+
+        // $lead =(new Lead)->setName('azialoame')->setEmailAddress('kofazia@gmail.com');
+
+        // $leadCsv = $serializer->serialize($lead,'csv');
+        // dd($leadCsv);
+        // $cr = $leadCsv;
+
+        // $compaign = $this->crud->getCompaign($userId,7);
+
+        // $compaign->setStatus($this->crud->getStatus(STATUS::COMPAIGN_ACTIVE));
+        // $cr = $cl->sequence($compaign)->lunch();
+
+        $encoder = new CsvEncoder();
+        $encoder2 = new JsonEncoder();
+        $datajson = $encoder2->encode($leads,'json');
+        file_put_contents('leads.json',$datajson);
+        dd($datajson);
+        $data = file_get_contents('leads.csv','csv');
+        // $data2 = $serializer->deserialize($data,Lead::class,'csv') ;
+        $data2 = $encoder->decode($data,'csv');
+        // $data2 = $encoder->encode($data,'csv');
+        $normalizer = new ObjectNormalizer();
+
+        foreach($data2 as $data) $leads[] = $normalizer->denormalize($data,Lead::class);
+
+        dd($data2,$leads);
+
+        $fichier = 'leads.csv';
+
+
+
 
     
 
@@ -111,14 +119,18 @@ class HomeController extends AbstractController
     {
         /**@var User $user */
         $user = $this->getUser();
+        $userId = $user->getId();
         $compaign = $this->crud->getCompaign($user->getId(),7);
         $dsns = $compaign->getDsns()->getValues();
         $dsn  = $dsns[2];
+
+        $this->crud->deleteDsn($dsn);
+        // dd($dsn);
         // $lead = $this->crud->getLeadByEmailAddress(7,'clemaos@yahoo.fr');
         // $response = $ic->send('All');
         // $mails =$allrec->receive($dsn,'UID 22');
         // dd($response);
-        $cms->save($dsns,7,1);
+        // $cms->save($dsns,7,1);
 
         // $ms->saveMails($md->set($dsn,7,1));
 

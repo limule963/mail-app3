@@ -1,0 +1,27 @@
+{% extends 'Email/base.html.twig' %}
+
+{% block style %}<link rel="stylesheet" href= {{ asset('assets/css/formstyle.css') }} >{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block section %}
+<div class="form">
+
+    {% for label,messages in app.flashes %}
+    <div class="alert alert-{{label}}" role="alert">
+
+    {% for message in messages %}
+    
+        {{message}}
+    </div>
+    
+    {% endfor %}
+
+    {% endfor %}
+    
+    <h2>Add Email</h2>
+    {{ form(form) }}
+
+</div>
+    
+{% endblock %}

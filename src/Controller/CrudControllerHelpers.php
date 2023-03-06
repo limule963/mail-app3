@@ -23,6 +23,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Repository\MailRepository;
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
     class CrudControllerHelpers extends AbstractController
@@ -174,13 +175,20 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
         }
         
-        public function deleteCompaign($id)
+        public function deleteCompaignBy($id)
         {
             /**@var CompaignRepository */
             $rep = $this->em->getRepository(Compaign::class);
             $compaign = $rep->find($id);
             $rep->remove($compaign,true);
 
+        }
+
+        public function deleteCompaign(Compaign $compaign)
+        {
+            /**@var CompaignRepository */
+            $rep = $this->em->getRepository(Compaign::class);      
+            $rep->remove($compaign,true);     
         }
 
         public function getCompaigns($number)
@@ -250,13 +258,23 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
             }
             $rep->save($compaign,true);
         }
-        public function addLeadsByCsv($compaignId,$filename)
+        public function addLeadsByfile($compaignId,$filename,$format)
         {
             $normalizer = new ObjectNormalizer();
-            $encoder = new CsvEncoder();
+
+            if($format=='csv') $encoder = new CsvEncoder();
+            else if($format=='json') $encoder = new JsonEncoder();
+
             $data = file_get_contents($filename);
-            $dataDecode = $encoder->decode($data,'csv');
-            foreach($dataDecode as $lead) $leads[]=$normalizer->denormalize($lead,Lead::class);
+            $dataDecode = $encoder->decode($data,$format);
+            foreach($dataDecode as $lead) 
+            {
+                $leadTemp=$normalizer->denormalize($lead,Lead::class);
+                $leadTemp->setStatus($this->getStatus(STAT::STEP_1));
+                $leads[] = $leadTemp;
+            }
+
+            dd($leads);
             $this->updateCompaign(id:$compaignId,leads:$leads);
             
         }
@@ -594,6 +612,13 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
             if($mail!= null) $dsn->addMail($mail);
             $rep->save($dsn,true);
         }
+        public function deleteDsn(Dsn $dsn)
+        {
+            /**@var DsnRepository */
+            $rep = $this->em->getRepository(Dsn::class);
+            $rep->remove($dsn,true);
+        }
+        
 
 
 
