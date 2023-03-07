@@ -3,6 +3,7 @@
 {% block title %}Compaigns{% endblock %}
 
 {% block style %} <link rel="stylesheet" href= {{ asset('assets/css/compaignstyle.css') }}> {% endblock %}
+{% block script %} <script src = {{asset('assets/js/compaign.js')}}></script> {% endblock %}
 
 {% block section %}
 
@@ -30,7 +31,7 @@
 
 
                 {% for item in app.user.compaigns %} 
-                <div class="section-item row mb-5" id ={{item.id}}>
+                <div class="section-item row mb-3" id ={{item.id}}>
                     <div class="section-item1 d-flex align-items-center justify-content-start col-4">
                     
                         <div class = "me-auto ">
@@ -43,19 +44,19 @@
                     </div>
                     <div class="section-item2 d-flex align-items-center justify-content-center col">
                         <div>
-                            <img src={{asset('assets/images/svg/paper-plane.svg')}} height="15px" alt="I"><span>0</span>
+                            <img class = "me-1" src={{asset('assets/images/svg/paper-plane.svg')}} height="15px" alt="I"><span>0</span>
                         </div>
                         <div>
-                            <img src={{asset('assets/images/svg/letter.svg')}}  height="15px" alt="I"><span>0</span>
+                            <img class = "me-1" src={{asset('assets/images/svg/letter.svg')}}  height="15px" alt="I"><span>0</span>
                         </div>
                         <div>
-                            <img src={{asset('assets/images/svg/reply.svg')}} height="15px" alt="I"><span>0</span>
+                            <img class = "me-1" src={{asset('assets/images/svg/reply.svg')}} height="15px" alt="I"><span>0</span>
                         </div>
 
 
                     </div>
                     <div class="section-item3 d-flex align-items-center justify-content-between col-2">
-                        <a href=""><img src={{asset('assets/images/svg/play.svg')}} height="15px" alt="i"></a>
+                        <a href=""><img  class  = "play" src={{asset('assets/images/svg/play.svg')}} height="15px" alt="i"></a>
 
                         <a data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight" href="#offcanvasRight"><img src={{asset('assets/images/setting.png')}} height="15px" alt="i"></a>
 
@@ -112,3 +113,5 @@
 
     
 {% endblock %}
+
+

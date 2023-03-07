@@ -2,6 +2,8 @@
     
     namespace App\Controller;
 
+use App\AppMailer\Data\STATUS;
+use App\AppMailer\Sender\CompaignLuncher;
 use App\Entity\Compaign;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -36,6 +38,21 @@ use Symfony\Component\Routing\Annotation\Route;
 
             $compaign = new Compaign;
         }
+        #[Route('/app/compaign/lunch/{id}',name:'app_compaign_lunch')]
+        public function lunchCompaign(Compaign $compaign,CompaignLuncher $cl)
+        {
+            $Status = $this->crud->getStatus(STATUS::COMPAIGN_ACTIVE);
+            $compaign->setStatus($Status);
+
+            //appel le cron sur un lien lanceur
+            $res = [
+                'response'=>true,
+                'message'=> 'compaign lunched successfully'
+            ];
+            return $this->json($res);
+
+        }
+        
 
         
         
