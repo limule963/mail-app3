@@ -14,7 +14,8 @@ use App\Entity\Email;
             public ?array $leadStatusTable,
             public ?int $compaignId,
             public ?string $stepStatus,
-            public ?string $compaignState
+            public ?string $compaignState,
+            public ?bool $tracker
 
             )
         {

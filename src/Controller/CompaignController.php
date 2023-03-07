@@ -3,6 +3,7 @@
     namespace App\Controller;
 
 use App\AppMailer\Data\STATUS;
+use App\AppMailer\Data\TransparentPixelResponse;
 use App\AppMailer\Sender\CompaignLuncher;
 use App\Entity\Compaign;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -45,9 +46,26 @@ use Symfony\Component\Routing\Annotation\Route;
             $compaign->setStatus($Status);
 
             //appel le cron sur un lien lanceur
+            //Quelques codes
             $res = [
                 'response'=>true,
                 'message'=> 'compaign lunched successfully'
+            ];
+            return $this->json($res);
+
+        }
+        
+        #[Route('/app/compaign/pause/{id}',name:'app_compaign_pause')]
+        public function pauseCompaign(Compaign $compaign,CompaignLuncher $cl)
+        {
+            $Status = $this->crud->getStatus(STATUS::COMPAIGN_ACTIVE);
+            $compaign->setStatus($Status);
+
+            //appel le cron sur un lien lanceur
+            //Quelques codes
+            $res = [
+                'response'=>true,
+                'message'=> 'compaign paused successfully'
             ];
             return $this->json($res);
 

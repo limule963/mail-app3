@@ -60,12 +60,13 @@ use Symfony\Component\Mime\BodyRendererInterface;
                     $this->step = $step;
                     // $sequenceState =STAT::SEQUENCE_ONHOLD;
                     return new Sequence(
-                            $step->getEmail(),
-                            $compaign->getDsns()->getValues(),
-                            $this->leadStatusTable($this->steps),
-                            $compaign->getId(),
-                            $step->getStatus()->getStatus(),
-                            $compaign->getStatus()->getStatus()
+                            email:$step->getEmail(),
+                            dsns:$compaign->getDsns()->getValues(),
+                            leadStatusTable:$this->leadStatusTable($this->steps),
+                            compaignId:$compaign->getId(),
+                            stepStatus:$step->getStatus()->getStatus(),
+                            compaignState:$compaign->getStatus()->getStatus(),
+                            tracker:$compaign->isIsTracker()
                         );
                     break;
                 }

@@ -28,7 +28,7 @@ use Symfony\Component\Mime\BodyRendererInterface;
             $transport = Transport::fromDsn($ed->dsn);
             $mailer = new Mailer($transport);
 
-            $email = $this->getTemplatedEmail($ed->email,$ed->lead,$ed->from,$ed->senderName);
+            $email = $this->getTemplatedEmail($ed->email,$ed->lead,$ed->from,$ed->senderName,$ed->tracker);
 
             // dd($email);
 
@@ -47,13 +47,13 @@ use Symfony\Component\Mime\BodyRendererInterface;
 
 
 
-        private function getTemplatedEmail(Email $email,Lead $lead,string $from,string $senderName,bool $addTracker= false):TemplatedEmail
+        private function getTemplatedEmail(Email $email,Lead $lead,string $from,string $senderName,bool $tracker):TemplatedEmail
         {
             $subject = $email->getSubject();
             $emailLink = $email->getEmailLink();
 
             $emailAddress = $lead->getEmailAddress();
-            $tracker =$addTracker;
+            // $tracker =$addTracker;
 
             $email = (new TemplatedEmail())
                 // ->to(new Address('ryan@example.com'))

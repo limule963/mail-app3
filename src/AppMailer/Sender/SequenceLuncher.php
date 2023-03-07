@@ -47,11 +47,11 @@ use Symfony\Component\Mime\BodyRendererInterface;
       
         }
 
-        public function lunch(?Sequence $sequence)
+        public function lunch(?Sequence $seq)
         {
-            if($sequence == null) return null;
-            $this->sequence = $sequence;
-            $this->dsns = $sequence->dsns;
+            if($seq == null) return null;
+            $this->sequence = $seq;
+            $this->dsns = $seq->dsns;
             // $this->email = $sequence->email;
             // $this->compaignId = $sequence->compaignId;
             // $this->stepStatus = $sequence->stepStatus;
@@ -66,7 +66,7 @@ use Symfony\Component\Mime\BodyRendererInterface;
                 $dsn = $Dsn->getDsn();
                 $senderName = $Dsn->getName();
                 
-                if($sequence->stepStatus == STATUS::STEP_1) $lead = $this->getNextLead();
+                if($seq->stepStatus == STATUS::STEP_1) $lead = $this->getNextLead();
                 else $lead = $this->getNextLead($from);
 
                 if($lead == null) continue;
@@ -80,7 +80,7 @@ use Symfony\Component\Mime\BodyRendererInterface;
                 }
 
 
-                $emailData = new EmailData($dsn,$from,$lead,$sequence->email,$senderName,$sequence->stepStatus);
+                $emailData = new EmailData($dsn,$from,$lead,$seq->email,$senderName,$seq->stepStatus,$seq->tracker);
 
                 $emailResponse = $this->emailSender->send($emailData);
                 
@@ -97,7 +97,7 @@ use Symfony\Component\Mime\BodyRendererInterface;
 
             }
 
-            return $this->cr->setCompagneState($sequence->compaignState);
+            return $this->cr->setCompagneState($seq->compaignState);
             
 
         }

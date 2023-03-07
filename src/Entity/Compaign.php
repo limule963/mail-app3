@@ -50,6 +50,9 @@ class Compaign
     #[ORM\Column]
     private ?\DateTimeImmutable $createAt = null;
 
+    #[ORM\Column]
+    private bool $isTracker = true;
+
     // #[ORM\OneToOne(inversedBy: "compaign", cascade: ['persist', 'remove'])]
     // private ?Schedule $schedule = null;
 
@@ -293,6 +296,18 @@ class Compaign
     public function setCreateAt(\DateTimeImmutable $createAt): self
     {
         $this->createAt = $createAt;
+
+        return $this;
+    }
+
+    public function isIsTracker(): ?bool
+    {
+        return $this->isTracker;
+    }
+
+    public function setIsTracker(bool $isTracker): self
+    {
+        $this->isTracker = $isTracker;
 
         return $this;
     }

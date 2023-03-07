@@ -8,29 +8,34 @@ use App\Entity\User;
 use Twig\Environment;
 use App\AppMailer\Data\FOLDER;
 use App\AppMailer\Data\STATUS;
-use App\AppMailer\Data\Connexion;
 use App\AppMailer\Data\MailData;
+use App\AppMailer\Data\Connexion;
 use App\Repository\DsnRepository;
 use SecIT\ImapBundle\Service\Imap;
 use App\AppMailer\Sender\Sequencer;
+use Symfony\Component\Mime\Address;
+use App\AppMailer\Receiver\ImapCurl;
 use App\AppMailer\Receiver\Receiver;
+use App\AppMailer\Receiver\MailSaver;
 use App\AppMailer\Sender\EmailSender;
+use Symfony\Component\Mailer\Transport;
 use App\AppMailer\Sender\CompaignLuncher;
 use App\AppMailer\Sender\SequenceLuncher;
 use App\AppMailer\Receiver\AllDsnReceiver;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\Serializer\Serializer;
 use App\AppMailer\Receiver\AllFolderReceiver;
+
 use App\AppMailer\Receiver\CompaignMailSaver;
-use App\AppMailer\Receiver\ImapCurl;
-use App\AppMailer\Receiver\MailSaver;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-
 use Symfony\Component\Mime\BodyRendererInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Mailer\Mailer;
+use Throwable;
 
 class HomeController extends AbstractController
 {
@@ -170,10 +175,49 @@ class HomeController extends AbstractController
     }
 
     #[Route('em',name:'app_em')]
-    public function em(CrudControllerHelpers $crud)
+    public function em(CrudControllerHelpers $crud,BodyRendererInterface $bd)
     {
+        $lead = $this->crud->getLead(3);
+        $dsns= $this->crud->getCompaignDsns(7);
+        $dsn = $dsns[0];
 
-        return $this->render('mail/mail20.html.twig',[
+        $transport = Transport::fromDsn($dsn->getDsn());
+
+        $mailer = new Mailer($transport);
+
+        
+
+
+        $email = (new TemplatedEmail())->htmlTemplate('mail17.html.twig')
+                                        ->to(new Address($lead->getEmailAddress(),$lead->getName()))
+                                        ->subject('hello')
+                                        ->from(new Address($dsn->getEmail(),$dsn->getName()))
+                                        ->context([
+                                            'lead'=>$lead,
+                                            'tracker'=>true
+                                        ])
+                    ;
+
+        $bd->render($email);
+        // dd($email);
+        try {
+            $mailer->send($email);
+            dd('done');
+        }
+        catch(Throwable $th){
+            
+             dd('not done');  
+         } 
+
+
+
+
+
+
+
+
+        return $this->render('mail17.html.twig',[
+            'lead'=>$lead
         ]);
     }
 
