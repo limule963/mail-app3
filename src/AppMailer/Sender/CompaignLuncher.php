@@ -40,12 +40,16 @@ use App\Entity\Compaign;
         public function lunch()
         {
 
-            $this->cms->save($this->dsns,$this->compaignId,1);
-
+            
             if($this->compaignStatus != STATUS::COMPAIGN_ACTIVE) return $this->getStat();
             $date = getdate();
             $h = $date['hours'];
             if($h < $this->fromm && $h > $this->too) return $this->getStat();
+
+            //synchro mails receve
+            $this->cms->save($this->dsns,$this->compaignId,1);
+
+            //lunch sequence
             return $this->sequenceLuncher->lunch($this->sequence);
         }
 

@@ -117,8 +117,9 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
             
             $sch = (new Schedule)->setStartTime(new \DateTimeImmutable())->setFromm(8)->setToo(18);
 
+            $step = $this->createStep('step 1','Hello','mail17.html.twig');
 
-            return (new Compaign)->setName($name)->setStatus($status)->setSchedule($sch);
+            return (new Compaign)->setName($name)->setStatus($status)->setSchedule($sch)->addStep($step);
 
         }
 
@@ -215,6 +216,18 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
             $c = $rep->find($compaignId);
             return $c;
         }
+        public function searchCompaigns($userId,$search)
+        {
+            /**@var User */
+            $user = $this->get_User($userId);
+            $id = $user->getId();
+
+            /**@var CompaignRepository */
+            $rep = $this->em->getRepository(Compaign::class);
+            
+            return $rep-> findByname($userId,$search);
+        }
+        
 
 
 //---------------------------------------------------------------------
@@ -390,7 +403,7 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
         public function createStep($name,$subject,$linkToEmail):Step
         {
 
-            $status = $this->getStatus(STAT::STEP_DRAFT);
+            $status = $this->getStatus(STAT::STEP_1);
             $email = $this->createEmail($subject,$linkToEmail);
             return (new Step)
                 ->setName($name)

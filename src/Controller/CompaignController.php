@@ -7,6 +7,7 @@ use App\AppMailer\Data\TransparentPixelResponse;
 use App\AppMailer\Sender\CompaignLuncher;
 use App\Entity\Compaign;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
     class CompaignController extends AbstractController
@@ -34,10 +35,12 @@ use Symfony\Component\Routing\Annotation\Route;
         }
 
         #[Route('app/compaign/add/',name:'app_compaign_add')]
-        public function addCompaign(Compaign $compaign)
+        public function addCompaign(Request $request)
         {
+            $name = $request->request->get('name');
+            $this->crud->addCompaign($this->getUser()->getId(),$name);
 
-            $compaign = new Compaign;
+            return $this->redirectToRoute('app_compaign');
         }
         #[Route('/app/compaign/lunch/{id}',name:'app_compaign_lunch')]
         public function lunchCompaign(Compaign $compaign,CompaignLuncher $cl)
@@ -70,6 +73,12 @@ use Symfony\Component\Routing\Annotation\Route;
             return $this->json($res);
 
         }
+        #[Route('/app/compaign/detail/{id}',name:'app_compaign_detail')]
+        public function compaignDetail(Compaign $compaign)
+        {
+            return $this->render('Email/compaign_detail.html.twig');
+        }
+        
         
 
         

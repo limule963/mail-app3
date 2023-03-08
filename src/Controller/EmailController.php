@@ -54,6 +54,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
                     $this->addFlash("danger","imap connexion failed");
 
                 }
+                
                 else  
                 {
                     $this->crud->addDsnToUser($dsn);
@@ -65,7 +66,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
             }
 
             return $this->render('Email/add/email.html.twig',[
-                'form'=>$form
+                'form'=>$form,
             ]);
         }
 
@@ -106,6 +107,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
             return $imap->testConnection($dsn->getConnexionName());       
         }
-        
+
+
         
     } 

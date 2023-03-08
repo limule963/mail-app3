@@ -20,7 +20,7 @@ class TrackingController extends AbstractController
     public function index(Request $request): Response
     {
         // dd(new TransparentPixelResponse);
-
+        
         $id = $request->query->get('id');
         // dd($id);
         if (null !== $id) {
@@ -39,7 +39,7 @@ class TrackingController extends AbstractController
     public function tracker(Lead $lead)
     {
         //making change for 
-        $leadName = $lead->getName(3);
+        $leadName = $lead->getName();
         $lead->setName($leadName."1");
         $this->crud->saveLead($lead);
         

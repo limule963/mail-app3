@@ -13,10 +13,12 @@
 
             <div class="section-body mt-5">
                 
+            {#  message flash  #}
+
 
                 {% for label,messages in app.flashes %}
-                <div class="alert alert-{{label}}" role="alert">
-
+                <div class="alert alert-{{label}} alert-dismissible " role="alert">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     {% for message in messages %}
                 
                     {{message}}
@@ -25,6 +27,8 @@
                 {% endfor %}
 
                 {% endfor %}
+
+
 
 
 

@@ -70,6 +70,22 @@ class CompaignRepository extends ServiceEntityRepository
                         ->getResult()
         ;
     }
+    /**
+        * @return Compaign[] Returns an array of Compaign objects
+        */
+    public function findByname($id,$search): array
+    {
+        
+            return $this->createQueryBuilder('c')
+                        ->andWhere('c.user = :val')
+                        ->andWhere('c.name LIKE :val2')
+                        ->setParameter('val', $id)
+                        ->setParameter('val2', $search)
+                        ->orderBy('c.id', 'ASC')
+                        ->getQuery()
+                        ->getResult()
+        ;
+    }
 
     public function findOneByName($name): ?Compaign
     {
