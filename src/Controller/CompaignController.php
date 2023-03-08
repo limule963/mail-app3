@@ -79,8 +79,8 @@ use Symfony\Component\Routing\Annotation\Route;
             return $this->render('Email/compaign_detail.html.twig');
         }
         
-        
 
-        
+
+
         
     }
