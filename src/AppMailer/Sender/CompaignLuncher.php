@@ -41,6 +41,7 @@ use App\Entity\Compaign;
         {
 
             
+            
             if($this->compaignStatus != STATUS::COMPAIGN_ACTIVE) return $this->getStat();
             $date = getdate();
             $h = $date['hours'];

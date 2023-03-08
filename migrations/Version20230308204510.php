@@ -31,3 +31,4 @@ final class Version20230308204510 extends AbstractMigration
         $this->addSql('CREATE UNIQUE INDEX UNIQ_43B9FE3C5E237E06 ON step (name)');
     }
 }
+

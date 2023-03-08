@@ -58,6 +58,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
         }
         
+        
         #[Route('/app/compaign/pause/{id}',name:'app_compaign_pause')]
         public function pauseCompaign(Compaign $compaign,CompaignLuncher $cl)
         {
@@ -82,5 +83,5 @@ use Symfony\Component\Routing\Annotation\Route;
 
 
 
-        
+
     }
