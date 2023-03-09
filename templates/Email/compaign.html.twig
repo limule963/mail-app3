@@ -75,7 +75,7 @@
                         
                         <div class="section-item1 d-flex align-items-center justify-content-start col-4 " >
                         
-                            <a class = "me-auto btn compname" href ='#'>
+                            <a class = "me-auto btn compname" href = {{ path('app_compaign_leads', {'id': item.id}) }} >
                                 <div >{{item.name}}</div>
                                 <div>{{item.createAt|ago}}</div>
 

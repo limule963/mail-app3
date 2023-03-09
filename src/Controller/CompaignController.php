@@ -113,9 +113,8 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
             {
                 $file = $form->get('leads')->getData();
 
-                $objfile = $this->deserialize($file);
+                $this->crud->addLeadsByfile($compaign->getId(),$file);
 
-                $this->crud->updateCompaign(id: $compaign->getId(), leads: $objfile);
                 
                 $this->addFlash('success','Leads Add successfully');
 
@@ -127,9 +126,36 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
             return $this->render('Email/compaign_detail.html.twig',[
                 'compaign'=> $compaign,
-                'form'=>$form
+                'form'=>$form,
+                'leads'=>$compaign
             ]);
         }
+
+        #[Route(path:'/app/compaign/{id}/leads',name:'app_compaign_leads')]
+        public function compaignLead(Compaign $compaign)
+        {
+
+
+
+            return $this->render('Email/compaign_leads.html.twig',[
+                'compaign'=>$compaign
+            ]);
+        }
+        #[Route(path:'/app/compaign/leads/delete/{id}',name:'app_compaign_leads_delete')]
+        public function compaignLeadDelete(Lead $lead)
+        {
+            $compaignId = $lead->getCompaign()->getId();
+            if($lead != null) 
+            {
+                $this->crud->deleteLead($lead);
+                $this->addFlash('success','lead deleted');
+                
+            }
+            return $this->redirectToRoute('app_compaign_leads',['id'=>$compaignId]);
+        }
+
+
+        
 
         private function getUploadFileForm()
         {

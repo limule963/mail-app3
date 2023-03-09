@@ -1,0 +1,54 @@
+{% extends 'Email/base.html.twig' %}
+
+{% block title %}compaign leads{% endblock %}
+
+{% block section %}
+    
+
+
+<section>
+
+<a class = "btn btn-outline-success w-2" href= {{ path('app_compaign') }} >back</a>
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Email</th>
+      <th scope="col">Gender</th>
+      <th scope="col">Status</th>
+    </tr>
+  </thead>
+  <tbody>
+
+{% for item in compaign.leads %}
+    
+    <tr>
+      <td> {{item.name}} </td>
+      <td> {{item.emailAddress}} </td>
+      <td> not set </td>
+      <td> <span class="badge bg-secondary">Not set</span> </td>
+      <td><a type="button" class="btn-close"  href = {{ path('app_compaign_leads_delete', {'id': item.id}) }} ></a> </td>
+        
+    </tr>
+
+
+{% endfor %}
+
+
+
+
+
+
+
+  </tbody>
+</table>
+
+
+</section>
+
+
+
+
+
+
+{% endblock %}

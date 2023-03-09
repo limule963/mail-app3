@@ -3,28 +3,30 @@ namespace App\Controller;
 
 use App\Entity\Dsn;
 use App\Entity\Lead;
+use App\Entity\Mail;
 use App\Entity\Step;
 use App\Entity\User;
 use App\Entity\Email;
 use App\Entity\Status;
 use App\Entity\Compaign;
 use App\Entity\Schedule;
-use App\AppMailer\Data\STATUS as STAT;
 use App\Repository\DsnRepository;
 use App\Repository\LeadRepository;
+use App\Repository\MailRepository;
 use App\Repository\StepRepository;
 use App\Repository\UserRepository;
+use App\AppMailer\Data\STATUS as STAT;
 use App\Repository\CompaignRepository;
 use App\Repository\ScheduleRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use App\AppMAiler\Exceptions\CrudControllerException;
-use App\Entity\Mail;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use App\Repository\MailRepository;
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
+use Symfony\Component\Serializer\Encoder\XmlEncoder;
+use App\AppMAiler\Exceptions\CrudControllerException;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
     class CrudControllerHelpers extends AbstractController
     {
@@ -139,12 +141,12 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
         /**
          * @param Dsn[] $dsns
          * @param string $name
+         * @param Lead[] $leads
          */
-        public function updateCompaign($id,$name = null,  mixed $dsns = null, Step $step = null, Status $status =null,mixed $leads =null, Schedule $schedule =null)
+        public function updateCompaign($id,$name = null,  mixed $dsns = null, Step $step = null, Status $status =null, $leads =null, Schedule $schedule =null)
         {
             /**@var CompaignRepository */
             $rep = $this->em->getRepository(Compaign::class);
-            
             /**@var Compaign */
             $compaign = $rep->find($id);
             if($name!=null) $compaign->setName($name);
@@ -159,13 +161,14 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
             if($schedule!=null) $compaign->setSchedule($schedule);
             if($step!=null) $compaign->addStep($step);
 
-            if($leads instanceof Lead && $leads!=null) $compaign->addLead($leads);
-            else
+            if($leads!=null)
             {
-                if($leads!=null) $compaign->addLeads($leads);
+                $compaign->addLeads($leads);
             }
-
+            
             $rep->save($compaign,true);
+
+
         }
 
         public function saveCompaign(Compaign $compaign)
@@ -271,24 +274,41 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
             }
             $rep->save($compaign,true);
         }
-        public function addLeadsByfile($compaignId,$filename,$format)
+
+
+
+        public function addLeadsByfile($compaignId,UploadedFile $file)
         {
-            $normalizer = new ObjectNormalizer();
 
-            if($format=='csv') $encoder = new CsvEncoder();
-            else if($format=='json') $encoder = new JsonEncoder();
+            $od = new ObjectNormalizer();
+            $decoders = [
+                'csv'=>new CsvEncoder(),
+                'json'=>new JsonEncoder(),
+                'xml'=>new XmlEncoder()
+            ];
 
-            $data = file_get_contents($filename);
-            $dataDecode = $encoder->decode($data,$format);
-            foreach($dataDecode as $lead) 
+            $ext = $file->guessExtension();
+            $data = $file->getContent();
+
+            /**@var DecoderInterface  */
+            $dec = $decoders[$ext];
+
+            $leads = $dec->decode($data,$ext);
+            $leadsOb = null;
+            
+            foreach($leads as $lead)
             {
-                $leadTemp=$normalizer->denormalize($lead,Lead::class);
+                /**@var Lead */
+                $leadTemp = $od->denormalize($lead,Lead::class);
                 $leadTemp->setStatus($this->getStatus(STAT::STEP_1));
-                $leads[] = $leadTemp;
+
+                $leadsOb[] = $leadTemp;
             }
 
-            dd($leads);
-            $this->updateCompaign(id:$compaignId,leads:$leads);
+            
+            $this->updateCompaign(id:$compaignId,leads:$leadsOb);
+            
+            return $leadsOb;
             
         }
         
@@ -378,6 +398,14 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
             $rep = $this->em->getRepository(Lead::class);
             return $rep->findOneByEmailAddress($compaignId,$emailAddress);
         }
+
+        public function deleteLead(Lead $lead)
+        {
+            /**@var LeadRepository */
+            $rep = $this->em->getRepository(Lead::class);
+            $rep->remove($lead,true);           
+        }
+        
 
 
 

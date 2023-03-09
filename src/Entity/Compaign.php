@@ -111,7 +111,8 @@ class Compaign
 
         return $this;
     }
-    public function addLeads(array $leads): self
+    /**@param Lead[] $leads */
+    public function addLeads($leads): self
     {
         foreach($leads as $lead)
         {
