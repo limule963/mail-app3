@@ -55,7 +55,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
                 }
                 
-                else  
+                else
                 {
                     $this->crud->addDsnToUser($dsn);
                     

@@ -19,7 +19,7 @@ class Lead
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255,unique:true)]
+    #[ORM\Column(length: 255)]
     private ?string $emailAddress = null;
 
     #[ORM\ManyToOne(inversedBy: 'leads')]

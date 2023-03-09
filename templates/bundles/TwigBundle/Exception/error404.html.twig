@@ -1,0 +1,10 @@
+{# templates/bundles/TwigBundle/Exception/error404.html.twig #}
+{% extends 'Email/base.html.twig' %}
+
+{% block section %}
+    <h1>Error 404</h1>
+
+    <p>
+         <a class = "btn btn-outline-success" href="{{ path('app_email') }}">return to the homepage</a>
+    </p>
+{% endblock %}

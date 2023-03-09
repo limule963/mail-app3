@@ -1,9 +1,17 @@
 {% extends 'Email/base.html.twig' %}
 
-{% block title %}Compaigns{% endblock %}
+{% block title %}Add Leads{% endblock %}
 
 {% block style %} <link rel="stylesheet" href= {{ asset('assets/css/compaignstyle.css') }}> {% endblock %}
 {% block script %} <script src = {{asset('assets/js/compaign.js')}}></script> {% endblock %}
+
+{% block headersearch %}
+<div class = "me-auto">
+<h3>Compaign configuration</h3>
+
+</div>
+{% endblock %}
+
 
 {% block section %}
 
@@ -34,7 +42,7 @@
                 <div class = "mt-5  ">
                     <div class = ' mb-5'>
                         {{ form_start(form) }}
-                        <h4>{{ form_label(form.leads) }}</h4>
+                        <h6>{{ form_label(form.leads) }}</h6>
 
                         {{ form_widget(form.leads) }}
                         {{ form_errors(form.leads) }}
@@ -47,7 +55,7 @@
                 </div>
                 <div class =''>
                     <form action="">
-                        <label for="singlelead" class = "form-label mb-2" > <h4>Add single lead</h4></label>
+                        <label for="singlelead" class = "form-label mb-2" > <h6>Add single lead</h6></label>
                         
                         <textarea name="singlelead" id="singlelead"  class ="form-control" cols="20" rows="5"></textarea>
                         <input type="submit" class = "btn btn-primary mt-2" value="submit">

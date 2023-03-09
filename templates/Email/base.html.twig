@@ -20,48 +20,95 @@
 
 
         <div class="d-flex row">
-        
-            <aside class="aside col-3 border-end border-secondary">
+
+
+
+
+
+
+
+
+
+
+
+
+            <aside class="aside col-2 border-end border-dark-subtle">
                 <div class="aside-up  "><a class ="" href= {{ path('app_email') }} >APP NAME</a></div>
+
+
+
+
                 <div class="aside-dw mt-5">
-                    <div class="">
-                        <a href={{ path('app_email') }} ><img src={{asset('assets/images/svg/letter.svg')}} height="20px" alt="I">Email</a>
-                    </div>
+                <ul class = "nav flex-column nav-pills">
+                
+                    <li class="nav-item">
+                        <a class = "nav-link " href={{ path('app_email') }} ><img class = "me-1" src={{asset('assets/images/svg/letter.svg')}} height="20px" alt="I">Email</a>
+                    </li>
+                
+                    <li class="nav-item">
+                        <a  class = "nav-link" href= {{ path('app_compaign') }} ><img class = "me-1"  src={{asset('assets/images/svg/paper-plane.svg')}} height="20px" alt="I">Compaign</a>     
+                    </li class="nav-item">
 
-                    <div>
-                        <a href= {{ path('app_compaign') }} ><img src={{asset('assets/images/svg/paper-plane.svg')}} height="20px" alt="I">Compaign</a>     
-                    </div>
+                    <li class="nav-item">
+                        <a  class = "nav-link" href=""><img class = "me-1"  src={{asset('assets/images/statistiques.png')}} height="20px" alt="I"> Analytics</a>   
+                    </li>
 
-                    <div>
-                        <a href=""><img src={{asset('assets/images/statistiques.png')}} height="20px" alt="I"> Analytics</a>   
-                    </div>
+                    <li class="nav-item" >
+                        <a  class = "nav-link" href=""><img class = "me-1"  src={{asset('assets/images/reglage.png')}} height="20px" alt="I">Options</a>
+                    </li>
+                </ul>
 
-                    <div>
-                        <a href=""><img src={{asset('assets/images/reglage.png')}} height="20px" alt="I">Options</a>
-                    </div>
                 </div>
 
             </aside>
+
+
+
             <main class =" main col">
-            {% block header %}
-                <header class="header d-flex">
-                    <div class="header-left me-auto">
-                        {# <img src={{asset('assets/images/chercher.png')}} height="20px" alt="I">
-                        <input type="text" placeholder="Search"> #}
-                        <form class="d-flex" role="search">
-                            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name ='search'>
-                            <button class="btn btn-outline-success" type="submit">Search</button>
-                        </form>
+
+                {% block header %}
+                    <header class="header d-flex">
+
+                        {% block headersearch %}  
+                        <div class="header-left me-auto">
+                            <form class="d-flex" role="search">
+                                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name ='search'>
+                                <button class="btn btn-outline-success" type="submit">Search</button>
+                            </form>
+                        </div>
+                        {% endblock %}
+
+
+                        <div class="header-right">
+                            <a href=""><img src={{asset('assets/images/profil.png')}} height="20px" alt="I"></a>
+                            <a href="">{{app.user.email}}</a>
+                            <a href=""><img src={{asset('assets/images/reglage.png')}} height="20px" alt=""></a>
+                        </div>
+                    </header>
+                    <hr>
+                {% endblock %}
+
+
+                {% block flash %}
+
+                    {% for label,messages in app.flashes %}
+                    <div class="alert alert-{{label}} alert-dismissible " role="alert">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        {% for message in messages %}
+                    
+                        {{message}}
+                
+                    
+                        {% endfor %}
                     </div>
-                    <div class="header-right">
-                        <a href=""><img src={{asset('assets/images/profil.png')}} height="20px" alt="I"></a>
-                        <a href="">{{app.user.email}}</a>
-                        <a href=""><img src={{asset('assets/images/reglage.png')}} height="20px" alt=""></a>
-                    </div>
-                </header>
-                <hr>
-            {% endblock %}
+                    {% endfor %}
+                    
+                {% endblock %}
+
+
                 {% block section %}{% endblock %}
+
+            
             </main>
         </div>
 

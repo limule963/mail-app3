@@ -42,6 +42,8 @@ class FormController extends AbstractController
             $this->em->persist($user);
             $this->em->flush();
 
+            $this->redirectToRoute('app_home');
+
 
         }
 

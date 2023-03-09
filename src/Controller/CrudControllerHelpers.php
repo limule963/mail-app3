@@ -74,7 +74,7 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
         public function user()
         {
-            if($this->getUser() == null) throw new CrudControllerException('User is not connected');
+            if($this->getUser() == null) return $this->redirectToRoute('app_login');
             return $this->getUser();
         }
 

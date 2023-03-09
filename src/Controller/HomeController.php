@@ -41,7 +41,7 @@ class HomeController extends AbstractController
     public function index( AllDsnReceiver $alldsnRec, CompaignLuncher $cl, Sequencer $seq,SequenceLuncher $sl,AllFolderReceiver $allrec,Receiver $rec): Response
     {
     
-
+        
 
         return $this->render('home/index.html.twig', [
             'controller_name' => 'HomeController',

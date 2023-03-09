@@ -17,34 +17,34 @@
 
             <!-- Modal -->
         
-        <form action = {{path('app_compaign_add')}}  method = "POST" >
-            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
+            <form action = {{path('app_compaign_add')}}  method = "POST" >
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
 
 
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Add Compaign</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label for="name" class="form-label">Name</label>
-                                <input type="text" class="form-control compentry1 w-75 " id="name" name = 'name' >
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Add Compaign</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Name</label>
+                                    <input type="text" class="form-control compentry1 w-75 " id="name" name = 'name' >
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Add</button>
+                            </div>
+
+
+
                         </div>
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Add</button>
-                        </div>
-
-
-
                     </div>
                 </div>
-            </div>
-        </form>
+            </form>
 
 
 
@@ -55,97 +55,95 @@
             <div class="section-body mt-5">
                 
 
-                {% for label,messages in app.flashes %}
-                <div class="alert alert-{{label}} alert-dismissible " role="alert">
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    {% for message in messages %}
+                    {# {% for label,messages in app.flashes %}
+                    <div class="alert alert-{{label}} alert-dismissible " role="alert">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        {% for message in messages %}
+                    
+                        {{message}}
                 
-                    {{message}}
-               
-                
-                    {% endfor %}
-                </div>
-                {% endfor %}
+                    
+                        {% endfor %}
+                    </div>
+                    {% endfor %} #}
 
 
 
                 {% for item in app.user.compaigns %} 
                 
-
-                
-                <div class="section-item row mb-3 " id = {{item.id}} >
-                    
-                    <div class="section-item1 d-flex align-items-center justify-content-start col-4 " >
-                    
-                        <a class = "me-auto btn compname" href ='#'>
-                            <div >{{item.name}}</div>
-                            <div>{{item.createAt|ago}}</div>
-
-                        </a>
-                        <span class="badge bg-primary">draft</span>
-
-                    </div>
-                    <div class="section-item2 d-flex align-items-center justify-content-center col">
-                        <div>
-                            <img class = "me-1" src={{asset('assets/images/svg/paper-plane.svg')}} height="15px" alt="I"><span>0</span>
-                        </div>
-                        <div>
-                            <img class = "me-1" src={{asset('assets/images/svg/letter.svg')}}  height="15px" alt="I"><span>0</span>
-                        </div>
-                        <div>
-                            <img class = "me-1" src={{asset('assets/images/svg/reply.svg')}} height="15px" alt="I"><span>0</span>
-                        </div>
-
-
-                    </div>
-                    <div class="section-item3 d-flex align-items-center justify-content-between col-2">
-                        <a href="">
-                            <img  class  = "play" src={{asset('assets/images/svg/play.svg')}} height="15px" alt="i">
-                        </a>
-
-                        <a href= {{ path('app_compaign_detail', {'id':item.id }) }}>
-                            <img src={{asset('assets/images/setting.png')}} height="15px" alt="i">
-                        </a>
-
-                        {# <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
-                            <div class="offcanvas-header">
-                                <h5 id="offcanvasRightLabel">Config</h5>
-                                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                            </div>
-                            <div class="offcanvas-body">
-                                ...
-                            </div>
-                        </div> #}
+                    <div class="section-item row mb-3 ms-1" id = {{item.id}} >
                         
+                        <div class="section-item1 d-flex align-items-center justify-content-start col-4 " >
                         
-                        {% set idd = 'delcompaign'~ item.id %}
-                        <a data-bs-toggle="modal" data-bs-target={{"#" ~ idd}} href ="">
-                            <img src={{asset('assets/images/svg/trash.svg')}} height="15px" alt="i">
-                        </a>
+                            <a class = "me-auto btn compname" href ='#'>
+                                <div >{{item.name}}</div>
+                                <div>{{item.createAt|ago}}</div>
 
+                            </a>
+                            <span class="badge bg-primary">draft</span>
 
-                            <div class="modal fade" id={{idd}} tabindex="-1" aria-labelledby={{"#" ~ idd}} aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id={{idd}}> Confirmation </h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    Do you want to delete the Compaign?
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    <a type="button" class="btn btn-primary" href= {{ path('app_compaign_delete', {'id': item.id}) }} >Delete</a>
-                                </div>
-                                </div>
+                        </div>
+                        <div class="section-item2 d-flex align-items-center justify-content-center col">
+                            <div>
+                                <img class = "me-1" src={{asset('assets/images/svg/paper-plane.svg')}} height="15px" alt="I"><span>0</span>
                             </div>
+                            <div>
+                                <img class = "me-1" src={{asset('assets/images/svg/letter.svg')}}  height="15px" alt="I"><span>0</span>
+                            </div>
+                            <div>
+                                <img class = "me-1" src={{asset('assets/images/svg/reply.svg')}} height="15px" alt="I"><span>0</span>
                             </div>
 
+
+                        </div>
+                        <div class="section-item3 d-flex align-items-center justify-content-between col-2">
+                            <a href="">
+                                <img  class  = "play" src={{asset('assets/images/svg/play.svg')}} height="15px" alt="i">
+                            </a>
+
+                            <a href= {{ path('app_compaign_detail', {'id':item.id }) }}>
+                                <img src={{asset('assets/images/setting.png')}} height="15px" alt="i">
+                            </a>
+
+                            {# <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+                                <div class="offcanvas-header">
+                                    <h5 id="offcanvasRightLabel">Config</h5>
+                                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                                </div>
+                                <div class="offcanvas-body">
+                                    ...
+                                </div>
+                            </div> #}
+                            
+                            
+                            {% set idd = 'delcompaign'~ item.id %}
+                            <a data-bs-toggle="modal" data-bs-target={{"#" ~ idd}} href ="">
+                                <img src={{asset('assets/images/svg/trash.svg')}} height="15px" alt="i">
+                            </a>
+
+
+                                <div class="modal fade" id={{idd}} tabindex="-1" aria-labelledby={{"#" ~ idd}} aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id={{idd}}> Confirmation </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Do you want to delete the Compaign?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <a type="button" class="btn btn-primary" href= {{ path('app_compaign_delete', {'id': item.id}) }} >Delete</a>
+                                    </div>
+                                    </div>
+                                </div>
+                                </div>
+
+
+                        </div>
 
                     </div>
-
-                </div>
             
                 {% endfor %}
     
