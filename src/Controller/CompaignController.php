@@ -7,8 +7,11 @@ use App\AppMailer\Data\TransparentPixelResponse;
 use App\AppMailer\Sender\CompaignLuncher;
 use App\Entity\Compaign;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\File;
 
     class CompaignController extends AbstractController
     {
@@ -28,9 +31,13 @@ use Symfony\Component\Routing\Annotation\Route;
         #[Route('app/compaign/delete/{id}',name:'app_compaign_delete')]
         public function deleteCompaign(Compaign $compaign)
         {
+            if($compaign == null);
+            else
+            {
+                $this->crud->deleteCompaign($compaign);
+                $this->addFlash('success', 'compaign deleted');
 
-            $this->crud->deleteCompaign($compaign);
-            $this->addFlash('success', 'compaign deleted');
+            }
             return $this->redirectToRoute('app_compaign');
         }
 
@@ -58,7 +65,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
         }
         
-        
+
         #[Route('/app/compaign/pause/{id}',name:'app_compaign_pause')]
         public function pauseCompaign(Compaign $compaign,CompaignLuncher $cl)
         {
@@ -75,9 +82,44 @@ use Symfony\Component\Routing\Annotation\Route;
 
         }
         #[Route('/app/compaign/detail/{id}',name:'app_compaign_detail')]
-        public function compaignDetail(Compaign $compaign)
+        public function compaignDetail(Compaign $compaign,Request $request)
         {
-            return $this->render('Email/compaign_detail.html.twig');
+
+            $form =$this->createFormBuilder($compaign)
+                    ->add('leads',FileType::class,[
+                        'label' => 'Upload Leads (csv,json,xml)',
+                        'mapped'=> false,
+                        'required' => true,
+                        'constraints'=>[
+                            new File([
+                                'maxSize' => '1024k',
+                                'mimeTypes' => [
+                                    'text/csv',
+                                    'application/json',
+                                    'application/xml'
+                                ],
+                                'mimeTypesMessage' => 'Please upload a valid  document',                                
+                            ])
+                        ],
+                    ])
+                    ->add('submit',SubmitType::class,['label'=>'Add'])
+                    ->getForm() ;
+
+
+            $form->handleRequest($request);
+            if($form->isSubmitted() && $form->isValid())
+            {
+                $file = $form->get('leads')->getData();
+
+                dd($file);
+            }
+                    
+                   
+
+            return $this->render('Email/compaign_detail.html.twig',[
+                'compaign'=> $compaign,
+                'form'=>$form
+            ]);
         }
         
 

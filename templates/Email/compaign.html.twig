@@ -17,7 +17,7 @@
 
             <!-- Modal -->
         
-        <form action = {{path('app_compaign_add')}} method = "POST" >
+        <form action = {{path('app_compaign_add')}}  method = "POST" >
             <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -30,7 +30,7 @@
                         <div class="modal-body">
                             <div class="mb-3">
                                 <label for="name" class="form-label">Name</label>
-                                <input type="text" class="form-control" id="name" name = 'name' >
+                                <input type="text" class="form-control compentry1 w-75 " id="name" name = 'name' >
                             </div>
                         </div>
 
@@ -70,16 +70,18 @@
 
 
                 {% for item in app.user.compaigns %} 
-                <div>
-                </div>
-                <div class="section-item row mb-3 " id ={{item.id}}>
-                    <div class="section-item1 d-flex align-items-center justify-content-start col-4">
+                
+
+                
+                <div class="section-item row mb-3 " id = {{item.id}} >
                     
-                        <div class = "me-auto ">
+                    <div class="section-item1 d-flex align-items-center justify-content-start col-4 " >
+                    
+                        <a class = "me-auto btn compname" href ='#'>
                             <div >{{item.name}}</div>
                             <div>{{item.createAt|ago}}</div>
 
-                        </div>
+                        </a>
                         <span class="badge bg-primary">draft</span>
 
                     </div>
@@ -142,7 +144,9 @@
 
 
                     </div>
+
                 </div>
+            
                 {% endfor %}
     
             </div>

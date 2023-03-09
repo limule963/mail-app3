@@ -114,3 +114,7 @@ header{
     justify-content: space-between;
 
 }
+
+*{
+    box-sizing: content-box;
+}

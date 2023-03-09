@@ -18,11 +18,19 @@
   
   }
   .section-item2 div{
-    margin-right: 20px;
+    margin-right: 10%;
   } 
   
+
+  .compname:hover{
+    background-color: rgba(0, 128, 0, 0.308);
+  }
   /* *
   {
     color: #d33535;
   } */
   
+
+  /* .compentry1{
+    width: 125px;
+  } */

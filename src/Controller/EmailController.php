@@ -75,8 +75,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
         #[Route('/app/email/delete/{id}',name:'app_email_delete')]
         public function deleteEmail(Dsn $dsn)
         {
-            $this->crud->deleteDsn($dsn);
-            $this->addFlash('success', 'Email deleted');
+            if($dsn == null);
+            else
+            {
+
+                $this->crud->deleteDsn($dsn);
+                $this->addFlash('success', 'Email deleted');
+            }
             return $this->redirectToRoute('app_email');
             
         }

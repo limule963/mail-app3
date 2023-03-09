@@ -3,4 +3,6 @@
   }
 
 
-  
+  *{
+    box-sizing: content-box;
+  }
