@@ -1,6 +1,6 @@
 {% extends 'Email/base.html.twig' %}
 
-{% block title %}Add Leads{% endblock %}
+{% block title %}compaign config{% endblock %}
 
 {% block style %} <link rel="stylesheet" href= {{ asset('assets/css/compaignstyle.css') }}> {% endblock %}
 {% block script %} <script src = {{asset('assets/js/compaign.js')}}></script> {% endblock %}
@@ -69,8 +69,89 @@
             </div>
 
             {# sequence tab #}
-            <div class="tab-pane fade" id="sequence" role="tabpanel">
-                <p>Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit.</p>
+
+
+
+
+            <div class="tab-pane fade " id="sequence" role="tabpanel">
+                   
+                    {# begin #}
+                <div class="d-flex align-items-start mt-5">
+                {# integration #}
+
+                    
+               
+                    <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+
+                        {% for key,step in compaign.steps %}
+                            
+                       
+                            <div class="card" style="width: 12rem; ">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{step.name}}</h5>
+                                    {# <h6 class="card-subtitle mb-2 text-muted">some text</h6> #}
+                                    <p class="card-text">Some quick example.</p>
+
+                                    {% if key == 0 %}
+                                        
+                                        <button class="nav-link active" id="v-pills-{{step.id}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{step.id}}" type="button" role="tab" aria-controls="v-pills-{{step.id}}" aria-selected="true">Config</button>
+                                    {% else %}
+                                    
+                                        <button class="nav-link" id="v-pills-{{step.id}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{step.id}}" type="button" role="tab" aria-controls="v-pills-{{step.id}}" aria-selected="false">Config</button>
+                                    {% endif %}
+                                </div>
+                            </div> 
+                        
+                        {% endfor %}
+
+                    </div>
+
+
+                    <div class="tab-content" id="v-pills-tabContent">
+
+                        {% for key,step in compaign.steps %}
+                            
+                            {% if key == 0 %}
+                                <div class="tab-pane fade  show active" id="v-pills-{{step.id}}" role="tabpanel" aria-labelledby="v-pills-{{step.id}}-tab" tabindex="0"> 
+                            {% else %}
+                                <div class="tab-pane fade" id="v-pills-{{step.id}}" role="tabpanel" aria-labelledby="v-pills-{{step.id}}-tab" tabindex="0">
+                            {% endif %}
+                            
+                                <form>
+                                
+                                        <legend>Mail</legend>
+
+                                        <div class="form-group">
+                                            <label for="text" class="form-label mt-4">Subject</label>
+                                            <input type="text" class="form-control" id="text"  value={{step.email.subject}} >
+                                        </div>
+
+
+
+                                        <div class="form-group">
+                                            <label for="exampleTextarea" class="form-label mt-4">message</label>
+                                            <textarea class="form-control" id="exampleTextarea" rows="15" cols = "100"></textarea>
+                                        </div>
+
+                                        <div class="form-group mt-3">
+                                            <button type="submit" class="btn btn-primary">Save</button>
+                                        </div>
+                                
+                                </form>
+                            
+                            </div>
+                        
+                        {% endfor %}
+
+                    </div>
+
+
+                {# fin integration #}
+                
+                </div>
+                    {# end  #}
+
+
             </div>
 
             {# schedule tab #}

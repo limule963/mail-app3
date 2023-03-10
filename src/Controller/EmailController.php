@@ -4,20 +4,23 @@
 use App\Entity\Dsn;
 use App\Entity\Lead;
 // use App\Entity\Email;
+use App\Form\AddDsnType;
 use App\AppMailer\Data\EmailData;
+use App\Repository\DsnRepository;
 use Symfony\Component\Mime\Email;
 use SecIT\ImapBundle\Service\Imap;
 use Symfony\Component\Mailer\Mailer;
 use App\AppMailer\Sender\EmailSender;
-use App\Form\AddDsnType;
 use Symfony\Component\Mailer\Transport;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
     class EmailController extends AbstractController
     {
-        public function __construct(private CrudControllerHelpers $crud)
+            
+        public function __construct(private CrudControllerHelpers $crud,private PaginatorInterface $paginator)
         {
             
         }
@@ -25,12 +28,21 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
         
         #[Route('app/email',name:'app_email')]
 
-        public function email()
+        public function email(DsnRepository $rep,Request $request)
         {
 
+            $userId = $this->getUser()->getId();
+    
+            $dsns = $this->paginator->paginate(
+                $rep->findforPag($userId), /* query NOT result */
+                $request->query->getInt('page', 1), /*page number*/
+                10 /*limit per page*/
+            );
 
+            
 
             return $this->render('Email/email.html.twig',[
+                'dsns'=>$dsns
             ]);
         }
 

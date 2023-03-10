@@ -2,10 +2,11 @@
 
 namespace App\Repository;
 
+use Doctrine\ORM\Query;
 use App\Entity\Compaign;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\DependencyInjection\Compiler\Compiler;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<Compaign>
@@ -97,6 +98,21 @@ class CompaignRepository extends ServiceEntityRepository
             ->getOneOrNullResult()
         ;
     }
+
+
+
+       /**
+    * @return Compaign[] Returns an array of Lead objects
+    */
+   public function findforPag($id): ?Query
+   {
+       return $this->createQueryBuilder('c')
+            ->andWhere('c.user = :val')
+            ->setParameter('val', $id)
+            ->orderBy('c.id', 'ASC')
+            ->getQuery()
+       ;
+   }
 //    public function findOneBySomeField($value): ?Compaign
 //    {
 //        return $this->createQueryBuilder('c')

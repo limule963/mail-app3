@@ -3,8 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Lead;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<Lead>
@@ -73,6 +74,27 @@ class LeadRepository extends ServiceEntityRepository
             ->getResult()
        ;
    }
+
+
+
+   /**
+    * @return Lead[] Returns an array of Lead objects
+    */
+   public function findforPag($id): ?Query
+   {
+       return $this->createQueryBuilder('l')
+            // ->select('l','s')
+            ->andWhere('l.compaign = :val')
+            // ->join('l.status','s')
+            ->setParameter('val', $id)
+            ->orderBy('l.id', 'ASC')
+            ->getQuery()
+       ;
+   }
+
+
+
+   //    /**
 //    /**
 //     * @return Lead[] Returns an array of Lead objects
 //     */

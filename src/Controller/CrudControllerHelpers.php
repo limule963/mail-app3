@@ -31,12 +31,18 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
     class CrudControllerHelpers extends AbstractController
     {
         public $em;
-        private $comprepo;
-        private $steprepo;
-        private $leadrepo;
-        private $userrepo;
-        private $scherepo;
-        public function __construct(private UserPasswordHasherInterface $hasher,private ManagerRegistry $doc)
+
+
+
+        public function __construct(
+            private UserPasswordHasherInterface $hasher,
+            private ManagerRegistry $doc,
+            public CompaignRepository $comrepo,
+            public StepRepository $steprepo,
+            public LeadRepository $leadrepo,
+            public UserRepository $userrepo,
+            public ScheduleRepository $scherepo
+            )
         {
             $this->em = $doc->getManager();
         }

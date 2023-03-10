@@ -8,7 +8,10 @@
 
 <section>
 
-<a class = "btn btn-outline-success w-2" href= {{ path('app_compaign') }} >back</a>
+
+{# total items count #}
+<div class="count badge bg-primary"> Lead: {{ leads.getTotalItemCount }}</div>
+
 <table class="table table-hover">
   <thead>
     <tr>
@@ -20,19 +23,27 @@
   </thead>
   <tbody>
 
-{% for item in compaign.leads %}
+{% for lead in leads %}
     
     <tr>
-      <td> {{item.name}} </td>
-      <td> {{item.emailAddress}} </td>
+      <td> {{lead.name}} </td>
+      <td> {{lead.emailAddress}} </td>
       <td> not set </td>
       <td> <span class="badge bg-secondary">Not set</span> </td>
-      <td><a type="button" class="btn-close"  href = {{ path('app_compaign_leads_delete', {'id': item.id}) }} ></a> </td>
+      <td><a type="button" class="btn-close "  href = {{ path('app_compaign_leads_delete', {'id': lead.id}) }} ></a> </td>
         
     </tr>
-
-
 {% endfor %}
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -43,6 +54,10 @@
   </tbody>
 </table>
 
+{# display navigation #}
+<div class="navigation">
+    {{ knp_pagination_render(leads) }}
+</div>
 
 </section>
 

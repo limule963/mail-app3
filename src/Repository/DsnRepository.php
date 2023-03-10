@@ -3,8 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Dsn;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<Dsn>
@@ -64,4 +65,20 @@ class DsnRepository extends ServiceEntityRepository
             ->getResult()
         ;
     }
+
+       /**
+    * @return Dsn[] Returns an array of Lead objects
+    */
+   public function findforPag($id): ?Query
+   {
+       return $this->createQueryBuilder('d')
+
+            ->andWhere('d.user = :val')
+            // ->join('l.status','s')
+            ->setParameter('val', $id)
+            ->orderBy('d.id', 'ASC')
+            ->getQuery()
+       ;
+   }
+
 }

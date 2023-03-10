@@ -5,10 +5,13 @@
 use App\Entity\Lead;
 use App\Entity\Compaign;
 use App\AppMailer\Data\STATUS;
+use Doctrine\ORM\EntityManagerInterface;
 use App\AppMailer\Sender\CompaignLuncher;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use App\AppMailer\Data\TransparentPixelResponse;
+use App\Repository\LeadRepository;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
@@ -26,7 +29,11 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
     class CompaignController extends AbstractController
     {
 
-        public function __construct(private CrudControllerHelpers $crud,private SluggerInterface $slugger)
+        public function __construct(
+            private CrudControllerHelpers $crud,
+            private SluggerInterface $slugger,
+            private PaginatorInterface $paginator,
+            )
         {
             
         }
@@ -122,25 +129,43 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
             }
                     
-                   
+            
 
             return $this->render('Email/compaign_detail.html.twig',[
                 'compaign'=> $compaign,
                 'form'=>$form,
-                'leads'=>$compaign
             ]);
         }
 
+        // #[Route(path:'/app/compaign/{id}/leads',name:'app_compaign_leads')]
+        // public function compaignLead(Compaign $compaign)
+        // {
+
+
+
+        //     return $this->render('Email/compaign_leads.html.twig',[
+        //         'compaign'=>$compaign
+        //     ]);
+        // }
+
+
         #[Route(path:'/app/compaign/{id}/leads',name:'app_compaign_leads')]
-        public function compaignLead(Compaign $compaign)
+        public function compaignLead($id,LeadRepository $rep,Request $request )
         {
 
 
+            $leads = $this->paginator->paginate(
+                $rep->findforPag($id), /* query NOT result */
+                $request->query->getInt('page', 1), /*page number*/
+                10 /*limit per page*/
+            );
 
             return $this->render('Email/compaign_leads.html.twig',[
-                'compaign'=>$compaign
+                'leads'=>$leads
             ]);
         }
+
+
         #[Route(path:'/app/compaign/leads/delete/{id}',name:'app_compaign_leads_delete')]
         public function compaignLeadDelete(Lead $lead)
         {
@@ -178,6 +203,15 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
                 ])
                 ->add('submit',SubmitType::class,['label'=>'Add'])
                 ->getForm() ;
+        }
+
+        private function paginator($id,$rep, Request $request)
+        {
+            $leads = $this->paginator->paginate(
+                $rep->findforPag($id), /* query NOT result */
+                $request->query->getInt('page', 1), /*page number*/
+                10 /*limit per page*/
+            );
         }
 
         private function deserialize(UploadedFile $file)

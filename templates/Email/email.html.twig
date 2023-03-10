@@ -9,36 +9,16 @@
 
         <section class = "mt-5">
             <div class="section-header d-flex align-items-center">
-                <h1 class="section-title me-auto">Email</h1>
+                <h3 class="section-title me-auto">Email</h3>
                 <a class="btn btn-primary " href = {{path('app_email_add')}}>Add Email</a>
             </div>
 
             <div class="section-body mt-5">
                 
-            {#  message flash  #}
-
-
-{# 
-                {% for label,messages in app.flashes %}
-                <div class="alert alert-{{label}} alert-dismissible " role="alert">
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    {% for message in messages %}
-                
-                    {{message}}
-                </div>
-                
-                {% endfor %}
-
-                {% endfor %} #}
-
-
-
-
-
-                {% for item in app.user.dsns %} 
-                    <div class="section-item row mb-3 ms-1" id ={{item.id}}>
+                {% for dsn in dsns %} 
+                    <div class="section-item row mb-3 ms-1" id ={{dsn.id}}>
                         <div class="section-item1 d-flex align-items-center justify-content-start col-4">
-                            <span class = "me-auto ">{{item.email}}</span><img class="push" src={{asset('assets/images/svg/paper-plane.svg')}} height="15px" alt="I"><span >0</span>
+                            <span class = "me-auto ">{{dsn.email}}</span><img class="push" src={{asset('assets/images/svg/paper-plane.svg')}} height="15px" alt="I"><span >0</span>
                         </div>
                         <div class="section-item2 d-flex align-items-center justify-content-center col">
                             <div>
@@ -71,7 +51,7 @@
                                 </div>
                             </div>
                             
-                            {% set idd = 'deldsn'~ item.id %}
+                            {% set idd = 'deldsn'~ dsn.id %}
                             <a data-bs-toggle="modal" data-bs-target={{"#" ~ idd}}  href ="" ><img src={{asset('assets/images/svg/trash.svg')}} height="15px" alt="i"></a>
 
 
@@ -87,7 +67,7 @@
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                        <a type="button" class="btn btn-primary" href= {{ path('app_email_delete', {'id': item.id}) }} >Delete</a>
+                                        <a type="button" class="btn btn-primary" href= {{ path('app_email_delete', {'id': dsn.id}) }} >Delete</a>
                                     </div>
                                     </div>
                                 </div>
@@ -97,8 +77,14 @@
                         </div>
                     </div>
                 {% endfor %}
-    
+
+
             </div>
+
+            {# display navigation #}
+            <div class="navigation">
+                {{ knp_pagination_render(dsns) }}
+            </div>    
 
         </section>
 
