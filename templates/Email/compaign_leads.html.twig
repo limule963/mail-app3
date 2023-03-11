@@ -15,22 +15,25 @@
 <table class="table table-hover">
   <thead>
     <tr>
+      <th>Id</th>
       <th scope="col">Name</th>
       <th scope="col">Email</th>
       <th scope="col">Gender</th>
       <th scope="col">Status</th>
+      <th scope="col">Delete</th>
     </tr>
   </thead>
   <tbody>
 
-{% for lead in leads %}
+{% for key,lead in leads %}
     
     <tr>
-      <td> {{lead.name}} </td>
-      <td> {{lead.emailAddress}} </td>
+      <td>  {{begin + key + 1}} </td>
+      <td class = "align-middle"> {{lead.name}} </td>
+      <td class = "align-middle" > {{lead.emailAddress}} </td>
       <td> not set </td>
-      <td> <span class="badge bg-secondary">Not set</span> </td>
-      <td><a type="button" class="btn-close "  href = {{ path('app_compaign_leads_delete', {'id': lead.id}) }} ></a> </td>
+      <td class = "align-middle" > <span class="badge bg-secondary">Not set</span> </td>
+      <td class = "align-middle" ><a  class="btn"  href = {{ path('app_compaign_leads_delete', {'id': lead.id}) }} ><img src={{asset('assets/images/svg/trash.svg')}} height="15px" alt="i"></a> </td>
         
     </tr>
 {% endfor %}

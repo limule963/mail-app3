@@ -23,6 +23,8 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Serializer\Encoder\DecoderInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
@@ -152,16 +154,22 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
         #[Route(path:'/app/compaign/{id}/leads',name:'app_compaign_leads')]
         public function compaignLead($id,LeadRepository $rep,Request $request )
         {
+            $begin = 0;
+            $max = 10;
+            $page = $request->query->getInt('page');
 
+            if($page!=0) $begin = ($page - 1) * $max;
+            
 
             $leads = $this->paginator->paginate(
                 $rep->findforPag($id), /* query NOT result */
                 $request->query->getInt('page', 1), /*page number*/
-                10 /*limit per page*/
+                $max /*limit per page*/
             );
 
             return $this->render('Email/compaign_leads.html.twig',[
-                'leads'=>$leads
+                'leads'=>$leads,
+                'begin'=>$begin
             ]);
         }
 
@@ -201,6 +209,11 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
                         ])
                     ],
                 ])
+                // ->add('lead',TextareaType::class,[
+                //     'mapped'=>false,
+                //     'label' => 'Add single lead'
+                    
+                // ])
                 ->add('submit',SubmitType::class,['label'=>'Add'])
                 ->getForm() ;
         }

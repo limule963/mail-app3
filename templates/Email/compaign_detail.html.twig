@@ -38,6 +38,7 @@
 
 
             {# lead tab #}
+          
             <div class="tab-pane fade active show" id="leads" role="tabpanel">
                 <div class = "mt-5  ">
                     <div class = ' mb-5'>
@@ -58,6 +59,7 @@
                         
                     </div>
                 </div>
+
                 <div class =''>
                     <form action="">
                         <label for="singlelead" class = "form-label mb-2" > <h6>Add single lead</h6></label>
@@ -65,79 +67,126 @@
                         <textarea name="singlelead" id="singlelead"  class ="form-control" cols="20" rows="5"></textarea>
                         <input type="submit" class = "btn btn-primary mt-2" value="submit">
                     </form>    
-                    </div>
+                </div>
             </div>
 
+          
+
+
+
             {# sequence tab #}
-
-
-
-
             <div class="tab-pane fade " id="sequence" role="tabpanel">
-                   
-                    {# begin #}
+
+                {# begin #}
                 <div class="d-flex align-items-start mt-5">
-                {# integration #}
+
+
+                    {# integration #}
 
                     
                
-                    <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-
+                    <div class="nav flex-column nav-pills  me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                        
+                        
                         {% for key,step in compaign.steps %}
                             
                        
-                            <div class="card" style="width: 12rem; ">
+                            <div class="card mb-3" style="width: 12rem;">
                                 <div class="card-body">
-                                    <h5 class="card-title">{{step.name}}</h5>
-                                    {# <h6 class="card-subtitle mb-2 text-muted">some text</h6> #}
-                                    <p class="card-text">Some quick example.</p>
+                                    <div class = "d-flex">
+                                        <h5 class="card-title me-auto">{{step.name}}</h5>
+                                        {% if key != 0 %}
+                                        <a href="" ><img src={{asset('assets/images/svg/trash.svg')}} height="10px" alt="i"></a>
+                                        {% endif %}
+                                    </div>
 
-                                    {% if key == 0 %}
-                                        
-                                        <button class="nav-link active" id="v-pills-{{step.id}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{step.id}}" type="button" role="tab" aria-controls="v-pills-{{step.id}}" aria-selected="true">Config</button>
+                                    <p class="card-text"> step  {{key + 1 }} </p>
+
+                                    {% if key == 0 %} 
+                                    <button class="btn btn-outline-primary active" id="v-pills-{{step.id}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{step.id}}" type="button" role="tab" aria-controls="v-pills-{{step.id}}" aria-selected="true">Config</button>
                                     {% else %}
-                                    
-                                        <button class="nav-link" id="v-pills-{{step.id}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{step.id}}" type="button" role="tab" aria-controls="v-pills-{{step.id}}" aria-selected="false">Config</button>
+                                    <button class="btn btn-outline-primary" id="v-pills-{{step.id}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{step.id}}" type="button" role="tab" aria-controls="v-pills-{{step.id}}" aria-selected="false">Config</button>
                                     {% endif %}
                                 </div>
                             </div> 
                         
                         {% endfor %}
+                            {# add step form modal #}
+                            <button type="button" class="btn btn-outline-primary mt-3" data-bs-toggle="modal" data-bs-target="#exampleModal" >Add Step</button>
+                            
+                            <form action = {{path('app_compaign_add')}}  method = "POST" >
+                                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
 
+
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5" id="exampleModalLabel">Add Step</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="mb-3">
+                                                    <label for="name" class="form-label">Name</label>
+                                                    <input type="text" class="form-control compentry1 w-75 " id="name" name = 'name' >
+                                                </div>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                <button type="submit" class="btn btn-primary">Add</button>
+                                            </div>
+
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
                     </div>
 
 
                     <div class="tab-content" id="v-pills-tabContent">
 
                         {% for key,step in compaign.steps %}
-                            
-                            {% if key == 0 %}
-                                <div class="tab-pane fade  show active" id="v-pills-{{step.id}}" role="tabpanel" aria-labelledby="v-pills-{{step.id}}-tab" tabindex="0"> 
-                            {% else %}
-                                <div class="tab-pane fade" id="v-pills-{{step.id}}" role="tabpanel" aria-labelledby="v-pills-{{step.id}}-tab" tabindex="0">
-                            {% endif %}
-                            
-                                <form>
+                        
+                        {% if key == 0 %}
+                        <div class="tab-pane fade  show active" id="v-pills-{{step.id}}" role="tabpanel" aria-labelledby="v-pills-{{step.id}}-tab" tabindex="0"> 
+                        {% else %}
+                        <div class="tab-pane fade" id="v-pills-{{step.id}}" role="tabpanel" aria-labelledby="v-pills-{{step.id}}-tab" tabindex="0">
+                        {% endif %}
+
+                        {# email form begin #}
+                        <form>
                                 
-                                        <legend>Mail</legend>
 
-                                        <div class="form-group">
-                                            <label for="text" class="form-label mt-4">Subject</label>
-                                            <input type="text" class="form-control" id="text"  value={{step.email.subject}} >
-                                        </div>
+                            <div class = "mb-3">
+                                {% if key != 0 %}
+                                <label for="dayAfter"~{{step.id}} class ="form-label" >day After Step 1</label>
+                                <input type="number" class = "form-control" value = {{step.dayAfterLastStep }} name="dayAfter"~{{step.id}} id="dayAfter"~{{step.id}} min = "0">
+                                {% endif %}
+                            </div>
+
+                            <legend  >Mail</legend>
+
+                            <div class="form-group">
+                                <label for="text" class="form-label mt-4">Subject</label>
+                                <input type="text" class="form-control" id="text"  value={{step.email.subject}} >
+                            </div>
 
 
 
-                                        <div class="form-group">
-                                            <label for="exampleTextarea" class="form-label mt-4">message</label>
-                                            <textarea class="form-control" id="exampleTextarea" rows="15" cols = "100"></textarea>
-                                        </div>
+                            <div class="form-group">
+                                <label for="exampleTextarea" class="form-label mt-4">message</label>
+                                <textarea class="form-control" id="exampleTextarea" rows="15" cols = "100"></textarea>
+                            </div>
 
-                                        <div class="form-group mt-3">
-                                            <button type="submit" class="btn btn-primary">Save</button>
-                                        </div>
+
+                            <div class="form-group mt-3">
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </div>
                                 
-                                </form>
+                        </form>
+                        {# email form end #}
                             
                             </div>
                         
@@ -146,24 +195,90 @@
                     </div>
 
 
-                {# fin integration #}
+                    {# fin integration #}
                 
                 </div>
-                    {# end  #}
-
+                {# end  #}
 
             </div>
 
+
+
             {# schedule tab #}
             <div class="tab-pane fade" id="schedule" role="tabpanel">
-                <p>Etsy mixtape wayfarers, ethical wes anderson tofu before they sold out mcsweeney's organic lomo retro fanny pack lo-fi farm-to-table readymade. Messenger bag gentrify pitchfork tattooed craft beer, iphone skateboard locavore carles etsy salvia banksy hoodie helvetica. DIY synth PBR banksy irony. Leggings gentrify squid 8-bit cred pitchfork.</p>
+
+
+                <form class = "mt-5" >
+                    <div class="mb-3">
+                        <label for="fromm" class="form-label">From</label>
+                        <input type="number" class="form-control" id="fromm" min = "0" max ="24">
+                    </div>
+                    <div class="mb-3">
+                        <label for="too" class="form-label">To</label>
+                        <input type="number" class="form-control" id="too" min = "0" max ="24">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="startTime">Start Date</label>
+                        <input type="datetime-local" class="form-control" id="startTime">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+           
+           
             </div>
 
 
             {# options tab #}
             <div class="tab-pane fade" id="options" role="tabpanel">
-                <p>Trust fund seitan letterpress, keytar raw denim keffiyeh etsy art party before they sold out master cleanse gluten-free squid scenester freegan cosby sweater. Fanny pack portland seitan DIY, art party locavore wolf cliche high life echo park Austin. Cred vinyl keffiyeh DIY salvia PBR, banh mi before they sold out farm-to-table VHS viral locavore cosby sweater.</p>
+               
+                <form action="" class = " mt-5">
+                  
+                    <h6>Select Emails for compaign</h6>
+
+                    <div class="row border mt-3">
+                        <div class="col align-items-center">
+                            <div class="dropdown">
+                                <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"> Emails</button>
+                                
+                                <div class="dropdown-menu p-4">
+                                    {% for key,dsn in app.user.dsns %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault{{key}}" value = {{dsn.id}}>
+                                        <label class="form-check-label" for="flexCheckDefault{{key}}">{{dsn.email}}</label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col align-item-center">
+                            <p>heho</p>
+                        </div>
+                    
+                    </div>
+
+                    <div class = "mt-5 border " >
+
+                        <h6>New step Prority</h6>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="flexRadio" id="flexRadio1" value "0">
+                            <label class="form-check-label" for="flexRadio1">Yes</label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="flexRadio" id="flexRadio2" checked value = "1" >
+                            <label class="form-check-label" for="flexRadio2">No</label>
+                        </div>
+                    </div>
+
+
+                </form>             
+               
+               
+           
             </div>
+
+
         </div> 
  
     </section>
