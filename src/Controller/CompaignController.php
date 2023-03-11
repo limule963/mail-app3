@@ -23,6 +23,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Serializer\Encoder\DecoderInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -111,46 +112,81 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
             return $this->json($res);
 
         }
-        #[Route('/app/compaign/detail/{id}',name:'app_compaign_detail')]
+        #[Route('/app/compaign/{id}/detail',name:'app_compaign_detail')]
         public function compaignDetail(Compaign $compaign,Request $request)
         {
-
-            $form = $this->getUploadFileForm();
-
-            $form->handleRequest($request);
-            if($form->isSubmitted() && $form->isValid())
-            {
-                $file = $form->get('leads')->getData();
-
-                $this->crud->addLeadsByfile($compaign->getId(),$file);
-
-                
-                $this->addFlash('success','Leads Add successfully');
-
-                $this->fileTreatment($file);
-
-            }
-                    
+            $leadform = $this->getLeadForm();
+            $seqform = $this->getSequenceForm();
             
+            $leadform->handleRequest($request);
+            if($leadform->isSubmitted() && $leadform->isValid())
+            {
+                $file = $leadform->get('leads')->getData();
+                
+                $textleads = $leadform->get('lead')->getData();
+
+                if($textleads!=null) 
+                {
+                    $this->crud->addLeadsByString($compaign->getId(),$textleads);
+                    $this->addFlash('success','Leads Add successfully');
+
+                }
+
+                if($file!=null) 
+                {
+                    $this->crud->addLeadsByfile($compaign->getId(),$file);
+                    $this->addFlash('success','Leads Add successfully');
+                    $this->fileTreatment($file);
+                }
+            }
 
             return $this->render('Email/compaign_detail.html.twig',[
                 'compaign'=> $compaign,
-                'form'=>$form,
+                'leadform'=>$leadform,
+                'seqform'=>$seqform
             ]);
         }
 
-        // #[Route(path:'/app/compaign/{id}/leads',name:'app_compaign_leads')]
-        // public function compaignLead(Compaign $compaign)
+        // #[Route(path:'/app/compaign/{id}/leads/add',name:'app_compaign_leads_add')]
+        // public function compaignAddLeads(Compaign $compaign,Request $request)
         // {
 
+        //     $compaignId = $compaign->getId();
 
+        //     $form = $this->getUploadFileForm($compaignId);
+            
+        //     $form->handleRequest($request);
+        //     if($form->isSubmitted() && $form->isValid())
+        //     {
+        //         $file = $form->get('leads')->getData();
+                
+        //         $textleads = $form->get('lead')->getData();
 
-        //     return $this->render('Email/compaign_leads.html.twig',[
-        //         'compaign'=>$compaign
-        //     ]);
+        //         if($textleads!=null) 
+        //         {
+        //             $this->crud->addLeadsByString($compaignId,$textleads);
+        //             $this->addFlash('success','Leads Add successfully');
+
+        //         }
+
+        //         if($file!=null) 
+        //         {
+        //             $this->crud->addLeadsByfile($compaignId,$file);
+        //             $this->addFlash('success','Leads Add successfully');
+        //             $this->fileTreatment($file);
+
+        //         }
+
+        //         return $this->redirectToRoute('app_compaign_detail',['id'=>$compaignId,'link'=>'#sequence']);
+        //     }
         // }
 
 
+
+
+
+
+    
         #[Route(path:'/app/compaign/{id}/leads',name:'app_compaign_leads')]
         public function compaignLead($id,LeadRepository $rep,Request $request )
         {
@@ -169,7 +205,8 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
             return $this->render('Email/compaign_leads.html.twig',[
                 'leads'=>$leads,
-                'begin'=>$begin
+                'begin'=>$begin,
+                'id'=>$id
             ]);
         }
 
@@ -188,15 +225,23 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
         }
 
 
+        #[Route(path:'/compaign/step/add/{id}',name:'app_compaign_step_add')]
+        public function compaignStepAdd()
+        {
+            
+        }
         
 
-        private function getUploadFileForm()
+
+        
+
+        private function getLeadForm()
         {
             return $this->createFormBuilder()
             ->add('leads',FileType::class,[
                     'label' => 'Upload Leads (csv,json,xml)',
                     'mapped'=> false,
-                    'required' => true,
+                    'required' => false,
                     'constraints'=>[
                         new File([
                             'maxSize' => '1024k',
@@ -209,13 +254,33 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
                         ])
                     ],
                 ])
-                // ->add('lead',TextareaType::class,[
-                //     'mapped'=>false,
-                //     'label' => 'Add single lead'
+            ->add('lead',TextareaType::class,[
+                    'mapped'=>false,
+                    'required'=>false,
+                    'label' => 'Add leads by text',
+                    'attr'=>[
+                        'placeholder'=>"name,email\nname,email\nname,email",
+                        'rows'       =>"5"
+                    ]
                     
-                // ])
-                ->add('submit',SubmitType::class,['label'=>'Add'])
-                ->getForm() ;
+                ])
+            ->add('submit',SubmitType::class,['label'=>'Add'])
+            ->getForm() ;
+        }
+
+        private function getSequenceForm()
+        {
+            return $this->createFormBuilder()
+                ->add('subject',TextType::class,[
+                    'required'=>true
+                ])
+                ->add('message',TextType::class,[
+                    'required'=>true
+                ])
+                ->add('dayAfter',NumberType::class,[
+                    'required'=>true
+                ])
+                ->getForm();
         }
 
         private function paginator($id,$rep, Request $request)

@@ -8,9 +8,13 @@
 
 <section>
 
-
-{# total items count #}
-<div class="count badge bg-primary"> Lead: {{ leads.getTotalItemCount }}</div>
+<div class="d-flex">
+  {# total items count #}
+  <div class="me-auto">
+    <div class=" count badge bg-primary h-75"> Lead: {{ leads.getTotalItemCount }}</div> 
+  </div>
+  <a href= {{path('app_compaign_detail',{'id': id })}} class = " btn btn-outline-success">Back</a>
+</div>
 
 <table class="table table-hover">
   <thead>

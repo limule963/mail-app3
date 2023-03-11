@@ -292,7 +292,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
                 'json'=>new JsonEncoder(),
                 'xml'=>new XmlEncoder()
             ];
-
+            
             $ext = $file->guessExtension();
             $data = $file->getContent();
 
@@ -317,6 +317,31 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             return $leadsOb;
             
         }
+
+        public function addLeadsByString($compaignId,string $text)
+        {
+            $od = new ObjectNormalizer();
+            $dec = new CsvEncoder();
+            
+            
+            $text  = "name,emailAddress\r\n".$text;
+            $data = $dec->decode($text,"csv");
+            $leads = null;
+            foreach($data as $lead)
+            {
+                /**@var Lead */
+                $leadTemp = $od->denormalize($lead,Lead::class);
+                $leadTemp->setStatus($this->getStatus(STAT::STEP_1));
+
+                $leads[] = $leadTemp;
+
+            }
+            $this->updateCompaign(id:$compaignId,leads:$leads);
+
+            return $leads;
+        
+        }
+        
         
 
         public function updateLead($id,$name = null,$emailAddress = null,Status $status = null, Mail $mail = null )

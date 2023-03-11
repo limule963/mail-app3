@@ -7,8 +7,7 @@
 
 {% block headersearch %}
 <div class = "me-auto">
-<h3>Compaign configuration</h3>
-
+    <h4>Compaign configuration</h4>
 </div>
 {% endblock %}
 
@@ -41,33 +40,28 @@
           
             <div class="tab-pane fade active show" id="leads" role="tabpanel">
                 <div class = "mt-5  ">
-                    <div class = ' mb-5'>
-                        {{ form_start(form) }}
+                    <div class = ' mb-5 '>
+                        {{ form_start(leadform) }}
                         <div class = 'row mb-2'>
-                            <h6 class = "col" >{{ form_label(form.leads) }}</h6>   
+                            <h6 class = "col" >{{ form_label(leadform.leads) }}</h6>   
                             <div class ="col" >Lead uploaded: {{ compaign.leads|length }} </div>
                             <div class = "col" ><a class = "btn btn-outline-success w-1" href= {{ path('app_compaign_leads',{'id': compaign.id }) }} >Leads</a></div>
-
                         </div>
 
-                        {{ form_widget(form.leads) }}
-                        {{ form_errors(form.leads) }}
+                        {{ form_widget(leadform.leads) }}
+                        {{ form_errors(leadform.leads) }}
 
-                        <div class = "mt-2" >{{ form_widget(form.submit) }}</div>
-
-                        {{ form_end(form) }}
-                        
                     </div>
-                </div>
+               
 
-                <div class =''>
-                    <form action="">
-                        <label for="singlelead" class = "form-label mb-2" > <h6>Add single lead</h6></label>
-                        
-                        <textarea name="singlelead" id="singlelead"  class ="form-control" cols="20" rows="5"></textarea>
-                        <input type="submit" class = "btn btn-primary mt-2" value="submit">
-                    </form>    
-                </div>
+                    <div class =''>
+                    
+                        <h6>{{ form_label(leadform.lead) }}</h6>
+                        {{ form_widget(leadform.lead) }}
+                        <div class = "mt-2" >{{ form_widget(leadform.submit) }}</div>
+                    </div>
+                        {{ form_end(leadform) }}
+                 </div>
             </div>
 
           
@@ -235,7 +229,7 @@
                   
                     <h6>Select Emails for compaign</h6>
 
-                    <div class="row border mt-3">
+                    <div class="row  mt-3">
                         <div class="col align-items-center">
                             <div class="dropdown">
                                 <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"> Emails</button>
@@ -257,7 +251,7 @@
                     
                     </div>
 
-                    <div class = "mt-5 border " >
+                    <div class = "mt-5  " >
 
                         <h6>New step Prority</h6>
                         <div class="form-check">
