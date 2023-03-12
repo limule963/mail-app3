@@ -18,16 +18,16 @@
     <section>
         <ul class="nav nav-tabs" role="tablist">
             <li class="nav-item" role="presentation">
-                <a class="nav-link active" data-bs-toggle="tab" href="#leads" aria-selected="true" role="tab">Leads</a>
+                <a class= "nav-link {{link == null or link == "leads" ? 'active'}}"  data-bs-toggle="tab" href="#leads" aria-selected= {{link == null or link == "leads" ? 'true' : "false"}} role="tab">Leads</a>
             </li>
             <li class="nav-item" role="presentation">
-                <a class="nav-link" data-bs-toggle="tab" href="#sequence" aria-selected="false" role="tab" tabindex="-1">Sequence</a>
+                <a class="nav-link {{link == 'sequence' ? 'active'}}" data-bs-toggle="tab" href="#sequence" aria-selected= {{link == 'sequence' ? 'true' : "false"}} role="tab" tabindex="-1">Sequence</a>
             </li>
             <li class="nav-item" role="presentation">
-                <a class="nav-link" data-bs-toggle="tab" href="#schedule" aria-selected="false" role="tab" tabindex="-1">Schedule</a>
+                <a class="nav-link {{link == "schedule" ? 'active'}} " data-bs-toggle="tab" href="#schedule" aria-selected=  {{link == 'schedule' ? 'true' : "false"}} role="tab" tabindex="-1">Schedule</a>
             </li>
             <li class="nav-item" role="presentation">
-                <a class="nav-link" data-bs-toggle="tab" href="#options" aria-selected="false" role="tab" tabindex="-1">Options</a>
+                <a class="nav-link  {{link == "options" ? 'active'}}" data-bs-toggle="tab" href="#options" aria-selected= {{link == 'options' ? 'true' : "false"}} role="tab" tabindex="-1">Options</a>
             </li>
 
 
@@ -36,16 +36,18 @@
         <div id="myTabContent" class="tab-content">
 
 
+
+
             {# lead tab #}
           
-            <div class="tab-pane fade active show" id="leads" role="tabpanel">
+            <div class="tab-pane fade  {{link == null or link == "leads" ? 'active show'}} " id="leads" role="tabpanel">
                 <div class = "mt-5  ">
                     <div class = ' mb-5 '>
                         {{ form_start(leadform) }}
                         <div class = 'row mb-2'>
                             <h6 class = "col" >{{ form_label(leadform.leads) }}</h6>   
                             <div class ="col" >Lead uploaded: {{ compaign.leads|length }} </div>
-                            <div class = "col" ><a class = "btn btn-outline-success w-1" href= {{ path('app_compaign_leads',{'id': compaign.id }) }} >Leads</a></div>
+                            <div class = "col" ><a class = "btn btn-outline-success w-1" href= {{ path('app_compaign_leads',{'id': compaign.id, 'link': 'leads' }) }} >Leads</a></div>
                         </div>
 
                         {{ form_widget(leadform.leads) }}
@@ -69,7 +71,7 @@
 
 
             {# sequence tab #}
-            <div class="tab-pane fade " id="sequence" role="tabpanel">
+            <div class="tab-pane fade {{link == 'sequence' ? 'active show'}} " id="sequence" role="tabpanel">
 
                 {# begin #}
                 <div class="d-flex align-items-start mt-5">
@@ -108,7 +110,7 @@
                             {# add step form modal #}
                             <button type="button" class="btn btn-outline-primary mt-3" data-bs-toggle="modal" data-bs-target="#exampleModal" >Add Step</button>
                             
-                            <form action = {{path('app_compaign_add')}}  method = "POST" >
+                            <form action = {{path('app_compaign_step_add',{'id': compaign.id})}}  method = "POST" >
                                 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
@@ -120,8 +122,8 @@
                                             </div>
                                             <div class="modal-body">
                                                 <div class="mb-3">
-                                                    <label for="name" class="form-label">Name</label>
-                                                    <input type="text" class="form-control compentry1 w-75 " id="name" name = 'name' >
+                                                    <label for="step_name" class="form-label">Name</label>
+                                                    <input type="text" class="form-control compentry1 w-75 " id="step_name" name = 'step_name' >
                                                 </div>
                                             </div>
 
@@ -149,40 +151,42 @@
                         <div class="tab-pane fade" id="v-pills-{{step.id}}" role="tabpanel" aria-labelledby="v-pills-{{step.id}}-tab" tabindex="0">
                         {% endif %}
 
-                        {# email form begin #}
-                        <form>
-                                
+                            {# email form begin #}
+                            <form action = {{ path("app_compaign_step_update", {"id": compaign.id, "link": "sequence"}) }} method = "post" >
+                                    
 
-                            <div class = "mb-3">
-                                {% if key != 0 %}
-                                <label for="dayAfter"~{{step.id}} class ="form-label" >day After Step 1</label>
-                                <input type="number" class = "form-control" value = {{step.dayAfterLastStep }} name="dayAfter"~{{step.id}} id="dayAfter"~{{step.id}} min = "0">
-                                {% endif %}
-                            </div>
+                                <div class = "mb-3">
+                                    {% if key != 0 %}
+                                    <label for="dayAfter"~{{step.id}} class ="form-label" >day After Step 1</label>
+                                    <input type="number" class = "form-control" value = {{step.dayAfterLastStep }} name="seqform[dayAfter_{{step.id}}]" id="dayAfter"~{{step.id}} min = "0">
+                                    {% endif %}
+                                </div>
 
-                            <legend  >Mail</legend>
+                                <legend >Mail</legend>
 
-                            <div class="form-group">
-                                <label for="text" class="form-label mt-4">Subject</label>
-                                <input type="text" class="form-control" id="text"  value={{step.email.subject}} >
-                            </div>
-
-
-
-                            <div class="form-group">
-                                <label for="exampleTextarea" class="form-label mt-4">message</label>
-                                <textarea class="form-control" id="exampleTextarea" rows="15" cols = "100"></textarea>
-                            </div>
+                                <div class="form-group">
+                                    <label for="subject_{{step.id}}" class="form-label mt-4">Subject</label>
+                                    <input type="text" class="form-control" id="subject_{{step.id}}"  value =" {{step.email.subject}}" name = "seqform[subject_{{step.id}}]" >
+                                </div>
 
 
-                            <div class="form-group mt-3">
-                                <button type="submit" class="btn btn-primary">Save</button>
-                            </div>
-                                
-                        </form>
-                        {# email form end #}
+
+                                <div class="form-group">
+                                    <label for="message" class="form-label mt-4">message</label>
+                                    <textarea class="form-control" id="message" rows="15" cols = "100" name = "seqform[message_{{step.id}}]"   >{{step.email.textMessage}}</textarea>
+                                </div>
+
+                                <input type="hidden" name="token" value ={{ csrf_token("sequence") }} >
+
+                                <div class="form-group mt-3">
+                                    <button type="submit" class="btn btn-primary">Save</button>
+                                </div>
+
+                                    
+                            </form>
+                            {# email form end #}
                             
-                            </div>
+                        </div>
                         
                         {% endfor %}
 
@@ -199,7 +203,7 @@
 
 
             {# schedule tab #}
-            <div class="tab-pane fade" id="schedule" role="tabpanel">
+            <div class="tab-pane fade  {{link == 'schedule' ? 'active show'}} " id="schedule" role="tabpanel">
 
 
                 <form class = "mt-5" >
@@ -223,7 +227,7 @@
 
 
             {# options tab #}
-            <div class="tab-pane fade" id="options" role="tabpanel">
+            <div class="tab-pane fade  {{link == 'options' ? 'active show'}} " id="options" role="tabpanel">
                
                 <form action="" class = " mt-5">
                   
@@ -275,6 +279,13 @@
 
         </div> 
  
+{{ dump(var) }}
+
+
+
+
+
+
     </section>
 
 

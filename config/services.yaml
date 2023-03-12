@@ -5,10 +5,13 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     file_directory: '%kernel.project_dir%/var/uploads/file'
+    sendmail_file_directory: '%kernel.project_dir%/templates/mail/send/'
+    receivemail_file_directory: '%kernel.project_dir%/templates/mail/receive'
 
 services:
     # default configuration for services in *this* file
     _defaults:
+
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 

@@ -28,6 +28,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Mime\BodyRendererInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Uid\Uuid;
 use Throwable;
 
 class HomeController extends AbstractController
@@ -41,7 +42,11 @@ class HomeController extends AbstractController
     public function index( AllDsnReceiver $alldsnRec, CompaignLuncher $cl, Sequencer $seq,SequenceLuncher $sl,AllFolderReceiver $allrec,Receiver $rec): Response
     {
     
-        
+            $step = $this->crud->getStep(46);
+
+            $uid = Uuid::v7();
+            dd($uid);
+            dd($step,$step->getEmail()->getSubject()) ;   
 
         return $this->render('home/index.html.twig', [
             'controller_name' => 'HomeController',

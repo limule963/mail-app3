@@ -1,4 +1,5 @@
-{% apply inline_css(source('@styles/style.css')) %}
+{# {% apply inline_css(source('@styles/style.css')) %} #}
+{# {% apply inline_css(source('@styles/style.css')) %}
 <h1>Hello la famille</h1>
 
 {% block body %}{% endblock %}
@@ -12,5 +13,34 @@
 
 
 
+{% endapply %}
+ #}
+
+
+{% apply inline_css(source('@styles/style.css')) %}
+
+<!doctype html>
+<html>
+
+
+    <body>
+
+        {% block body %}{% endblock %}
+
+        {% if tracker is defined %}
+
+            {% if tracker == true %}
+            {# https://localhost:8000/tracking/1.png #}
+
+            {# <p><img src=  {{ url('app_tracking', {'id': lead.id }) }} ></p> #}
+            <p><img src= {{ url('app_tracking_2',{'id': lead.id}) }}></p>
+            {% endif %}
+
+        {% endif %}
+
+
+
+    </body>
+</html>
 {% endapply %}
 

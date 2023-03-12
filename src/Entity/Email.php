@@ -20,6 +20,18 @@ class Email
     #[ORM\Column(length: 255)]
     private ?string $subject = null;
 
+    #[ORM\Column(length: 10000, nullable: true)]
+    private ?string $textMessage = null;
+
+    #[ORM\Column]
+    public ?string $uid = null;
+
+
+    public function __construct()
+    {
+        if($this->uid == null) $this->uid = uniqid();
+    }
+    
     public function getId(): ?int
     {
         return $this->id;
@@ -58,5 +70,17 @@ class Email
             ->htmlTemplate($this->getEmailLink())
         ;
         return $email;
+    }
+
+    public function getTextMessage(): ?string
+    {
+        return $this->textMessage;
+    }
+
+    public function setTextMessage(?string $textMessage): self
+    {
+        $this->textMessage = $textMessage;
+
+        return $this;
     }
 }

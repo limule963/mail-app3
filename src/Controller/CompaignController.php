@@ -5,13 +5,15 @@
 use App\Entity\Lead;
 use App\Entity\Compaign;
 use App\AppMailer\Data\STATUS;
+use App\Repository\LeadRepository;
+use Symfony\Component\Filesystem\Path;
 use Doctrine\ORM\EntityManagerInterface;
 use App\AppMailer\Sender\CompaignLuncher;
 use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use App\AppMailer\Data\TransparentPixelResponse;
-use App\Repository\LeadRepository;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
@@ -19,13 +21,15 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Serializer\Encoder\DecoderInterface;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\HttpFoundation\File\File as FileFile;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
@@ -66,10 +70,10 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
         #[Route('app/compaign/add/',name:'app_compaign_add')]
         public function addCompaign(Request $request)
         {
-            $name = $request->request->get('name');
+            $name = $request->request->get('compaign_name');
             if($name != null)
             {
-                $this->crud->addCompaign($this->getUser()->getId(),$name);
+                $comp = $this->crud->addCompaign($this->getUser()->getId(),$name);
                 $this->addFlash('success','compaign add');
                 // return $this->redirectToRoute('app_compaign');
             }
@@ -112,24 +116,38 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
             return $this->json($res);
 
         }
-        #[Route('/app/compaign/{id}/detail',name:'app_compaign_detail')]
-        public function compaignDetail(Compaign $compaign,Request $request)
+        #[Route('/app/compaign/{id}/detail/{link?}',name:'app_compaign_detail')]
+        public function compaignDetail(Compaign $compaign,Request $request, ?string $link)
         {
-            $leadform = $this->getLeadForm();
-            $seqform = $this->getSequenceForm();
-            
+
+            $leadform = $this->getLeadForm($compaign->getId());
+            $seqform = $request->request->all('seqform');
+
+
+            return $this->render('Email/compaign_detail.html.twig',[
+                'compaign'=> $compaign,
+                'leadform'=>$leadform,
+                'var'=>$seqform,
+                'link' => $link
+            ]);
+        }
+
+        #[Route(path:'/app/compaign/{id}/leads/add',name:'app_compaign_leads_add')]
+        public function compaignAddLeads(Compaign $compaign,Request $request)
+        {
+            // dd('am in');
+            $leadform = $this->getLeadForm($compaign->getId());
             $leadform->handleRequest($request);
             if($leadform->isSubmitted() && $leadform->isValid())
             {
-                $file = $leadform->get('leads')->getData();
                 
+                $file = $leadform->get('leads')->getData();
                 $textleads = $leadform->get('lead')->getData();
 
                 if($textleads!=null) 
                 {
                     $this->crud->addLeadsByString($compaign->getId(),$textleads);
                     $this->addFlash('success','Leads Add successfully');
-
                 }
 
                 if($file!=null) 
@@ -138,48 +156,12 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
                     $this->addFlash('success','Leads Add successfully');
                     $this->fileTreatment($file);
                 }
+                return $this->redirectToRoute("app_compaign_detail",["id"=>$compaign->getId()]);
             }
+            $this->addFlash("warning","No lead to add");
+            return $this->redirectToRoute("app_compaign_detail",["id"=>$compaign->getId()]);
 
-            return $this->render('Email/compaign_detail.html.twig',[
-                'compaign'=> $compaign,
-                'leadform'=>$leadform,
-                'seqform'=>$seqform
-            ]);
         }
-
-        // #[Route(path:'/app/compaign/{id}/leads/add',name:'app_compaign_leads_add')]
-        // public function compaignAddLeads(Compaign $compaign,Request $request)
-        // {
-
-        //     $compaignId = $compaign->getId();
-
-        //     $form = $this->getUploadFileForm($compaignId);
-            
-        //     $form->handleRequest($request);
-        //     if($form->isSubmitted() && $form->isValid())
-        //     {
-        //         $file = $form->get('leads')->getData();
-                
-        //         $textleads = $form->get('lead')->getData();
-
-        //         if($textleads!=null) 
-        //         {
-        //             $this->crud->addLeadsByString($compaignId,$textleads);
-        //             $this->addFlash('success','Leads Add successfully');
-
-        //         }
-
-        //         if($file!=null) 
-        //         {
-        //             $this->crud->addLeadsByfile($compaignId,$file);
-        //             $this->addFlash('success','Leads Add successfully');
-        //             $this->fileTreatment($file);
-
-        //         }
-
-        //         return $this->redirectToRoute('app_compaign_detail',['id'=>$compaignId,'link'=>'#sequence']);
-        //     }
-        // }
 
 
 
@@ -225,17 +207,91 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
         }
 
 
-        #[Route(path:'/compaign/step/add/{id}',name:'app_compaign_step_add')]
-        public function compaignStepAdd()
+        #[Route(path:'/compaign/{id}/step/add',name:'app_compaign_step_add')]
+        public function compaignStepAdd(Compaign $compaign, Request $request)
         {
+            $name = $request->request->get('step_name');
+
+            if($name != null)
+            {
+
+                $step = $this->crud->createStep($name,'','');
+                $compaign->addStep($step);
+                $this->crud->saveCompaign($compaign);
+                $this->addFlash("success","step add");
+
+
+            }
+            return $this->redirectToRoute('app_compaign_detail',['id'=>$compaign->getId(),'link'=>"sequence"]);
+
             
+
+        }
+
+        #[Route(path:'/compaign/{id}/step/update',name:'app_compaign_step_update')]
+        public function compaignStepUpdate(Compaign $compaign, Request $request)
+        {
+            $seqform = $request->request->all('seqform');
+            $submittedToken = $request->request->get('token');
+            
+
+            if(empty($seqform))
+            {
+                $this->addFlash("warning", "Nothing to save");
+                return $this->redirectToRoute("app_compaign_detail",["id"=>$compaign->getId(),"link"=>"sequence"]);
+            }
+
+            if ($this->isCsrfTokenValid('sequence', $submittedToken)) {
+                
+                $data = explode("_",array_key_first($seqform));
+                $id = intval($data[1]);
+                $step = $this->crud->getStep($id);
+                $email = $step->getEmail();
+                
+                foreach($seqform as $key => $value)
+                {
+                    $data = explode("_",$key);
+                    if($data[0] === 'dayAfter') $step->dayAfterLastStep = $value;
+                    if($data[0] === 'subject') $email->setSubject($value);
+                    if($data[0] === 'message') 
+                    {
+                        $email->setTextMessage($value);
+
+                        $path = $this->getParameter('sendmail_file_directory');
+                        $name = "message_".$email->uid."_".$id.".html.twig";
+                        $filename = $path.$name;
+                        $this->createfile($name,$path);
+                        
+                        file_put_contents($filename,$value."\r\n\r\n{% endblock %}",FILE_APPEND);
+                        $email->setEmailLink($name);
+
+                    }
+
+                
+                    
+                }
+
+
+                $step->setEmail($email);
+                $this->crud->saveStep($step);
+                $this->addFlash('success','saved');
+            }
+
+            return $this->redirectToRoute("app_compaign_detail",["id"=>$compaign->getId(),"link"=>"sequence"]);
+
+
         }
         
 
 
-        
+        private function myHandleRequest(Request $request)
+        {   
+            return  $request->$request->get('seqform');
+            
 
-        private function getLeadForm()
+        }
+
+        private function getLeadForm($compaignId)
         {
             return $this->createFormBuilder()
             ->add('leads',FileType::class,[
@@ -265,12 +321,13 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
                     
                 ])
             ->add('submit',SubmitType::class,['label'=>'Add'])
+            ->setAction($this->generateUrl("app_compaign_leads_add",["id"=>$compaignId]))
             ->getForm() ;
         }
 
         private function getSequenceForm()
         {
-            return $this->createFormBuilder()
+            return $this->createFormBuilder(null,[])
                 ->add('subject',TextType::class,[
                     'required'=>true
                 ])
@@ -279,6 +336,7 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
                 ])
                 ->add('dayAfter',NumberType::class,[
                     'required'=>true
+
                 ])
                 ->getForm();
         }
@@ -346,6 +404,55 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
                 }
             }
 
+        }
+
+        private function createfile(string $name,string $path)
+        {
+            $filename = $path.$name;
+            $file = fopen($filename,"a+");
+            if($file) 
+            {
+                $content = file_get_contents($path.'mailtemplate.html.twig');
+                file_put_contents($filename,$content);
+                // fseek($file,25);
+                fclose($file);
+                return true;
+            }
+            else  return false;
+            
+        }
+        private function createfile2(string $filename,string $path)
+        {
+            $filesystem = new Filesystem();
+
+            try 
+            {
+                // $filesystem->mkdir(
+                //     Path::normalize(sys_get_temp_dir().'/'.random_int(0, 1000)),
+                //);
+                $filesystem->dumpFile($path.$filename,'{% extends "mail/send/base.html.twig" %}');
+                // $filesystem->touch($path.$filename);
+            } 
+            catch (IOExceptionInterface $exception) 
+            {
+                echo "An error occurred while creating your directory at ".$exception->getPath();
+            }
+
+            
+        }
+
+        private function file_put($filename,$content)
+        {
+            $file = fopen($filename,'w+');
+            fseek($file,20);
+            fwrite($file,$content);
+            fclose($file);
+
+        }
+
+        private function test(string $path)
+        {
+            return $path;
         }
         
 

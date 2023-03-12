@@ -19,7 +19,7 @@ class Step
     private ?string $name = null;
 
     #[ORM\Column]
-    public int $dayAfterLastStep = 1;
+    public int $dayAfterLastStep = 0;
 
     // #[ORM\Column]
     // public ?int $startTime = null;

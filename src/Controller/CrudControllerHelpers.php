@@ -548,6 +548,14 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
             return $rep->findByCompaignId($compaignId);
         }
+        
+        public function getStep($id)
+        {
+            /**@var StepRepository */
+            $rep = $this->em->getRepository(Step::class);
+
+            return $rep->find($id);
+        }
 
 
 
