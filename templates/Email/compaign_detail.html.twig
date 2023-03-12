@@ -92,16 +92,17 @@
                                     <div class = "d-flex">
                                         <h5 class="card-title me-auto">{{step.name}}</h5>
                                         {% if key != 0 %}
-                                        <a href="" ><img src={{asset('assets/images/svg/trash.svg')}} height="10px" alt="i"></a>
+                                        <a href={{ path("app_compaign_step_delete", {"id" : step.id}) }} ><img src={{asset('assets/images/svg/trash.svg')}} height="10px" alt="i"></a>
                                         {% endif %}
                                     </div>
+
 
                                     <p class="card-text"> step  {{key + 1 }} </p>
 
                                     {% if key == 0 %} 
-                                    <button class="btn btn-outline-primary active" id="v-pills-{{step.id}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{step.id}}" type="button" role="tab" aria-controls="v-pills-{{step.id}}" aria-selected="true">Config</button>
+                                    <button class="btn btn-outline-primary {{link2 == null or link2 == step.id ? 'active'}}" id="v-pills-{{step.id}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{step.id}}" type="button" role="tab" aria-controls="v-pills-{{step.id}}" aria-selected=" {{link2 == null or link2 == step.id ? 'true' : 'false'}}">Config</button>
                                     {% else %}
-                                    <button class="btn btn-outline-primary" id="v-pills-{{step.id}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{step.id}}" type="button" role="tab" aria-controls="v-pills-{{step.id}}" aria-selected="false">Config</button>
+                                    <button class="btn btn-outline-primary {{link2 == step.id ? 'active' }}" id="v-pills-{{step.id}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{step.id}}" type="button" role="tab" aria-controls="v-pills-{{step.id}}" aria-selected=" {{link2 == step.id ? "true" : "false"}}">Config</button>
                                     {% endif %}
                                 </div>
                             </div> 
@@ -146,9 +147,9 @@
                         {% for key,step in compaign.steps %}
                         
                         {% if key == 0 %}
-                        <div class="tab-pane fade  show active" id="v-pills-{{step.id}}" role="tabpanel" aria-labelledby="v-pills-{{step.id}}-tab" tabindex="0"> 
+                        <div class="tab-pane fade {{link2 == null or link2 == step.id ? "show active" }} " id="v-pills-{{step.id}}" role="tabpanel" aria-labelledby="v-pills-{{step.id}}-tab" tabindex="0"> 
                         {% else %}
-                        <div class="tab-pane fade" id="v-pills-{{step.id}}" role="tabpanel" aria-labelledby="v-pills-{{step.id}}-tab" tabindex="0">
+                        <div class="tab-pane fade {{link2 == step.id ? 'show active'}} " id="v-pills-{{step.id}}" role="tabpanel" aria-labelledby="v-pills-{{step.id}}-tab" tabindex="0">
                         {% endif %}
 
                             {# email form begin #}
@@ -279,7 +280,6 @@
 
         </div> 
  
-{{ dump(var) }}
 
 
 

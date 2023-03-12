@@ -3,6 +3,7 @@
     namespace App\Controller;
 
 use App\Entity\Lead;
+use App\Entity\Step;
 use App\Entity\Compaign;
 use App\AppMailer\Data\STATUS;
 use App\Repository\LeadRepository;
@@ -116,10 +117,9 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
             return $this->json($res);
 
         }
-        #[Route('/app/compaign/{id}/detail/{link?}',name:'app_compaign_detail')]
-        public function compaignDetail(Compaign $compaign,Request $request, ?string $link)
+        #[Route('/app/compaign/{id}/detail/{link?}-{link2?}',name:'app_compaign_detail')]
+        public function compaignDetail(Compaign $compaign,Request $request, ?string $link,?string $link2)
         {
-
             $leadform = $this->getLeadForm($compaign->getId());
             $seqform = $request->request->all('seqform');
 
@@ -128,7 +128,8 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
                 'compaign'=> $compaign,
                 'leadform'=>$leadform,
                 'var'=>$seqform,
-                'link' => $link
+                'link' => $link,
+                'link2'=>$link2
             ]);
         }
 
@@ -206,6 +207,22 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
             return $this->redirectToRoute('app_compaign_leads',['id'=>$compaignId]);
         }
 
+        
+        #[Route(path:'/compaign/step/delete/{id}',name:'app_compaign_step_delete')]
+        public function compaignStepDelete(Step $step)
+        {
+
+
+            
+            $compaignId = $step->getCompaign()->getId();
+            $link = "sequence";
+            $link2 = $step->getId();    
+
+            $this->crud->deleteStep($step->getId());
+            return $this->redirectToRoute("app_compaign_detail",["id"=>$compaignId,"link"=>$link]);
+            
+        }
+
 
         #[Route(path:'/compaign/{id}/step/add',name:'app_compaign_step_add')]
         public function compaignStepAdd(Compaign $compaign, Request $request)
@@ -222,7 +239,7 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 
             }
-            return $this->redirectToRoute('app_compaign_detail',['id'=>$compaign->getId(),'link'=>"sequence"]);
+            return $this->redirectToRoute('app_compaign_detail',['id'=>$compaign->getId(),'link'=>"sequence","link2"=>$step->getId()]);
 
             
 
@@ -277,7 +294,7 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
                 $this->addFlash('success','saved');
             }
 
-            return $this->redirectToRoute("app_compaign_detail",["id"=>$compaign->getId(),"link"=>"sequence"]);
+            return $this->redirectToRoute("app_compaign_detail",["id"=>$compaign->getId(),"link"=>"sequence","link2"=>$step->getId()]);
 
 
         }
