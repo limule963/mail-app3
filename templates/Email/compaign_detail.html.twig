@@ -240,7 +240,7 @@
                         <label class="form-label" for="startTime">Start Date</label>
                         <input type="datetime-local" class="form-control" value ="{{compaign.schedule.startTime|date("Y-m-d H:i")}}"  name = "scheform[startTime]" id="startTime" required>
                     </div>
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
                 </form>
            
            
@@ -249,53 +249,94 @@
 
             {# options tab #}
             <div class="tab-pane fade  {{link == 'options' ? 'active show'}} " id="options" role="tabpanel">
-               
-                <form action="" class = " mt-5">
-                  
-                    <h6>Select Emails for compaign</h6>
+              
+               <div class="row mt-5">
 
-                    <div class="row  mt-3">
-                        <div class="col align-items-center">
-                            <div class="dropdown">
-                                <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"> Emails</button>
-                                
-                                <div class="dropdown-menu p-4">
-                                    {% for key,dsn in app.user.dsns %}
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault{{key}}" value = {{dsn.id}}>
-                                        <label class="form-check-label" for="flexCheckDefault{{key}}">{{dsn.email}}</label>
-                                    </div>
-                                    {% endfor %}
+                    <form class = "col-4 " action = {{ path("app_compaign_config", {"id": compaign.id}) }} method = "post" class = "  mt-5">
+
+                        <div class = "row">
+                            <div class = "col" >
+                                <h6>Select Emails for compaign</h6>
+
+                                <div class="  mt-3">
+                                    <div class=" align-items-center">
+                                        <div class="dropdown">
+                                            <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"> Emails</button>
+                                            
+                                            <div class="dropdown-menu p-4">
+                                                {% for key,dsn in app.user.dsns %}
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox"  id="flexCheckDefault_{{key}}" value = "{{dsn.id}}" name = "optionscheck[]">
+                                                    <label class="form-check-label" for="flexCheckDefault_{{key}}">{{dsn.email}}</label>
+                                                </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>                    
+                                </div> 
+                            </div>
+
+
+                                            
+                        </div>
+
+                        <div class = "mt-5  " >
+
+                            <h6>New step Prority</h6>
+                            <div class="row ms-2">
+                            
+                                <div class="form-check col-2">
+                                    <input class="form-check-input" type="radio" {% if compaign.newStepPriority == true %}checked{% endif %} name="options[newStepPriority]" id="flexRadio1" value = 1>
+                                    <label class="form-check-label" for="flexRadio1">Yes</label>
                                 </div>
+
+                                <div class="form-check col-2">
+                                    <input class="form-check-input" type="radio" {% if compaign.newStepPriority == false %}checked{% endif %} name="options[newStepPriority]" id="flexRadio2"  value = 0 >
+                                    <label class="form-check-label" for="flexRadio2">No</label>
+                                </div>
+                            
                             </div>
                         </div>
 
-                        <div class="col align-item-center">
-                            <p>heho</p>
+                        <div class = "mt-5  " >
+
+                            <h6>Enable open Mail Tracker</h6>
+
+                            <div class="row ms-2">
+                            
+                                <div class="form-check col-2 ">
+                                    <input class="form-check-input" {% if compaign.isTracker == true %}checked{% endif %}  type="radio" name="options[tracker]" id="flexRadio3" value = 1>
+                                    <label class="form-check-label" for="flexRadio3">Yes</label>
+                                </div>
+
+                                <div class="form-check col-2 ">
+                                    <input class="form-check-input" {% if compaign.isTracker == false %}checked{% endif %}  type="radio" name="options[tracker]" id="flexRadio4"  value = 0 >
+                                    <label class="form-check-label" for="flexRadio4">No</label>
+                                </div>
+
+                            </div>
                         </div>
-                    
-                    </div>
 
-                    <div class = "mt-5  " >
+                        
+                        <button  class = "btn btn-primary mt-5" type="submit">Save</button> 
 
-                        <h6>New step Prority</h6>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="flexRadio" id="flexRadio1" value "0">
-                            <label class="form-check-label" for="flexRadio1">Yes</label>
+                    </form> 
+
+                    <div class="col pt-4 " id = "compaign_dsns">
+                        <div class ="d-flex " id ="emailselect">
+                            {% for dsn in compaign.dsns %}
+                            <div class="d-flex me-3" >
+                                <div class="option_comp_email me-1"> {{dsn.email}} </div>
+                                <a class="btn btn-close w-25" href = {{ path("app_compaign_dsn_delete", {"id":dsn.id}) }} ></a>
+                            </div>
+                            {% endfor %}
                         </div>
-
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="flexRadio" id="flexRadio2" checked value = "1" >
-                            <label class="form-check-label" for="flexRadio2">No</label>
-                        </div>
-                    </div>
-
-
-                </form>             
+                        </div>              
+                
+                    </div>               
                
-               
-           
-            </div>
+               </div>
+
 
 
         </div> 

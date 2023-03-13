@@ -2,8 +2,10 @@
     
     namespace App\Controller;
 
+use App\Entity\Dsn;
 use App\Entity\Lead;
 use App\Entity\Step;
+use DateTimeImmutable;
 use App\Entity\Compaign;
 use App\AppMailer\Data\STATUS;
 use App\Repository\LeadRepository;
@@ -15,7 +17,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use App\AppMailer\Data\TransparentPixelResponse;
-use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
@@ -196,14 +198,15 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
         #[Route(path:'/app/compaign/leads/delete/{id}',name:'app_compaign_leads_delete')]
         public function compaignLeadDelete(Lead $lead)
         {
-            $compaignId = $lead->getCompaign()->getId();
+            $compaign = $lead->getCompaign();
             if($lead != null) 
             {
-                $this->crud->deleteLead($lead);
+                $compaign->removeLead($lead);
+                $this->crud->saveCompaign($compaign);
                 $this->addFlash('success','lead deleted');
                 
             }
-            return $this->redirectToRoute('app_compaign_leads',['id'=>$compaignId]);
+            return $this->redirectToRoute('app_compaign_leads',['id'=>$compaign->getId()]);
         }
 
         
@@ -311,6 +314,53 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
             return $this->redirectToRoute("app_compaign_detail",["id"=>$compaign->getId(),"link"=>"schedule"]);
 
         }
+
+        #[Route(path:"/app/compaign/{id}/config",name:"app_compaign_config")]
+        public function compaignConfig(Compaign $compaign,Request $request)
+        {
+            $optform = $request->request->all("options");
+            $checkform = $request->request->all("optionscheck");
+
+            foreach($checkform as $id)
+            {
+                $dsn = $this->crud->getUserDsn($this->getUser()->getId(),$id);
+                $compaign->addDsn($dsn);
+                $this->crud->saveCompaign($compaign,false);
+            }
+
+            foreach($optform as $key=> $value )
+            {
+                if($key == "newStepPriority")
+                {
+                    $compaign->newStepPriority = intval($value);
+                    $this->crud->saveCompaign($compaign,false);
+                }
+
+                if($key == "tracker")
+                {
+                    $compaign->setIsTracker(intval($value));
+                    $this->crud->saveCompaign($compaign,false);
+
+                }
+            }
+            
+            $this->crud->em->flush();
+            $this->addFlash("success", "Saved");
+            return $this->redirectToRoute("app_compaign_detail",["id"=>$compaign->getId(),"link"=>'options']);
+        }
+
+        #[Route(path:"/app/compaign/dsn/delete/{id}",name:"app_compaign_dsn_delete")]
+        public function compaignDsnsAdd(Dsn $dsn)
+        {
+            $compaign = $dsn->getCompaign();
+            $compaign->removeDsn($dsn);
+
+            $this->crud->saveCompaign($compaign);
+            $this->addFlash("success","Email removed");
+
+            return $this->redirectToRoute("app_compaign_detail",["id"=>$compaign->getId(),'link'=>'options']);
+        }
+        
         
     
         

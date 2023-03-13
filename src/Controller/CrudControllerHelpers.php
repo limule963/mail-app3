@@ -177,11 +177,11 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
         }
 
-        public function saveCompaign(Compaign $compaign)
+        public function saveCompaign(Compaign $compaign,$flush =true)
         {
             /**@var CompaignRepository */
             $rep = $this->em->getRepository(Compaign::class);
-            $rep->save($compaign,true);
+            $rep->save($compaign,$flush);
 
         }
         
