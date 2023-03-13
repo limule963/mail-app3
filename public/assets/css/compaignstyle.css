@@ -34,3 +34,19 @@
   /* .compentry1{
     width: 125px;
   } */
+
+#v-pills-tab{
+  height: 500px;
+  flex-wrap: nowrap;
+  overflow-y: auto;
+}
+
+/* 
+#stepcard{
+  width: 200px;
+} */
+
+
+.form-scheform input::placeholder{
+  text-align: right;
+}

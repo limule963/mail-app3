@@ -74,40 +74,16 @@
             <div class="tab-pane fade {{link == 'sequence' ? 'active show'}} " id="sequence" role="tabpanel">
 
                 {# begin #}
-                <div class="d-flex align-items-start mt-5">
+                <div class="d-flex align-items-start mt-3">
 
 
                     {# integration #}
 
                     
-               
-                    <div class="nav flex-column nav-pills  me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                        
-                        
-                        {% for key,step in compaign.steps %}
-                            
-                       
-                            <div class="card mb-3" style="width: 12rem;">
-                                <div class="card-body">
-                                    <div class = "d-flex">
-                                        <h5 class="card-title me-auto">{{step.name}}</h5>
-                                        {% if key != 0 %}
-                                        <a href={{ path("app_compaign_step_delete", {"id" : step.id}) }} ><img src={{asset('assets/images/svg/trash.svg')}} height="10px" alt="i"></a>
-                                        {% endif %}
-                                    </div>
+                    <div id = "stepcard d-flex flex-column ">
 
+                        <div class = " mb-4 " id = "addstepbtn">
 
-                                    <p class="card-text"> step  {{key + 1 }} </p>
-
-                                    {% if key == 0 %} 
-                                    <button class="btn btn-outline-primary {{link2 == null or link2 == step.id ? 'active'}}" id="v-pills-{{step.id}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{step.id}}" type="button" role="tab" aria-controls="v-pills-{{step.id}}" aria-selected=" {{link2 == null or link2 == step.id ? 'true' : 'false'}}">Config</button>
-                                    {% else %}
-                                    <button class="btn btn-outline-primary {{link2 == step.id ? 'active' }}" id="v-pills-{{step.id}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{step.id}}" type="button" role="tab" aria-controls="v-pills-{{step.id}}" aria-selected=" {{link2 == step.id ? "true" : "false"}}">Config</button>
-                                    {% endif %}
-                                </div>
-                            </div> 
-                        
-                        {% endfor %}
                             {# add step form modal #}
                             <button type="button" class="btn btn-outline-primary mt-3" data-bs-toggle="modal" data-bs-target="#exampleModal" >Add Step</button>
                             
@@ -124,7 +100,7 @@
                                             <div class="modal-body">
                                                 <div class="mb-3">
                                                     <label for="step_name" class="form-label">Name</label>
-                                                    <input type="text" class="form-control compentry1 w-75 " id="step_name" name = 'step_name' >
+                                                    <input type="text" class="form-control compentry1 w-75 " id="step_name" name = 'step_name' required >
                                                 </div>
                                             </div>
 
@@ -138,7 +114,44 @@
                                         </div>
                                     </div>
                                 </div>
-                            </form>
+                            </form>                        
+                        
+                        </div>
+
+
+                        <div class="nav flex-column nav-pills  me-3  " id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                            
+                            
+                                {% for key,step in compaign.steps %}
+                                    
+                            
+                                    <div class="card mb-3" style="width: 12rem;">
+                                        <div class="card-body">
+                                            <div class = "d-flex">
+                                                <h5 class="card-title me-auto">{{step.name}}</h5>
+                                                {% if key != 0 %}
+                                                <a href={{ path("app_compaign_step_delete", {"id" : step.id}) }} ><img src={{asset('assets/images/svg/trash.svg')}} height="10px" alt="i"></a>
+                                                {% endif %}
+                                            </div>
+
+
+                                            <p class="card-text"> step  {{key + 1 }} </p>
+
+                                            {% if key == 0 %} 
+                                            <button class="btn btn-outline-primary {{link2 == null or link2 == step.id ? 'active'}}" id="v-pills-{{step.id}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{step.id}}" type="button" role="tab" aria-controls="v-pills-{{step.id}}" aria-selected=" {{link2 == null or link2 == step.id ? 'true' : 'false'}}">Config</button>
+                                            {% else %}
+                                            <button class="btn btn-outline-primary {{link2 == step.id ? 'active' }}" id="v-pills-{{step.id}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{step.id}}" type="button" role="tab" aria-controls="v-pills-{{step.id}}" aria-selected=" {{link2 == step.id ? "true" : "false"}}">Config</button>
+                                            {% endif %}
+                                        </div>
+                                    </div> 
+                                
+                                {% endfor %}
+                            
+
+                    
+                            
+                        </div>
+                    
                     </div>
 
 
@@ -156,25 +169,26 @@
                             <form action = {{ path("app_compaign_step_update", {"id": compaign.id, "link": "sequence"}) }} method = "post" >
                                     
 
-                                <div class = "mb-3">
+                                <div class = "mb-2">
                                     {% if key != 0 %}
-                                    <label for="dayAfter"~{{step.id}} class ="form-label" >day After Step 1</label>
-                                    <input type="number" class = "form-control" value = {{step.dayAfterLastStep }} name="seqform[dayAfter_{{step.id}}]" id="dayAfter"~{{step.id}} min = "0">
+                                    <label for="dayAfter_{{step.id}}" class ="form-label" >day After Step 1</label>
+                                    <input type="number" class = "form-control" value = {{step.dayAfterLastStep }} name="seqform[dayAfter_{{step.id}}]" id="dayAfter_{{step.id}}" min = "0">
                                     {% endif %}
                                 </div>
 
-                                <legend >Mail</legend>
+                                {# <legend >Mail</legend> #}
+                                <h5 >Mail</h5>
 
                                 <div class="form-group">
-                                    <label for="subject_{{step.id}}" class="form-label mt-4">Subject</label>
-                                    <input type="text" class="form-control" id="subject_{{step.id}}"  value =" {{step.email.subject}}" name = "seqform[subject_{{step.id}}]" >
+                                    <label for="subject_{{step.id}}" class="form-label mt-2"  >Subject</label>
+                                    <input  type="text" class="form-control" id="subject_{{step.id}}"  value ="{{step.email.subject}}" name = "seqform[subject_{{step.id}}]" required></input>
                                 </div>
 
 
 
                                 <div class="form-group">
-                                    <label for="message" class="form-label mt-4">message</label>
-                                    <textarea class="form-control" id="message" rows="15" cols = "100" name = "seqform[message_{{step.id}}]"   >{{step.email.textMessage}}</textarea>
+                                    <label for="message_{{step.id}}" class="form-label mt-4">message</label>
+                                    <textarea  required class="form-control" id="message_{{step.id}}" rows="15" cols = "100" name = "seqform[message_{{step.id}}]"   >{{step.email.textMessage}}</textarea>
                                 </div>
 
                                 <input type="hidden" name="token" value ={{ csrf_token("sequence") }} >
@@ -207,18 +221,24 @@
             <div class="tab-pane fade  {{link == 'schedule' ? 'active show'}} " id="schedule" role="tabpanel">
 
 
-                <form class = "mt-5" >
-                    <div class="mb-3">
-                        <label for="fromm" class="form-label">From</label>
-                        <input type="number" class="form-control" id="fromm" min = "0" max ="24">
+                <form   class = "form-scheform  mt-5" action = {{ path('app_compaign_schedule_update', {"id": compaign.id}) }} method = "post">
+               
+                    <div class="row mb-4">
+
+                        <div class=" col-md-6 form-group w-25">
+                            <label for="fromm" class="form-label">From</label>
+                            <input type="number" class="form-control" id="fromm" name = "scheform[from]" value = "{{compaign.schedule.fromm}}" min = "0" max ="24" required placeholder = 'h'> 
+                        </div>
+
+                        <div class=" form-group w-25 col-md-6">
+                            <label for="too" class="form-label">To</label>
+                            <input type="number" class="form-control" name = "scheform[to]" value = "{{compaign.schedule.too}}"  id="too" min = "0" max ="24" required placeholder = 'h'>
+                        </div>                
                     </div>
-                    <div class="mb-3">
-                        <label for="too" class="form-label">To</label>
-                        <input type="number" class="form-control" id="too" min = "0" max ="24">
-                    </div>
-                    <div class="mb-3">
+
+                    <div class="mb-3 form-group">
                         <label class="form-label" for="startTime">Start Date</label>
-                        <input type="datetime-local" class="form-control" id="startTime">
+                        <input type="datetime-local" class="form-control" value ="{{compaign.schedule.startTime|date("Y-m-d H:i")}}"  name = "scheform[startTime]" id="startTime" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>

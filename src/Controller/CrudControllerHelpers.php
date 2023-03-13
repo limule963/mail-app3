@@ -125,7 +125,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             
             $sch = (new Schedule)->setStartTime(new \DateTimeImmutable())->setFromm(8)->setToo(18);
 
-            $step = $this->createStep('step 1','Hello','mail17.html.twig');
+            $step = $this->createStep('step 1','','mailtemplate.html.twig');
 
             return (new Compaign)->setName($name)->setStatus($status)->setSchedule($sch)->addStep($step);
 

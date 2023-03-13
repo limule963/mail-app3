@@ -14,10 +14,10 @@ class Email
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255,nullable:true)]
     private ?string $emailLink = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255,nullable:true)]
     private ?string $subject = null;
 
     #[ORM\Column(length: 10000, nullable: true)]

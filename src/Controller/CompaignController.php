@@ -15,6 +15,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use App\AppMailer\Data\TransparentPixelResponse;
+use DateTimeImmutable;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
@@ -56,8 +57,6 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
         #[Route('app/compaign/delete/{id}',name:'app_compaign_delete')]
         public function deleteCompaign(Compaign $compaign)
         {
-        
-
 
                 $this->crud->deleteCompaign($compaign);
                 $this->addFlash('success', 'compaign deleted');
@@ -74,7 +73,7 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
             $name = $request->request->get('compaign_name');
             if($name != null)
             {
-                $comp = $this->crud->addCompaign($this->getUser()->getId(),$name);
+                $this->crud->addCompaign($this->getUser()->getId(),$name);
                 $this->addFlash('success','compaign add');
                 // return $this->redirectToRoute('app_compaign');
             }
@@ -298,6 +297,22 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 
         }
+        #[Route(path:'app/compaign/{id}/schedule/update',name:"app_compaign_schedule_update")]
+        public function compaignScheduleUpdate(Compaign $compaign,Request $request)
+        {
+            $scheform = $request->request->all("scheform");
+            $schedule = $compaign->getSchedule();
+            $schedule->setFromm($scheform['from'])->setToo($scheform['to'])->setStartTime(new DateTimeImmutable($scheform['startTime'])) ;
+            $compaign->setSchedule($schedule);
+
+            $this->crud->saveCompaign($compaign);
+            $this->addFlash("success","saved");
+
+            return $this->redirectToRoute("app_compaign_detail",["id"=>$compaign->getId(),"link"=>"schedule"]);
+
+        }
+        
+    
         
 
 
