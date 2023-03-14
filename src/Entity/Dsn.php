@@ -35,8 +35,8 @@ class Dsn
 
     public bool $sendState = false;
 
-    #[ORM\ManyToOne(inversedBy: 'dsns')]
-    private ?Compaign $compaign = null;
+    // #[ORM\ManyToOne(inversedBy: 'dsns')]
+    // private ?Compaign $compaign = null;
 
     #[ORM\ManyToOne(inversedBy: 'dsns')]
     private ?User $user = null;
@@ -64,8 +64,10 @@ class Dsn
     #[ORM\OneToMany(mappedBy: 'dsn', targetEntity: Mail::class,cascade:['persist','remove'],orphanRemoval:true)]
     private Collection $mails;
 
-    // #[ORM\ManyToMany(targetEntity: Compaign::class, mappedBy: 'dsns')]
-    // private Collection $compaigns;
+    #[ORM\ManyToMany(targetEntity: Compaign::class, mappedBy: 'dsns')]
+    private Collection $compaigns;
+
+
 
     public function __construct()
     {
@@ -179,17 +181,17 @@ class Dsn
         ];
     }
 
-    public function getCompaign(): ?Compaign
-    {
-        return $this->compaign;
-    }
+    // public function getCompaign(): ?Compaign
+    // {
+    //     return $this->compaign;
+    // }
 
-    public function setCompaign(?Compaign $compaign): self
-    {
-        $this->compaign = $compaign;
+    // public function setCompaign(?Compaign $compaign): self
+    // {
+    //     $this->compaign = $compaign;
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
     public function getUser(): ?User
     {
@@ -306,6 +308,33 @@ class Dsn
             if ($mail->getDsn() === $this) {
                 $mail->setDsn(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Compaign>
+     */
+    public function getCompaigns(): Collection
+    {
+        return $this->compaigns;
+    }
+
+    public function addCompaign(Compaign $compaign): self
+    {
+        if (!$this->compaigns->contains($compaign)) {
+            $this->compaigns->add($compaign);
+            $compaign->addDsn($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCompaign(Compaign $compaign): self
+    {
+        if ($this->compaigns->removeElement($compaign)) {
+            $compaign->removeDsn($this);
         }
 
         return $this;

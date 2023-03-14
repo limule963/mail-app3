@@ -160,7 +160,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             if($dsns instanceof Dsn && $dsns != null) $compaign->addDsn($dsns);
             else
             {
-                if($dsns != null) $compaign->addDsns($dsns);
+                // if($dsns != null) $compaign->addDsns($dsns);
             }
 
             if($status!=null) $compaign->setStatus($status);

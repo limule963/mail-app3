@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use App\AppMailer\Data\TransparentPixelResponse;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
@@ -196,16 +197,22 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 
         #[Route(path:'/app/compaign/leads/delete/{id}',name:'app_compaign_leads_delete')]
-        public function compaignLeadDelete(Lead $lead)
+        public function compaignLeadDelete(Lead $lead,Request $request)
         {
+            $submittedToken = $request->request->get("token");
             $compaign = $lead->getCompaign();
-            if($lead != null) 
+            
+            if($this->isCsrfTokenValid('delete_lead',$submittedToken))
             {
+                
+                
                 $compaign->removeLead($lead);
                 $this->crud->saveCompaign($compaign);
                 $this->addFlash('success','lead deleted');
-                
             }
+            else $this->addFlash("warning", "Not autorise");
+                
+            
             return $this->redirectToRoute('app_compaign_leads',['id'=>$compaign->getId()]);
         }
 
@@ -349,10 +356,12 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
             return $this->redirectToRoute("app_compaign_detail",["id"=>$compaign->getId(),"link"=>'options']);
         }
 
-        #[Route(path:"/app/compaign/dsn/delete/{id}",name:"app_compaign_dsn_delete")]
-        public function compaignDsnsAdd(Dsn $dsn)
+        #[Route(path:"/app/compaign/{id}/dsn/delete/{id2}",name:"app_compaign_dsn_delete")]
+        public function compaignDsnsAdd(Compaign $compaign, 
+                #[MapEntity(expr: 'repository.find(id2)')]
+                Dsn $dsn)
         {
-            $compaign = $dsn->getCompaign();
+            // $compaign = $dsn->getCompaigns();
             $compaign->removeDsn($dsn);
 
             $this->crud->saveCompaign($compaign);

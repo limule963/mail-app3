@@ -25,7 +25,7 @@ class Compaign
     #[ORM\ManyToOne(inversedBy: 'compaigns')]
     private ?User $user = null;
 
-    #[ORM\OneToMany(mappedBy: 'compaign', targetEntity: Lead::class,cascade:['persist','remove'])]
+    #[ORM\OneToMany(mappedBy: 'compaign', targetEntity: Lead::class,cascade:['persist','remove'],orphanRemoval:true)]
     private Collection $leads;
 
     #[ORM\ManyToOne(inversedBy: 'compaigns',cascade:["persist"])]
@@ -35,14 +35,10 @@ class Compaign
     #[ORM\OneToMany(mappedBy: 'compaign', targetEntity: Step::class,cascade:["persist",'remove'])]
     private Collection $steps;
 
-    // #[ORM\ManyToMany(targetEntity: Dsn::class, inversedBy: 'compaigns',cascade:['persist'])]
+
+
+    // #[ORM\OneToMany(mappedBy: 'compaign', targetEntity: Dsn::class,cascade:['persist'])]
     // private Collection $dsns;
-
-    // #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    // private ?Schedule $schedule = null;
-
-    #[ORM\OneToMany(mappedBy: 'compaign', targetEntity: Dsn::class,cascade:['persist'])]
-    private Collection $dsns;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Schedule $schedule = null;
@@ -52,6 +48,9 @@ class Compaign
 
     #[ORM\Column]
     private bool $isTracker = true;
+
+    #[ORM\ManyToMany(targetEntity: Dsn::class, inversedBy: 'compaigns')]
+    private Collection $dsns;
 
     // #[ORM\OneToOne(inversedBy: "compaign", cascade: ['persist', 'remove'])]
     // private ?Schedule $schedule = null;
@@ -176,46 +175,6 @@ class Compaign
         return $this;
     }
 
-    // /**
-    //  * @return Collection<int, Dsn>
-    //  */
-    // public function getDsns(): Collection
-    // {
-    //     return $this->dsns;
-    // }
-
-    // public function addDsn(Dsn $dsn): self
-    // {
-    //     if (!$this->dsns->contains($dsn)) {
-    //         $this->dsns->add($dsn);
-    //     }
-
-    //     return $this;
-    // }
-
-    // public function addDsns($dsns)
-    // {
-    //     foreach($dsns as $dsn) $this->addDsn($dsn);
-    // }
-
-    // public function removeDsn(Dsn $dsn): self
-    // {
-    //     $this->dsns->removeElement($dsn);
-
-    //     return $this;
-    // }
-
-    // public function getSchedule(): ?Schedule
-    // {
-    //     return $this->schedule;
-    // }
-
-    // public function setSchedule(?Schedule $schedule): self
-    // {
-    //     $this->schedule = $schedule;
-
-    //     return $this;
-    // }
 
     public function isNewStepPriority(): ?bool
     {
@@ -229,53 +188,43 @@ class Compaign
         return $this;
     }
 
-    // public function getSchedule(): ?Schedule
+
+
+    // /**
+    //  * @return Collection<int, Dsn>
+    //  */
+    // public function getDsns(): Collection
     // {
-    //     return $this->schedule;
+    //     return $this->dsns;
     // }
 
-    // public function setSchedule(?Schedule $schedule): self
+    // public function addDsn(Dsn $dsn): self
     // {
-    //     $this->schedule = $schedule;
+    //     if (!$this->dsns->contains($dsn)) {
+    //         $this->dsns->add($dsn);
+    //         $dsn->setCompaign($this);
+    //     }
+
+    //     return $this;
+    // }
+    // public function addDsns(array $dsns): self
+    // {
+    //     foreach($dsns as $dsn) $this->addDsn($dsn);
 
     //     return $this;
     // }
 
-    /**
-     * @return Collection<int, Dsn>
-     */
-    public function getDsns(): Collection
-    {
-        return $this->dsns;
-    }
+    // public function removeDsn(Dsn $dsn): self
+    // {
+    //     if ($this->dsns->removeElement($dsn)) {
+    //         // set the owning side to null (unless already changed)
+    //         if ($dsn->getCompaign() === $this) {
+    //             $dsn->setCompaign(null);
+    //         }
+    //     }
 
-    public function addDsn(Dsn $dsn): self
-    {
-        if (!$this->dsns->contains($dsn)) {
-            $this->dsns->add($dsn);
-            $dsn->setCompaign($this);
-        }
-
-        return $this;
-    }
-    public function addDsns(array $dsns): self
-    {
-        foreach($dsns as $dsn) $this->addDsn($dsn);
-
-        return $this;
-    }
-
-    public function removeDsn(Dsn $dsn): self
-    {
-        if ($this->dsns->removeElement($dsn)) {
-            // set the owning side to null (unless already changed)
-            if ($dsn->getCompaign() === $this) {
-                $dsn->setCompaign(null);
-            }
-        }
-
-        return $this;
-    }
+    //     return $this;
+    // }
 
     public function getSchedule(): ?Schedule
     {
@@ -309,6 +258,30 @@ class Compaign
     public function setIsTracker(bool $isTracker): self
     {
         $this->isTracker = $isTracker;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Dsn>
+     */
+    public function getDsns(): Collection
+    {
+        return $this->dsns;
+    }
+
+    public function addDsn(Dsn $dsn): self
+    {
+        if (!$this->dsns->contains($dsn)) {
+            $this->dsns->add($dsn);
+        }
+
+        return $this;
+    }
+
+    public function removeDsn(Dsn $dsn): self
+    {
+        $this->dsns->removeElement($dsn);
 
         return $this;
     }

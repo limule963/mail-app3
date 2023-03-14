@@ -266,7 +266,7 @@
                                             <div class="dropdown-menu p-4">
                                                 {% for key,dsn in app.user.dsns %}
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox"  id="flexCheckDefault_{{key}}" value = "{{dsn.id}}" name = "optionscheck[]">
+                                                    <input class="form-check-input" {% if dsn in compaign.dsns %}checked{% endif %} type="checkbox"  id="flexCheckDefault_{{key}}" value = "{{dsn.id}}" name = "optionscheck[]">
                                                     <label class="form-check-label" for="flexCheckDefault_{{key}}">{{dsn.email}}</label>
                                                 </div>
                                                 {% endfor %}
@@ -327,7 +327,7 @@
                             {% for dsn in compaign.dsns %}
                             <div class="d-flex me-3" >
                                 <div class="option_comp_email me-1"> {{dsn.email}} </div>
-                                <a class="btn btn-close w-25" href = {{ path("app_compaign_dsn_delete", {"id":dsn.id}) }} ></a>
+                                <a class="btn btn-close w-25" href = {{ path("app_compaign_dsn_delete", {"id":compaign.id, "id2": dsn.id}) }} ></a>
                             </div>
                             {% endfor %}
                         </div>
