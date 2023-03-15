@@ -11,6 +11,7 @@
         "doctrine/doctrine-bundle": "^2.8",
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.14",
+        "friendsofsymfony/ckeditor-bundle": "^2.4",
         "knplabs/knp-paginator-bundle": "^6.1",
         "knplabs/knp-time-bundle": "^1.20",
         "phpdocumentor/reflection-docblock": "^5.3",
@@ -72,7 +73,8 @@
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
             "assets:install %PUBLIC_DIR%": "symfony-cmd",
-            "requirements-checker": "script"
+            "requirements-checker": "script",
+            "ckeditor:install": "symfony-cmd"
         },
         "post-install-cmd": [
             "@auto-scripts"

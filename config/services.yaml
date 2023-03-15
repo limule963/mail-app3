@@ -7,6 +7,7 @@ parameters:
     file_directory: '%kernel.project_dir%/var/uploads/file'
     sendmail_file_directory: '%kernel.project_dir%/templates/mail/send/'
     receivemail_file_directory: '%kernel.project_dir%/templates/mail/receive'
+    mail_attachment_directory: '%kernel.project_dir%/public/assets/images/mail'
 
 services:
     # default configuration for services in *this* file

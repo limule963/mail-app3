@@ -27,6 +27,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Mime\BodyRendererInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use FOS\CKEditorBundle\Form\Type\CKEditorType;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Uid\Uuid;
 use Throwable;
@@ -39,19 +44,23 @@ class HomeController extends AbstractController
         
     }
     #[Route('/', name: 'app_home')]
-    public function index( AllDsnReceiver $alldsnRec, CompaignLuncher $cl, Sequencer $seq,SequenceLuncher $sl,AllFolderReceiver $allrec,Receiver $rec): Response
+    public function index( Request $request): Response
     {
-    
-            $step = $this->crud->getStep(46);
 
-            $uid = Uuid::v7();
-            dd($uid);
-            dd($step,$step->getEmail()->getSubject()) ;   
+        $data = $request->files->all();
+        // dd($data);
+
+        $form = $this->createFormBuilder(null,['csrf_protection'=>true])
+                        ->add('name',TextType::class)
+                        ->add('text',CKEditorType::class,["attr"=>['rows' => 20]])
+                        ->add('submit',SubmitType::class)
+                        ->getForm()
+                        ;
+
 
         return $this->render('home/index.html.twig', [
             'controller_name' => 'HomeController',
-            // 'cr'=>$cr
-            
+            'form'=>$data           
         ]);
 
 

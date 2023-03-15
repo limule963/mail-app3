@@ -138,7 +138,8 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
             $user = $this->get_User($userId);
             $user->addCompaign($compaign);
-            /**@UserRepository */
+
+            /**@var UserRepository */
             $rep= $this->em->getRepository(User::class);
             $rep->save($user,true);
             return $compaign;

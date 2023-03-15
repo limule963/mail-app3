@@ -1,39 +1,20 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Hello HomeController!{% endblock %}
+{% block link %}  <link rel="stylesheet" type="text/css" href="https://unpkg.com/trix@2.0.0/dist/trix.css">{% endblock %}
+{% block script %}  <script type="text/javascript" src="https://unpkg.com/trix@2.0.0/dist/trix.umd.min.js"></script>{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
 
-{% if error is defined %}
-<div>{{error}}</div>
 
-{% endif %}
+ {# Le type d'encodage des données, enctype, DOIT être spécifié comme ce qui suit --> #}
+<form enctype="multipart/form-data" action = {{path("app_compaign_mail_attachment")}} method="post">
+  <!-- MAX_FILE_SIZE doit précéder le champ input de type file -->
+  <input type="hidden"   name="MAX_FILE_SIZE" value="30000" />
+  <!-- Le nom de l'élément input détermine le nom dans le tableau $_FILES -->
+  {# Envoyez ce fichier :  #}
+  <input name="userfile" class = "form-control" type="file" />
+  <input type="submit" class  = "btn btn-primary" value="Envoyer le fichier" />
+</form>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ 'C:/Users/KOFF/Desktop/EMAIL APP/APP-2/src/Controller/HomeController.php'|file_link(0) }}">src/Controller/HomeController.php</a></code></li>
-        <li>Your template at <code><a href="{{ 'C:/Users/KOFF/Desktop/EMAIL APP/APP-2/templates/home/index.html.twig'|file_link(0) }}">templates/home/index.html.twig</a></code></li>
-        {% if code is defined %}
-        <li>{{code}}</li>
-        {% endif %}
-        {% if message is defined %}
-        <li>{{message}}</li>
-        {% endif %}
-
-        <pre>
-            {% if cr is defined %}
-                {{(cr) }}
-            
-            {% endif %}
-        </pre>
-        
-    </ul>
-</div>
 {% endblock %}

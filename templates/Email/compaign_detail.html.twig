@@ -3,7 +3,10 @@
 {% block title %}compaign config{% endblock %}
 
 {% block style %} <link rel="stylesheet" href= {{ asset('assets/css/compaignstyle.css') }}> {% endblock %}
-{% block script %} <script src = {{asset('assets/js/compaign.js')}}></script> {% endblock %}
+{% block script %} 
+<script src = {{asset('assets/js/compaign.js')}}></script> 
+<script src = {{asset('assets/js/attachment.js')}}></script> 
+{% endblock %}
 
 {% block headersearch %}
 <div class = "me-auto">
@@ -187,10 +190,14 @@
 
 
                                 <div class="form-group">
+                                     
                                     <label for="message_{{step.id}}" class="form-label mt-4">message</label>
-                                    <textarea  required class="form-control" id="message_{{step.id}}" rows="15" cols = "100" name = "seqform[message_{{step.id}}]"   >{{step.email.textMessage}}</textarea>
+                                    <input id="message_{{step.id}}" type="hidden" name = "seqform[message_{{step.id}}]" value ={% autoescape  false %}"{{step.email.textMessage|raw}}"{% endautoescape %}  >
+                                    <trix-editor input="message_{{step.id}}"  required class="  form-control" id="message_{{step.id}}" rows="15" cols = "100"  ></trix-editor>                                    
+                                    {# <textarea  required class="form-control" id="message_{{step.id}}" rows="15" cols = "100" name = "seqform[message_{{step.id}}]"   >{{step.email.textMessage}}</textarea> #}
                                 </div>
 
+                                {# <div class="trix-content">{{step.email.textMessage|raw}}</div> #}
                                 <input type="hidden" name="token" value ={{ csrf_token("sequence") }} >
 
                                 <div class="form-group mt-3">
@@ -250,7 +257,7 @@
             {# options tab #}
             <div class="tab-pane fade  {{link == 'options' ? 'active show'}} " id="options" role="tabpanel">
               
-               <div class="row mt-5">
+                <div class="row mt-5">
 
                     <form class = "col-4 " action = {{ path("app_compaign_config", {"id": compaign.id}) }} method = "post" class = "  mt-5">
 
@@ -265,20 +272,25 @@
                                             
                                             <div class="dropdown-menu p-4">
                                                 {% for key,dsn in app.user.dsns %}
+
+                                                {% if dsn not in compaign.dsns %}
+                                                
                                                 <div class="form-check">
-                                                    <input class="form-check-input" {% if dsn in compaign.dsns %}checked{% endif %} type="checkbox"  id="flexCheckDefault_{{key}}" value = "{{dsn.id}}" name = "optionscheck[]">
+                                                    <input class="form-check-input"  type="checkbox"  id="flexCheckDefault_{{key}}" value = "{{dsn.id}}" name = "optionscheck[]">
                                                     <label class="form-check-label" for="flexCheckDefault_{{key}}">{{dsn.email}}</label>
                                                 </div>
+                                                
+                                                {% endif %}
                                                 {% endfor %}
                                             </div>
+
                                         </div>
                                     </div>                    
                                 </div> 
-                            </div>
 
-
-                                            
+                            </div>                      
                         </div>
+
 
                         <div class = "mt-5  " >
 
@@ -331,11 +343,11 @@
                             </div>
                             {% endfor %}
                         </div>
-                        </div>              
+                    </div>              
                 
-                    </div>               
+                </div>               
                
-               </div>
+            </div>
 
 
 

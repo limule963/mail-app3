@@ -371,7 +371,23 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
         }
         
         
-    
+        #[Route(path:"/app/compaign/mail/attachment",name:"app_compaign_mail_attachment")]
+        public function storeAttachment(Request $request)
+        {
+            $key = $request->request->get('key');
+            $content_type = $request->request->get('Content-Type');
+            /**@var UploadedFile */
+            $file = $request->files->get('file');
+
+            $filename ='';
+            if($file)
+            {
+                $filename = $this->fileTreatment($file,'mail_attachment_directory');
+            }
+
+            
+            return $this->json(["url"=>'https://localhost:8000/assets/images/mail/'.$filename,"href"=>'https://localhost:8000/assets/images/mail/'.$filename]);
+        }
         
 
 
@@ -472,8 +488,9 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 
         }
-        private function fileTreatment(UploadedFile $file)
+        private function fileTreatment(UploadedFile $file,$directory = 'file_directory')
         {
+            $newFilename = '';
             if ($file)
             {
                 $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
@@ -485,7 +502,7 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
                 try 
                 {
                     $file->move(
-                        $this->getParameter('file_directory'),
+                        $this->getParameter($directory),
                         $newFilename
                     );
                 }
@@ -494,6 +511,7 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
                     // ... handle exception if something happens during file upload
                 }
             }
+            return $newFilename;
 
         }
 
