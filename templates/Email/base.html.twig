@@ -1,141 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {# <link rel="stylesheet" href={{asset("assets/css/base_style.css")}}> #}
- 
-    {# <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"> #}
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <title>{% block title %}Mailing app{% endblock %} </title>
     <link rel="stylesheet" href={{ asset('assets/css/stylebase.css') }}> 
-    <script src = "https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" ></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
-
-
-    {% block jquery %}{% endblock %}  
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    
     {% block style %}{% endblock %}
     {% block script %}{% endblock %}
-
-    {% block trix %}{% endblock %}
     
-    <title>{% block title %}Mailing app{% endblock %} </title>
+    {% block timy %}{% endblock %}
+
+
+    
 
 
 
 </head>
 <body>
-{% block body %}
 
-    <div class="  p-3">
+<div class="container">
 
-        <div class="d-flex row">
+    {% block body %}
 
+        <div class="  p-3">
 
-            <aside class="aside col-2 border-end border-dark-subtle">
-                <div class="aside-up  "><a class ="" href= {{ path('app_email') }} >APP NAME</a></div>
-
+            <div class="d-flex row">
 
 
-
-                <div class="aside-dw mt-5">
-                <ul class = "nav flex-column nav-pills">
-                
-                    <li class="nav-item">
-                        <a class = "nav-link " href={{ path('app_email') }} ><img class = "me-1" src={{asset('assets/images/svg/letter.svg')}} height="20px" alt="I">Email</a>
-                    </li>
-                
-                    <li class="nav-item">
-                        <a  class = "nav-link" href= {{ path('app_compaign') }} ><img class = "me-1"  src={{asset('assets/images/svg/paper-plane.svg')}} height="20px" alt="I">Compaign</a>     
-                    </li class="nav-item">
-
-                    <li class="nav-item">
-                        <a  class = "nav-link" href=""><img class = "me-1"  src={{asset('assets/images/statistiques.png')}} height="20px" alt="I"> Analytics</a>   
-                    </li>
-
-                    <li class="nav-item" >
-                        <a  class = "nav-link" href=""><img class = "me-1"  src={{asset('assets/images/reglage.png')}} height="20px" alt="I">Options</a>
-                    </li>
-                </ul>
-
-                </div>
-
-            </aside>
+                <aside class="aside col-2 border-end border-dark-subtle">
+                    <div class="aside-up  "><a class ="" href= {{ path('app_email') }} >APP NAME</a></div>
 
 
 
-            <main class =" main col">
 
-                {% block header %}
-                    <header class="header d-flex">
-
-                        {% block headersearch %}  
-                        <div class="header-left me-auto">
-                            <form class="d-flex" role="search">
-                                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name ='search'>
-                                <button class="btn btn-outline-success" type="submit">Search</button>
-                            </form>
-                        </div>
-                        {% endblock %}
-
-
-                        <div class="header-right d-flex">
-                            <a class = "d-block"  href=""><img src={{asset('assets/images/profil.png')}} height="20px" alt="I"></a>
-                            {# <a href="">{{app.user.email}}</a> #}
-                            {# <a href=""><img src={{asset('assets/images/reglage.png')}} height="20px" alt=""></a> #}
-
-
-                            <div class="dropdown">
-                                <a class=" btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                    {{app.user.email}}
-                                </a>
-                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                    <li><a class="dropdown-item" href="#">Action</a></li>
-                                    <li><a class="dropdown-item" href="#">Another action</a></li>
-                                    <li><a class="dropdown-item" href="#">Something else here</a></li>
-                                    <li><a class="dropdown-item" href= {{ path('app_logout') }} >logout</a></li>
-                                </ul>
-                            </div>
-
-
-                        </div>
-                    </header>
-                    <hr>
-                {% endblock %}
-
-
-                {% block flash %}
-
-                    {% for label,messages in app.flashes %}
-                    <div class="alert alert-{{label}} alert-dismissible " role="alert">
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        {% for message in messages %}
+                    <div class="aside-dw mt-5">
+                    <ul class = "nav flex-column nav-pills">
                     
-                        {{message}}
-                
+                        <li class="nav-item">
+                            <a class = "nav-link " href={{ path('app_email') }} ><img class = "me-1" src={{asset('assets/images/svg/letter.svg')}} height="20px" alt="I">Email</a>
+                        </li>
                     
-                        {% endfor %}
+                        <li class="nav-item">
+                            <a  class = "nav-link" href= {{ path('app_compaign') }} ><img class = "me-1"  src={{asset('assets/images/svg/paper-plane.svg')}} height="20px" alt="I">Compaign</a>     
+                        </li class="nav-item">
+
+                        <li class="nav-item">
+                            <a  class = "nav-link" href=""><img class = "me-1"  src={{asset('assets/images/statistiques.png')}} height="20px" alt="I"> Analytics</a>   
+                        </li>
+
+                        <li class="nav-item" >
+                            <a  class = "nav-link" href=""><img class = "me-1"  src={{asset('assets/images/reglage.png')}} height="20px" alt="I">Options</a>
+                        </li>
+                    </ul>
+
                     </div>
-                    {% endfor %}
+
+                </aside>
+
+
+
+                <main class =" main col">
+
+                    {% block header %}
+                        <header class="header d-flex">
+
+                            {% block headersearch %}  
+                            <div class="header-left me-auto">
+                                <form class="d-flex" role="search">
+                                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name ='search'>
+                                    <button class="btn btn-outline-success" type="submit">Search</button>
+                                </form>
+                            </div>
+                            {% endblock %}
+
+
+                            <div class="header-right d-flex">
+                                <a class = "d-block"  href=""><img src={{asset('assets/images/profil.png')}} height="20px" alt="I"></a>
+                                {# <a href="">{{app.user.email}}</a> #}
+                                {# <a href=""><img src={{asset('assets/images/reglage.png')}} height="20px" alt=""></a> #}
+
+
+                                <div class="dropdown">
+                                    <a class=" btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                        {{app.user.email}}
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                        <li><a class="dropdown-item" href="#">Action</a></li>
+                                        <li><a class="dropdown-item" href="#">Another action</a></li>
+                                        <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                        <li><a class="dropdown-item" href= {{ path('app_logout') }} >logout</a></li>
+                                    </ul>
+                                </div>
+
+
+                            </div>
+                        </header>
+                        <hr>
+                    {% endblock %}
+
+
+                    {% block flash %}
+
+                        {% for label,messages in app.flashes %}
+                        <div class="alert alert-{{label}} alert-dismissible " role="alert">
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            {% for message in messages %}
+                        
+                            {{message}}
                     
-                {% endblock %}
+                        
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+                        
+                    {% endblock %}
 
 
-                {% block section %}{% endblock %}
+                    {% block section %}{% endblock %}
 
-            
-            </main>
+                
+                </main>
+            </div>
+
         </div>
 
-    </div>
-
-{% endblock %}
-    {# <footer class="container">
-        <p class="float-right"><a href="#">Back to top</a></p>
-        <p>&copy; 2017-2020 Company, Inc. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
-    </footer> #}
+    {% endblock %}
 
 
-{% block script2 %}{% endblock %}
+    {% block jquery %}{% endblock %}
+
+    {% block bootstrap %}
+        <script src = "https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" ></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+    {% endblock %}
+</div>
+<footer class ="mt-5" ></footer>
 </body>
 </html>
