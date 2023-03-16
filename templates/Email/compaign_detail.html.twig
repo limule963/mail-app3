@@ -5,15 +5,20 @@
 {% block style %} <link rel="stylesheet" href= {{ asset('assets/css/compaignstyle.css') }}> {% endblock %}
 {% block script %} 
 <script src = {{asset('assets/js/compaign.js')}}></script> 
-<script src = {{asset('assets/js/attachment.js')}}></script> 
+
+
+
+
 {% endblock %}
 
 {% block headersearch %}
 <div class = "me-auto">
-    <h4>Compaign configuration</h4>
+    <h5>Compaign - {{compaign.name}} </h5>
 </div>
 {% endblock %}
 
+{% block script2 %}
+{% endblock %}
 
 {% block section %}
 
@@ -190,14 +195,11 @@
 
 
                                 <div class="form-group">
-                                     
                                     <label for="message_{{step.id}}" class="form-label mt-4">message</label>
-                                    <input id="message_{{step.id}}" type="hidden" name = "seqform[message_{{step.id}}]" value ={% autoescape  false %}"{{step.email.textMessage|raw}}"{% endautoescape %}  >
-                                    <trix-editor input="message_{{step.id}}"  required class="  form-control" id="message_{{step.id}}" rows="15" cols = "100"  ></trix-editor>                                    
-                                    {# <textarea  required class="form-control" id="message_{{step.id}}" rows="15" cols = "100" name = "seqform[message_{{step.id}}]"   >{{step.email.textMessage}}</textarea> #}
+                                    <textarea  required class="form-control " id="message_{{step.id}}" rows="15" cols = "100" name = "seqform[message_{{step.id}}]"  >{{step.email.textMessage}}</textarea>
                                 </div>
+                                
 
-                                {# <div class="trix-content">{{step.email.textMessage|raw}}</div> #}
                                 <input type="hidden" name="token" value ={{ csrf_token("sequence") }} >
 
                                 <div class="form-group mt-3">

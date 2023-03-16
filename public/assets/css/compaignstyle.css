@@ -70,3 +70,9 @@
 #emailselect{
   flex-wrap: wrap;
 }
+
+
+.editor{
+  height: 400px;
+  width: 700px;
+}
