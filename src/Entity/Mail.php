@@ -97,7 +97,7 @@ class Mail
         return $this->subject;
     }
 
-    public function setSubject(string $subject): self
+    public function setSubject(?string $subject): self
     {
         $this->subject = $subject;
 
@@ -109,7 +109,7 @@ class Mail
         return $this->fromAddress;
     }
 
-    public function setFromAddress(string $fromAddress): self
+    public function setFromAddress(?string $fromAddress): self
     {
         $this->fromAddress = $fromAddress;
 
@@ -121,7 +121,7 @@ class Mail
         return $this->toAddress;
     }
 
-    public function setToAddress(string $toAddress): self
+    public function setToAddress(?string $toAddress): self
     {
         $this->toAddress = $toAddress;
 
@@ -133,7 +133,7 @@ class Mail
         return $this->date;
     }
 
-    public function setDate(string $date): self
+    public function setDate(?string $date): self
     {
         $this->date = $date;
 

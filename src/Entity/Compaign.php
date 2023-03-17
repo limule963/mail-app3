@@ -32,7 +32,7 @@ class Compaign
     #[ORM\JoinColumn(nullable: false)]
     private ?Status $status = null;
 
-    #[ORM\OneToMany(mappedBy: 'compaign', targetEntity: Step::class,cascade:["persist",'remove'])]
+    #[ORM\OneToMany(mappedBy: 'compaign', targetEntity: Step::class,cascade:["persist",'remove'],orphanRemoval:true)]
     private Collection $steps;
 
 
@@ -40,7 +40,7 @@ class Compaign
     // #[ORM\OneToMany(mappedBy: 'compaign', targetEntity: Dsn::class,cascade:['persist'])]
     // private Collection $dsns;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(cascade: ['persist', 'remove'],orphanRemoval: true)]
     private ?Schedule $schedule = null;
 
     #[ORM\Column]
@@ -51,6 +51,15 @@ class Compaign
 
     #[ORM\ManyToMany(targetEntity: Dsn::class, inversedBy: 'compaigns')]
     private Collection $dsns;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $tms = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $tmo = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $tmr = null;
 
     // #[ORM\OneToOne(inversedBy: "compaign", cascade: ['persist', 'remove'])]
     // private ?Schedule $schedule = null;
@@ -282,6 +291,42 @@ class Compaign
     public function removeDsn(Dsn $dsn): self
     {
         $this->dsns->removeElement($dsn);
+
+        return $this;
+    }
+
+    public function getTms(): ?int
+    {
+        return $this->tms;
+    }
+
+    public function setTms(?int $tms): self
+    {
+        $this->tms = $tms;
+
+        return $this;
+    }
+
+    public function getTmo(): ?int
+    {
+        return $this->tmo;
+    }
+
+    public function setTmo(?int $tmo): self
+    {
+        $this->tmo = $tmo;
+
+        return $this;
+    }
+
+    public function getTmr(): ?int
+    {
+        return $this->tmr;
+    }
+
+    public function setTmr(?int $tmr): self
+    {
+        $this->tmr = $tmr;
 
         return $this;
     }

@@ -108,12 +108,12 @@ use SecIT\ImapBundle\Service\Imap;
                     
                 }
                 $con->disconnect();
-                
+                // dd($this->mails);
                 return $this->mails;
             }
             catch(\Throwable $th)
             {
-                return new EmailResponse(false,'mail Not Receive',$dsn->getEmail(),throwMessage:$th->getMessage());
+                return new EmailResponse(succes:false,message:'mail Not Receive',sender:$dsn->getEmail(),throwMessage:$th->getMessage());
             }            
 
         }

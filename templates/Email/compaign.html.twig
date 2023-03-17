@@ -69,39 +69,76 @@
 
 
 
-                {% for item in app.user.compaigns %} 
-                
-                    <div class="section-item row mb-3 ms-1" id = {{item.id}} >
+                {% for compaign in app.user.compaigns %} 
+                    {% set status = compaign.status.status|slice(9) %}
+                    <div class="section-item row mb-3 ms-1" id = "{{compaign.id}}" >
                         
                         <div class="section-item1 d-flex align-items-center justify-content-start col-4 " >
                         
-                            <a class = "me-auto btn compname" href = {{ path('app_compaign_leads', {'id': item.id}) }} >
-                                <div >{{item.name}}</div>
-                                <div>{{item.createAt|ago}}</div>
+                            <a class = "me-auto btn compname" href = {{ path('app_compaign_leads', {'id': compaign.id}) }} >
+                                <div >{{compaign.name}}</div>
+                                <div>{{compaign.createAt|ago}}</div>
 
                             </a>
-                            <span class="badge bg-primary">draft</span>
+
+                            {% if status == 'active' %}
+                                {% set status2 = "success" %}
+                            {% endif %}
+
+                            {% if status == 'complete' %}
+                                {% set status2 = "primary" %}
+                            {% endif %}
+
+                            {% if status == 'draft' %}
+                                {% set status2 = "secondary" %}
+                            {% endif %}
+
+                            {% if status == 'paused' %}
+                                {% set status2 = "warning" %}
+                            {% endif %}
+                            
+                            <div class="badge bg-{{status2}} w-25  pb-2"> {{status}} </div>
 
                         </div>
+
                         <div class="section-item2 d-flex align-items-center justify-content-center col">
+                            
                             <div>
-                                <img class = "me-1" src={{asset('assets/images/svg/paper-plane.svg')}} height="15px" alt="I"><span>0</span>
+                                <img class = "me-1" src={{asset('assets/images/svg/paper-plane.svg')}} height="15px" alt="I"><span> {{compaign.tms == null ? 0 : compaign.tms}} </span>
                             </div>
+
                             <div>
-                                <img class = "me-1" src={{asset('assets/images/svg/letter.svg')}}  height="15px" alt="I"><span>0</span>
+                                <img class = "me-1" src={{asset('assets/images/svg/letter.svg')}}  height="15px" alt="I"><span> {{compaign.tmo == null ? 0 : compaign.tmo}} </span>
                             </div>
+
                             <div>
-                                <img class = "me-1" src={{asset('assets/images/svg/reply.svg')}} height="15px" alt="I"><span>0</span>
+                                <img class = "me-1" src={{asset('assets/images/svg/reply.svg')}} height="15px" alt="I"><span> {{compaign.tmr == null ? 0 : compaign.tmr}} </span>
                             </div>
 
 
                         </div>
+
                         <div class="section-item3 d-flex align-items-center justify-content-between col-2">
+
                             <a href="">
-                                <img  class  = "play" src={{asset('assets/images/svg/play.svg')}} height="15px" alt="i">
+                            {% if status == "active" %}
+                                <img src={{asset('assets/images/svg/pause.svg')}} height="15px" alt="i">
+                            {% endif %}
+
+                            {% if status == "draft" %}
+                                <img src={{asset('assets/images/svg/play.svg')}} height="15px" alt="i">
+                            {% endif %}
+
+                            {% if status == "complete" %}
+                                <img src={{asset('assets/images/svg/play_disable.svg')}} height="15px" alt="i">
+                            {% endif %}
+
+                            {% if status == "paused" %}
+                                <img src={{asset('assets/images/svg/play_paused.svg')}} height="15px" alt="i">
+                            {% endif %}
                             </a>
 
-                            <a href= {{ path('app_compaign_detail', {'id':item.id }) }}>
+                            <a href= {{ path('app_compaign_detail', {'id':compaign.id }) }}>
                                 <img src={{asset('assets/images/setting.png')}} height="15px" alt="i">
                             </a>
 
@@ -116,7 +153,7 @@
                             </div> #}
                             
                             
-                            {% set idd = 'delcompaign'~ item.id %}
+                            {% set idd = 'delcompaign'~ compaign.id %}
                             <a data-bs-toggle="modal" data-bs-target={{"#" ~ idd}} href ="">
                                 <img src={{asset('assets/images/svg/trash.svg')}} height="15px" alt="i">
                             </a>
@@ -134,7 +171,7 @@
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                            <a type="button" class="btn btn-primary" href= {{ path('app_compaign_delete', {'id': item.id}) }} >Delete</a>
+                                            <a type="button" class="btn btn-primary" href= {{ path('app_compaign_delete', {'id': compaign.id}) }} >Delete</a>
                                         </div>
                                         </div>
                                     </div>

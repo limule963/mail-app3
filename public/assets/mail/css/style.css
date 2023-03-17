@@ -1,6 +1,6 @@
-h1 {
+/* h1 {
     color: #ec3f3f;
-}
+} */
 .grey{
     color: grey;
 }
@@ -8,5 +8,5 @@ h1 {
     display:flex ;
     justify-content: center;
     align-items: center;
-    color: rgba(205, 245, 140, 0.753);
+    color: rgba(133, 194, 34, 0.753)
 }

@@ -53,6 +53,7 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
         #[Route('app/compaign',name:'app_compaign')]
         public function index()
         {
+            
             return $this->render('Email/compaign.html.twig',[]);
         }
 
@@ -222,12 +223,13 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
         {
 
 
-            
-            $compaignId = $step->getCompaign()->getId();
+            $compaign = $step->getCompaign();
+            $compaignId = $compaign->getId();
             $link = "sequence";
             $link2 = $step->getId();    
-
-            $this->crud->deleteStep($step->getId());
+            $compaign->removeStep($step);
+            $this->crud->saveCompaign($compaign);
+            // $this->crud->deleteStep($step->getId());
             return $this->redirectToRoute("app_compaign_detail",["id"=>$compaignId,"link"=>$link]);
             
         }
@@ -279,6 +281,7 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
                     $data = explode("_",$key);
                     if($data[0] === 'dayAfter') $step->dayAfterLastStep = $value;
                     if($data[0] === 'subject') $email->setSubject($value);
+                    if($data[0] === 'stepName') $step->setName($value);
                     if($data[0] === 'message') 
                     {
                         $email->setTextMessage($value);
@@ -375,18 +378,24 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
         public function storeAttachment(Request $request)
         {
             $key = $request->request->get('key');
+
+            // if($key)$this->crud->addCompaign($this->getUser()->getId(),$key);
+            // dd("dne");
+
             $content_type = $request->request->get('Content-Type');
+
             /**@var UploadedFile */
             $file = $request->files->get('file');
 
             $filename ='';
             if($file)
             {
-                $filename = $this->fileTreatment($file,'mail_attachment_directory');
+                $filename = $this->fileTreatment($file,'mail_attachment_directory',$key);
             }
 
             
-            return $this->json(["url"=>'https://localhost:8000/assets/images/mail/'.$filename,"href"=>'https://localhost:8000/assets/images/mail/'.$filename]);
+            // return $this->json(["url"=>'https://localhost:8000/assets/images/mail/'.$filename,"href"=>'https://localhost:8000/assets/images/mail/'.$filename]);
+            return $this->json([],204);
         }
         
 
@@ -488,7 +497,7 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 
         }
-        private function fileTreatment(UploadedFile $file,$directory = 'file_directory')
+        private function fileTreatment(UploadedFile $file,$directory = 'file_directory',$filename = "")
         {
             $newFilename = '';
             if ($file)
@@ -496,8 +505,8 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
                 $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
                 // this is needed to safely include the file name as part of the URL
                 $safeFilename = $this->slugger->slug($originalFilename);
-                $newFilename = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
-
+                if($filename === "") $newFilename = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
+                else $newFilename = $filename;
                 // Move the file to the directory where brochures are stored
                 try 
                 {

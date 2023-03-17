@@ -3,20 +3,24 @@
 {% block title %}compaign config{% endblock %}
 
 {% block style %} <link rel="stylesheet" href= {{ asset('assets/css/compaignstyle.css') }}> {% endblock %}
-{% block script %} 
-<script src = {{asset('assets/js/compaign.js')}}></script> 
-<script src = {{asset('assets/js/attachment.js')}}></script> 
+{% block script %} <script src = {{asset('assets/js/compaign.js')}}></script> {% endblock %}
+
+{% block timy %}
+    
+    {# <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script> #}
+    <script src= {{ asset('bundles/tinymce/tinymce.js') }} referrerpolicy="origin" ></script>
+    <script src = {{ asset('assets/js/timy.js') }} ></script>
 {% endblock %}
+
+
 
 {% block headersearch %}
 <div class = "me-auto">
-    <h4>Compaign configuration</h4>
+    <h5>Compaign - {{compaign.name}} </h5>
 </div>
 {% endblock %}
 
-
 {% block section %}
-
 
     <section>
         <ul class="nav nav-tabs" role="tablist">
@@ -138,7 +142,7 @@
                                             </div>
 
 
-                                            <p class="card-text"> step  {{key + 1 }} </p>
+                                            <p class="card-text"> {{step.status.status}} </p>
 
                                             {% if key == 0 %} 
                                             <button class="btn btn-outline-primary {{link2 == null or link2 == step.id ? 'active'}}" id="v-pills-{{step.id}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{step.id}}" type="button" role="tab" aria-controls="v-pills-{{step.id}}" aria-selected=" {{link2 == null or link2 == step.id ? 'true' : 'false'}}">Config</button>
@@ -171,16 +175,29 @@
                             {# email form begin #}
                             <form action = {{ path("app_compaign_step_update", {"id": compaign.id, "link": "sequence"}) }} method = "post" >
                                     
+                                <h5 class ="mb-2" > {{step.name}} </h5>
 
-                                <div class = "mb-2">
-                                    {% if key != 0 %}
-                                    <label for="dayAfter_{{step.id}}" class ="form-label" >day After Step 1</label>
-                                    <input type="number" class = "form-control" value = {{step.dayAfterLastStep }} name="seqform[dayAfter_{{step.id}}]" id="dayAfter_{{step.id}}" min = "0">
-                                    {% endif %}
+
+
+                                <div class="row mb-2">
+                                    <div class="form-group col-md-6">
+                                        <label class = "form-label" for="stepName_{{step.id}}">Step name</label>
+                                        <input  class = "form-control" type="text" name="seqform[stepName_{{step.id}}]" id="stepName_{{step.id}}" value = "{{step.name}}">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        {% if key != 0 %}
+                                        <label class = "form-label" for="dayAfter_{{step.id}}" class ="form-label" >day After Step 1</label>
+                                        <input class = "form-control" type="number" class = "form-control" value = {{step.dayAfterLastStep }} name="seqform[dayAfter_{{step.id}}]" id="dayAfter_{{step.id}}" min = "0">
+                                        {% endif %}
+
+                                    </div>
                                 </div>
 
+                                {# <div class = "mb-2 form-group">
+                                </div> #}
+
                                 {# <legend >Mail</legend> #}
-                                <h5 >Mail</h5>
+                                {# <h5 >Mail</h5> #}
 
                                 <div class="form-group">
                                     <label for="subject_{{step.id}}" class="form-label mt-2"  >Subject</label>
@@ -190,18 +207,15 @@
 
 
                                 <div class="form-group">
-                                     
-                                    <label for="message_{{step.id}}" class="form-label mt-4">message</label>
-                                    <input id="message_{{step.id}}" type="hidden" name = "seqform[message_{{step.id}}]" value ={% autoescape  false %}"{{step.email.textMessage|raw}}"{% endautoescape %}  >
-                                    <trix-editor input="message_{{step.id}}"  required class="  form-control" id="message_{{step.id}}" rows="15" cols = "100"  ></trix-editor>                                    
-                                    {# <textarea  required class="form-control" id="message_{{step.id}}" rows="15" cols = "100" name = "seqform[message_{{step.id}}]"   >{{step.email.textMessage}}</textarea> #}
+                                    <label for="message_{{step.id}}" class=" form-label mt-4">Message</label>
+                                    <textarea  required class="form-control " id="message_{{step.id}}" rows="10" cols = "100" name = "seqform[message_{{step.id}}]"  >{{step.email.textMessage}}</textarea>
                                 </div>
+                                
 
-                                {# <div class="trix-content">{{step.email.textMessage|raw}}</div> #}
                                 <input type="hidden" name="token" value ={{ csrf_token("sequence") }} >
 
                                 <div class="form-group mt-3">
-                                    <button type="submit" class="btn btn-primary">Save</button>
+                                    <button type="submit" name = "submitbtn" class="btn btn-primary">Save</button>
                                 </div>
 
                                     
@@ -361,15 +375,10 @@
 
     </section>
 
-
-
-
-
-
-
-
-
     
 {% endblock %}
 
 
+{% block jquery %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+{% endblock %}

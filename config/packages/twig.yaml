@@ -6,6 +6,7 @@ twig:
     paths: 
         '%kernel.project_dir%/public/assets/mail/css': styles
         '%kernel.project_dir%/public/assets/mail/images': images
+        '%kernel.project_dir%/templates/mail/send':
 
 when@test:
     twig:

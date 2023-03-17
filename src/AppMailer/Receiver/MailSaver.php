@@ -22,7 +22,7 @@ use App\Controller\CrudControllerHelpers;
         public function saveMails(MailData $md)
         {
             $lead = null;
-            $mails = $this->allrec->receive($md->dsn,$md->criteria);
+            $mails = $this->allrec->receive($md->dsn,$md->criteria,$md->compaignStartTime);
             /**@var Mail[] $mails */
             foreach($mails as $mailarray)
             {
@@ -99,10 +99,10 @@ use App\Controller\CrudControllerHelpers;
 
 
         /**@param Dsn $dsn */
-        public function getMails(Dsn $dsn,mixed $criteria =1)
+        public function getMails(Dsn $dsn,mixed $criteria =1,$compaignStartTime)
         {
 
-            return $this->allrec->receive($dsn,$criteria);
+            return $this->allrec->receive($dsn,$criteria,$compaignStartTime);
 
         }
 

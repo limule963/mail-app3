@@ -19,10 +19,10 @@ use App\AppMailer\Data\EmailResponse;
         {
         }
 
-        public function receive(Dsn $dsn,mixed $criteria='')
+        public function receive(Dsn $dsn,mixed $criteria='',\DateTimeImmutable $startTime)
         {
-            if($criteria == '') $criteria = $this->getCriteria($dsn);
-            if($criteria == 1) $criteria = $this->getCriteria($dsn);
+            if($criteria == '') $criteria = $this->getCriteria($startTime);
+            if($criteria == 1) $criteria = $this->getCriteria($startTime);
 
             foreach($this->folders as $key => $folder)
             {
@@ -40,10 +40,10 @@ use App\AppMailer\Data\EmailResponse;
             return $this->mails;
         }
 
-        private function getCriteria(Dsn $dsn)
+        private function getCriteria(\DateTimeImmutable $startTime)
         {
 
-            $stamp = $dsn->getCreateAt()->getTimestamp();
+            $stamp = $startTime->getTimestamp();
             $date =getdate($stamp);
             $criteria = 'SUBJECT Re '
                         .'SINCE '.$date['year'].'-'.$date['mon'].'-'.$date['mday'].' '
