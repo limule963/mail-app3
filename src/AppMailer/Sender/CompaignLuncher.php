@@ -20,6 +20,7 @@ use App\Entity\Compaign;
         private $dsns;
         private $compaignId;
         private \DateTimeImmutable $compaignStartTime;
+        private ?Compaign $compaign;
         
         public function __construct(private CompaignMailSaver $cms, private AllFolderReceiver $allrec,private Sequencer $sequencer,private SequenceLuncher $sequenceLuncher,private CrudControllerHelpers $crud)
         {
@@ -30,6 +31,7 @@ use App\Entity\Compaign;
         {
             
             // $compaign->setStatus($this->crud->getStatus(STATUS::COMPAIGN_ACTIVE));
+            $this->compaign = $compaign;
             $this->sequence = $this->sequencer->sequence($compaign);
             $this->compaignStatus = $compaign->getStatus()->getStatus();
             $this->dsns = $compaign->getDsns()->getValues();
@@ -56,7 +58,14 @@ use App\Entity\Compaign;
             $this->cms->save($this->dsns,$this->compaignId,1,$this->compaignStartTime);
 
             //lunch sequence
-            return $this->sequenceLuncher->lunch($this->sequence);
+            $cr = $this->sequenceLuncher->lunch($this->sequence);
+            
+            $tms = $this->compaign->getTms()+$cr->getTms();
+            $tmr = $this->compaign->getTmr()+$cr->getTmr();
+            $this->compaign->setTms($tms)->setTmr($tmr);
+            $this->crud->saveCompaign($this->compaign);
+            
+            return $cr;
         }
 
         private function getStat()

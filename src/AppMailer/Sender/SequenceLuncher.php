@@ -52,9 +52,10 @@ use Symfony\Component\Mime\BodyRendererInterface;
             if($seq == null) return null;
             $this->sequence = $seq;
             $this->dsns = $seq->dsns;
-            // $this->email = $sequence->email;
-            // $this->compaignId = $sequence->compaignId;
-            // $this->stepStatus = $sequence->stepStatus;
+ 
+            $tms = 0;
+            // $tmo = 0;
+            $tmr = 0;
 
             /**@var Dsn $Dsn */
             foreach($this->dsns as $Dsn)
@@ -73,6 +74,7 @@ use Symfony\Component\Mime\BodyRendererInterface;
 
                 if($this->isEmailAnswered($lead)) 
                 {
+                    $tmr++;
                     $Status  = $this->crud->getStatus(STATUS::LEAD_COMPLETE);
                     $lead->setStatus($Status);
                     $this->crud->saveLead($lead,true);
@@ -86,6 +88,7 @@ use Symfony\Component\Mime\BodyRendererInterface;
                 
                 if($emailResponse->succes)
                 {
+                    $tms++;
                     $Dsn->sendState = true;
                     
                     $this->prepareForNextCall($lead,$from,true);
@@ -96,8 +99,8 @@ use Symfony\Component\Mime\BodyRendererInterface;
                 $this->cr->setResponse($emailResponse);
 
             }
-
-            return $this->cr->setCompagneState($seq->compaignState);
+          
+            return $this->cr->setCompagneState($seq->compaignState)->setTms($tms)->setTmr($tmr);
             
 
         }

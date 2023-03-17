@@ -53,6 +53,7 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
         #[Route('app/compaign',name:'app_compaign')]
         public function index()
         {
+            
             return $this->render('Email/compaign.html.twig',[]);
         }
 
