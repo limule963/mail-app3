@@ -166,14 +166,17 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
             if($status!=null) $compaign->setStatus($status);
             if($schedule!=null) $compaign->setSchedule($schedule);
-            if($step!=null) $compaign->addStep($step);
-
+            if($step!=null) 
+            {
+                $compaign->addStep($step);
+            }
             if($leads!=null)
             {
                 $compaign->addLeads($leads);
             }
             
             $rep->save($compaign,true);
+            $this->leadStatusOrding($compaign->getId());
 
 
         }
@@ -183,6 +186,8 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             /**@var CompaignRepository */
             $rep = $this->em->getRepository(Compaign::class);
             $rep->save($compaign,$flush);
+            $this->leadStatusOrding($compaign->getId());
+
 
         }
         

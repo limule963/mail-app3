@@ -222,12 +222,13 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
         {
 
 
-            
-            $compaignId = $step->getCompaign()->getId();
+            $compaign = $step->getCompaign();
+            $compaignId = $compaign->getId();
             $link = "sequence";
             $link2 = $step->getId();    
-
-            $this->crud->deleteStep($step->getId());
+            $compaign->removeStep($step);
+            $this->crud->saveCompaign($compaign);
+            // $this->crud->deleteStep($step->getId());
             return $this->redirectToRoute("app_compaign_detail",["id"=>$compaignId,"link"=>$link]);
             
         }
@@ -279,6 +280,7 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
                     $data = explode("_",$key);
                     if($data[0] === 'dayAfter') $step->dayAfterLastStep = $value;
                     if($data[0] === 'subject') $email->setSubject($value);
+                    if($data[0] === 'stepName') $step->setName($value);
                     if($data[0] === 'message') 
                     {
                         $email->setTextMessage($value);

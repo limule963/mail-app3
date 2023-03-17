@@ -32,7 +32,7 @@ class Compaign
     #[ORM\JoinColumn(nullable: false)]
     private ?Status $status = null;
 
-    #[ORM\OneToMany(mappedBy: 'compaign', targetEntity: Step::class,cascade:["persist",'remove'])]
+    #[ORM\OneToMany(mappedBy: 'compaign', targetEntity: Step::class,cascade:["persist",'remove'],orphanRemoval:true)]
     private Collection $steps;
 
 
@@ -40,7 +40,7 @@ class Compaign
     // #[ORM\OneToMany(mappedBy: 'compaign', targetEntity: Dsn::class,cascade:['persist'])]
     // private Collection $dsns;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(cascade: ['persist', 'remove'],orphanRemoval: true)]
     private ?Schedule $schedule = null;
 
     #[ORM\Column]

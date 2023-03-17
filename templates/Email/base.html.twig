@@ -26,12 +26,12 @@
 
     {% block body %}
 
-        <div class="  p-3">
+       
 
-            <div class="d-flex row">
+            <div class="d-flex row flex-nowrap pt-3">
 
 
-                <aside class="aside col-2 border-end border-dark-subtle">
+                <aside class="aside col-2 border-end border-dark-subtle  ">
                     <div class="aside-up  "><a class ="" href= {{ path('app_email') }} >APP NAME</a></div>
 
 
@@ -63,7 +63,7 @@
 
 
 
-                <main class =" main col">
+                <main class =" main col flex-shrink-3 ">
 
                     {% block header %}
                         <header class="header d-flex">
@@ -126,7 +126,7 @@
                 </main>
             </div>
 
-        </div>
+        
 
     {% endblock %}
 

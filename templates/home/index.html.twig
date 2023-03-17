@@ -1,20 +1,14 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Hello HomeController!{% endblock %}
-{% block link %}  <link rel="stylesheet" type="text/css" href="https://unpkg.com/trix@2.0.0/dist/trix.css">{% endblock %}
-{% block script %}  <script type="text/javascript" src="https://unpkg.com/trix@2.0.0/dist/trix.umd.min.js"></script>{% endblock %}
+{% block link %}  {% endblock %}
+{% block script %}  {% endblock %}
 
 {% block body %}
 
+<pre>
 
- {# Le type d'encodage des données, enctype, DOIT être spécifié comme ce qui suit --> #}
-<form enctype="multipart/form-data" action = {{path("app_compaign_mail_attachment")}} method="post">
-  <!-- MAX_FILE_SIZE doit précéder le champ input de type file -->
-  <input type="hidden"   name="MAX_FILE_SIZE" value="30000" />
-  <!-- Le nom de l'élément input détermine le nom dans le tableau $_FILES -->
-  {# Envoyez ce fichier :  #}
-  <input name="userfile" class = "form-control" type="file" />
-  <input type="submit" class  = "btn btn-primary" value="Envoyer le fichier" />
-</form>
+{{ dump(cr) }}
+</pre>
 
 {% endblock %}
