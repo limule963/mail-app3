@@ -8,6 +8,7 @@ use App\Entity\Dsn;
         public Dsn $dsn;
         public int $compaignId;
         public mixed $criteria;
+        public \DateTimeImmutable $compaignStartTime;
         public function __construct(
 
         )
@@ -15,11 +16,12 @@ use App\Entity\Dsn;
             
         }
 
-        public function set(Dsn $dsn,int $compaignId,mixed $criteria):self
+        public function set(Dsn $dsn,int $compaignId,mixed $criteria, \DateTimeImmutable $compaignStartTime):self
         {
             $this->dsn = $dsn;
             $this->compaignId =$compaignId;
             $this->criteria= $criteria;
+            $this->compaignStartTime = $compaignStartTime;
 
             return $this;
         }

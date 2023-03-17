@@ -8,6 +8,7 @@ use App\Entity\Dsn;
         public string $folder;
         public string $criteria;
         public Dsn $dsn;
+
         public function __construct(
         )
         {

@@ -45,11 +45,15 @@ class HomeController extends AbstractController
         
     }
     #[Route('/', name: 'app_home')]
-    public function index( Request $request): Response
+    public function index( Request $request,Receiver $rec,Connexion $con): Response
     {
+        $user = $this->getUser();
+        $userId = $user->getId();
+        $dsns = $this->crud->getUserDsns($userId,3);
+        $dsn = $dsns[0];
 
-
-
+        $res = $rec->receive($con->set($dsn));
+        dd($res);
         return $this->render('home/index.html.twig', [
             'controller_name' => 'HomeController',
             'cr'=>''

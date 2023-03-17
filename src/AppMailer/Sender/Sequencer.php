@@ -44,10 +44,11 @@ use Symfony\Component\Mime\BodyRendererInterface;
             
             // if($compaign->newStepPriority)
             // {
-            //     $steps = array_reverse($steps);
-            // }  
-
+                //     $steps = array_reverse($steps);
+                // }  
+                
             $steps =  $this->stepManager($steps,$compaign->newStepPriority);
+
 
             foreach($steps as $step)
             {
@@ -100,7 +101,7 @@ use Symfony\Component\Mime\BodyRendererInterface;
         {
             foreach ($steps as $key => $step)
             {
-                if($step->stepState == STAT::STEP_COMPLETE) continue;
+                if($step->stepState === STAT::STEP_COMPLETE) continue;
                 
                 $doJob = $this->isStepDoJob($step);
                 

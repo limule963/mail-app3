@@ -12,12 +12,12 @@ use Doctrine\Common\Collections\Criteria;
         }
 
         /**@param ?Dsn[] */
-        public function save( $dsns,$compaignId,$criteria)
+        public function save( $dsns,$compaignId,$criteria,$compaignStartTime)
         {
             foreach($dsns as $dsn)
             {
 
-                $mailData = $this->md->set($dsn,$compaignId,$criteria);
+                $mailData = $this->md->set($dsn,$compaignId,$criteria,$compaignStartTime);
                 $this->ms->saveMails($mailData);
             }
         }
