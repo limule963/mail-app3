@@ -40,6 +40,15 @@ class Step
     #[ORM\JoinColumn(nullable: false)]
     private ?Compaign $compaign = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $tms = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $tmo = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $tmr = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -119,4 +128,40 @@ class Step
 
     //     return $this;
     // }
+
+    public function getTms(): ?int
+    {
+        return $this->tms;
+    }
+
+    public function setTms(?int $tms): self
+    {
+        $this->tms = $tms;
+
+        return $this;
+    }
+
+    public function getTmo(): ?int
+    {
+        return $this->tmo;
+    }
+
+    public function setTmo(?int $tmo): self
+    {
+        $this->tmo = $tmo;
+
+        return $this;
+    }
+
+    public function getTmr(): ?int
+    {
+        return $this->tmr;
+    }
+
+    public function setTmr(?int $tmr): self
+    {
+        $this->tmr = $tmr;
+
+        return $this;
+    }
 }

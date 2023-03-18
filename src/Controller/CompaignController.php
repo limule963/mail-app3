@@ -9,15 +9,11 @@ use DateTimeImmutable;
 use App\Entity\Compaign;
 use App\AppMailer\Data\STATUS;
 use App\Repository\LeadRepository;
-use Symfony\Component\Filesystem\Path;
-use Doctrine\ORM\EntityManagerInterface;
 use App\AppMailer\Sender\CompaignLuncher;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use App\AppMailer\Data\TransparentPixelResponse;
-use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
@@ -30,13 +26,11 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Serializer\Encoder\DecoderInterface;
-use Symfony\Component\HttpFoundation\File\File as FileFile;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
-use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
     class CompaignController extends AbstractController
     {
@@ -397,6 +391,12 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
             // return $this->json(["url"=>'https://localhost:8000/assets/images/mail/'.$filename,"href"=>'https://localhost:8000/assets/images/mail/'.$filename]);
             return $this->json([],204);
         }
+        #[Route(path:"/compaign/{id}/analytics",name:"app_compaign_analytics")]
+        public function compaignAnalytics(Compaign $compaign)
+        {
+            return $this-> render('Email/compaign_analytics.html.twig');
+        }
+        
         
 
 

@@ -71,7 +71,7 @@
 
                 {% for compaign in app.user.compaigns %} 
                     {% set status = compaign.status.status|slice(9) %}
-                    <div class="section-item row mb-3 ms-1" id = "{{compaign.id}}" >
+                    <div class="section-item row mb-3 ms-1" onclick="location.href='{{ path('app_compaign_analytics', {'id': compaign.id}) }} ';" style="cursor: pointer;" id = "{{compaign.id}}" >
                         
                         <div class="section-item1 d-flex align-items-center justify-content-start col-4 " >
                         

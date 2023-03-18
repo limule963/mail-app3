@@ -10,8 +10,8 @@ for(let element of tabs)
 tinymce.init({
     selector: '#v-pills-tabContent textarea',
     skin: 'tinymce-5',
-    plugins: 'lists, link, image, media, code',
-    toolbar: 'h1 h2 bold italic strikethrough blockquote bullist numlist backcolor   | link image media | code removeformat help',
+    plugins: 'lists, link, image, media, code table',
+    toolbar: 'h1 h2 bold italic strikethrough blockquote bullist numlist backcolor table  | link image media | code removeformat help',
     menubar: 'insert, format, ',
     branding: false,
     height: 300,
