@@ -2,11 +2,12 @@
 
 namespace App\AppMailer\Receiver;
 
-use App\AppMailer\Data\Connexion;
-use App\AppMailer\Data\EmailResponse;
-use App\AppMailer\Data\Mail;
+use PhpImap\Mailbox;
 use App\Entity\Mail as Ma;
+use App\AppMailer\Data\Mail;
+use App\AppMailer\Data\Connexion;
 use SecIT\ImapBundle\Service\Imap;
+use App\AppMailer\Data\EmailResponse;
 
 
     class Receiver
@@ -32,6 +33,7 @@ use SecIT\ImapBundle\Service\Imap;
             
             if(!$test) return new EmailResponse(false,'Connexion fail',$dsn->getEmail(),'');
             
+            /**@var Mailbox */
             $con = $imap->get($dsn->getConnexionName());
 
             // $stamp = $dsn->getCreateAt()->getTimestamp();
@@ -60,6 +62,8 @@ use SecIT\ImapBundle\Service\Imap;
                     $mail2->isDeleted = $mail->isDeleted;
                     $mail2->date = $mail->date;
                     $mail2->mid = $mail->id;
+                    $mail2->textHtml = $mail->textHtml;
+                    $mail2->textPlain = $mail->textPlain;
                     // $mail2->udate = $mail->udate;
                     $this->mails[] = $mail2;
                     
@@ -87,11 +91,12 @@ use SecIT\ImapBundle\Service\Imap;
             if(!$test) return new EmailResponse(false,'Connexion fail',$dsn->getEmail(),'');
             
             $con = $imap->get($dsn->getConnexionName());
-
-
+            
+            
             try
             {
                 $mailIds = $con->switchMailbox($folder)->sortMails(searchCriteria:$criteria);
+                if($mailIds == null) return null;
                 foreach($mailIds as $id)
                 {
                     $mail2 = new Ma;
@@ -104,11 +109,13 @@ use SecIT\ImapBundle\Service\Imap;
                     $mail2->setDate($mail->date);
                     $mail2->setToAddress($dsn->getEmail());
                     $mail2->setDsn($dsn);
+                    $mail2->setTextHtml($mail->textHtml);
+                    $mail2->setTextPlain($mail->textPlain);
+
                     $this->mails[] = $mail2;
                     
                 }
                 $con->disconnect();
-                // dd($this->mails);
                 return $this->mails;
             }
             catch(\Throwable $th)

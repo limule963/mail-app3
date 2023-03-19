@@ -2,6 +2,7 @@
     
     namespace App\AppMailer\Receiver;
 
+use App\AppMailer\Data\EmailResponse;
 use App\Entity\Dsn;
 use App\Entity\Lead;
 use App\Entity\Mail;
@@ -23,77 +24,36 @@ use App\Controller\CrudControllerHelpers;
         {
             $lead = null;
             $mails = $this->allrec->receive($md->dsn,$md->criteria,$md->compaignStartTime);
+            if($mails == null) return null;
+            if($mails instanceof EmailResponse) return null;
             /**@var Mail[] $mails */
             foreach($mails as $mailarray)
             {
-                if($mailarray == null) continue;
-                else
+                /**@var Mail $mail */
+                foreach($mailarray as $mail)
                 {
-                    foreach($mailarray as $mail)
+
+                    $lead =$this->crud->getLeadByEmailAddress($md->compaignId,$mail->getFromAddress());
+                    if($lead == null) continue;
+                    else
                     {
+                        $lead->addUniqMail($mail);
+                        $this->crud->saveLead($lead,false);
 
-                        $lead =$this->crud->getLeadByEmailAddress($md->compaignId,$mail->getFromAddress());
-                        if($lead == null) continue;
-                        else
-                        {
-                            $mailIds = $this->getAllmailIds($lead);
-                            if($mailIds==null) $lead->addMail($mail);
-                            else
-                            {
-                                if(!in_array($mail->getMailId(),$mailIds,true)) $lead->addMail($mail);
-                            }
-                            $this->crud->saveLead($lead,false);
-    
-                        }
+                        // $mailIds = $this->getAllmailIds($lead);
+                        // if($mailIds==null) $lead->addMail($mail);
+                        // else
+                        // {
+                        //     if(!in_array($mail->getMailId(),$mailIds,true)) $lead->addMail($mail);
+                        // }
+                        // $this->crud->saveLead($lead,false);
+
                     }
-
                 }
+
+                
             }
             if($lead!=null) $this->crud->saveLead($lead);
-
-            /**@var ?Mail[]  */
-            // $inboxFolder = $mails[FOLDER::INBOX];
-
-            /**@var ?Mail[]  */
-            // $junkFolder = $mails[FOLDER::JUNK];
-            
-            // /**@var ?Lead */
-            // $lead = null;
-            // if($inboxFolder!=null)
-            // {
-            //     foreach($inboxFolder as $mail)
-            //     {
-            //         $lead =$this->crud->getLeadByEmailAddress($md->compaignId,$mail->getFromAddress());
-
-            //         if($lead!=null) 
-            //         {
-            //             $mailIds = $this->getAllmailIds($lead);
-            //             if($mailIds!=null)
-            //             $id = $mail->getMailId();
-                     
-            //             if(!in_array($id,$mailIds,true)) $lead->addMail($mail);
-            //             $this->crud->saveLead($lead,true);
-            //         }
-
-            //     }
-            // }
-
-
-            // if($junkFolder!=null)
-            // {
-            //     foreach($inboxFolder as $mail)
-            //     {
-            //         $mailIds = $this->getAllmailIds($lead);
-            //         $id = $mail->getMailId();
-                 
-            //         if(!in_array($id,$mailIds,true)) $lead->addMail($mail);
-            //     }
-            //     $this->crud->saveLead($lead,true);
-
-            // }
-
-            
-            
 
         }
 

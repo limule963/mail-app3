@@ -8,4 +8,5 @@
 /public/bundles/
 /var/
 /vendor/
+/memo
 ###< symfony/framework-bundle ###

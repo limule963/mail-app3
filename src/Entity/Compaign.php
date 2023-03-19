@@ -110,6 +110,34 @@ class Compaign
         return $this->leads;
     }
 
+    public function addUniqLead(Lead $lead)
+    {
+        $email = $lead->getEmailAddress();
+
+        /**@param Lead $element */
+        if(!$this->leads->exists(function($key,$element) use($email){
+            return $element->getEmailAddress() == $email;
+        }))
+        {
+            $this->leads->add($lead);
+            $lead->setCompaign($this);
+            return true;
+            
+        }
+        return false;
+    }
+
+    /**@param Lead[] $leads */
+    public function addUniqLeads($leads)
+    {
+        foreach($leads as $lead)
+        {
+            $this->addUniqLead($lead);
+        }
+        
+    }
+    
+
     public function addLead(Lead $lead): self
     {
         if (!$this->leads->contains($lead)) {

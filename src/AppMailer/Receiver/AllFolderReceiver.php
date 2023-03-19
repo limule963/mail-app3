@@ -9,8 +9,8 @@ use App\AppMailer\Data\EmailResponse;
     class AllFolderReceiver
     {
         private $folders =[
-            FOLDER::JUNK,
             FOLDER::INBOX,
+            FOLDER::JUNK,
 
         ] ;
         private $mails;
@@ -28,15 +28,12 @@ use App\AppMailer\Data\EmailResponse;
             {
                
                 $mails = (new Receiver)->receive( $this->connex->set($dsn,$criteria,$folder)); 
+                if($mails == null) continue;
                 if($mails instanceof EmailResponse) return $mails;
                 $this->mails[$folder]=$mails;       
                 $mails = null;
                 
             }
-            // foreach($this->mails as $mail)
-            // {
-            //     if($mail instanceof EmailResponse) return $mail;
-            // }
             return $this->mails;
         }
 

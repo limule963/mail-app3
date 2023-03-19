@@ -99,7 +99,12 @@ use Symfony\Component\Mime\BodyRendererInterface;
                 $this->cr->setResponse($emailResponse);
 
             }
-          
+            $stepTms = $seq->step->getTms();
+            $stepTmr = $seq->step->getTmr();
+            $seq->step->setTms($stepTms+$tms);
+            $seq->step->setTmr($stepTmr+$tmr);
+            $this->crud->saveStep($seq->step);
+        
             return $this->cr->setCompagneState($seq->compaignState)->setTms($tms)->setTmr($tmr);
             
 
@@ -148,60 +153,5 @@ use Symfony\Component\Mime\BodyRendererInterface;
             if(!empty($lead->getMail()->getValues())) return true;
             return false;
         }
-        // private function isEmailAnswered(Dsn $dsn,Lead $lead)
-        // {
-        //     $stamp = $dsn->getCreateAt()->getTimestamp();
-        //     $date =getdate($stamp);
-        //     $criteria = 'SINCE '.$date['year'].'-'.$date['mon'].'-'.$date['mday'];
-        //     $criteria = $criteria.' '. 'FROM '.$lead->getEmailAddress();
-
-
-        //     $mails = $this->allrec->receive($dsn,$criteria);
-        //     foreach($mails as $key => $mail)
-        //     {
-        //         if($key == FOLDER::JUNK)
-        //         {
-        //             if($mails[FOLDER::JUNK] != null ) return true;
-        //         }
-        //         else if($key == FOLDER::INBOX)
-        //         {
-        //             if($mails[FOLDER::INBOX] != null) return true;
-        //         }
-        //     }
-        //     return false;
-        // }
-
-
-        // private function getTemplatedEmail(Email $email,Lead $lead):TemplatedEmail
-        // {
-        //     $subject = $email->getSubject();
-        //     $emailLink = $email->getEmailLink();
-
-        //     $email = (new TemplatedEmail())
-        //         // ->to(new Address('ryan@example.com'))
-        //         ->subject($subject)
-
-        //         // path of the Twig template to render
-        //         ->htmlTemplate($emailLink)
-
-        //         // pass variables (name => value) to the template
-        //         ->context([
-        //             'lead' => $lead
-        //         ])
-        //     ;
-        //     $this->bodyRenderer->render($email);
-
-        //     return $email;
-        // }
-
-        // private function getDsnByEmail($email)
-        // {
-        //     foreach($this->dsns as $dsn)
-        //     {
-        //         if($dsn->getEmail() == $email) return $dsn->getDsn();
-        //     }
-        // }
-
- 
 
     }

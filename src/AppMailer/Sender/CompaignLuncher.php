@@ -47,11 +47,11 @@ use App\Entity\Compaign;
             
             
             if($this->compaignStatus != STATUS::COMPAIGN_ACTIVE) return $this->getStat();
-            $date = getdate();
+            $date = getdate(time());
             $h = $date['hours'];
 
            
-            if($this->fromm == 0) $this->fromm = 24;
+           
 
             if($h < $this->fromm && $h > $this->too) return $this->getStat();
             //synchro mails receve

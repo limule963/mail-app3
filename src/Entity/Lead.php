@@ -115,6 +115,21 @@ class Lead
         return $this->mail;
     }
 
+    public function addUniqMail(Mail $mail)
+    {
+        $mailId = $mail->getMailId();
+
+        /**@param Mail $element */
+        if(!$this->mail->exists(function($key,$element) use($mailId){
+            return $element->getMailId() == $mailId;
+        }))
+        {
+            $this->mail->add($mail);
+            $mail->setMailLead($this);
+        }
+    }
+    
+
     public function addMail(Mail $mail): self
     {
         if (!$this->mail->contains($mail)) {

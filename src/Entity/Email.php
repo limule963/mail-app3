@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\EmailRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 
@@ -20,7 +21,7 @@ class Email
     #[ORM\Column(length: 255,nullable:true)]
     private ?string $subject = null;
 
-    #[ORM\Column(length: 10000, nullable: true)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $textMessage = null;
 
     #[ORM\Column]

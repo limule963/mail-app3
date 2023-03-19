@@ -60,15 +60,7 @@ use Symfony\Component\Mime\BodyRendererInterface;
                 {
                     $this->step = $step;
                     // $sequenceState =STAT::SEQUENCE_ONHOLD;
-                    return new Sequence(
-                            email:$step->getEmail(),
-                            dsns:$compaign->getDsns()->getValues(),
-                            leadStatusTable:$this->leadStatusTable($this->steps),
-                            compaignId:$compaign->getId(),
-                            stepStatus:$step->getStatus()->getStatus(),
-                            compaignState:$compaign->getStatus()->getStatus(),
-                            tracker:$compaign->isIsTracker()
-                        );
+                    return new Sequence($step);
                     break;
                 }
                 
@@ -80,10 +72,6 @@ use Symfony\Component\Mime\BodyRendererInterface;
 
             return null;
             
-        
-
-
- 
         }
         
 
@@ -128,16 +116,7 @@ use Symfony\Component\Mime\BodyRendererInterface;
             else return $steps;
         }
 
-        /**@var Step[] $steps */
-        private function leadStatusTable($steps)
-        {
-            foreach ($steps as $step) {
-                /**@var Step $step */
-                $statusTable[] = $step->getStatus()->getStatus();
-            } 
-                
-            return $statusTable;
-        }
+
 
 
 

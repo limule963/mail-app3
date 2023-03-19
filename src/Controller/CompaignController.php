@@ -144,8 +144,9 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
                 if($textleads!=null) 
                 {
-                    $this->crud->addLeadsByString($compaign->getId(),$textleads);
-                    $this->addFlash('success','Leads Add successfully');
+                    if($this->crud->addLeadsByString($compaign->getId(),$textleads)) $this->addFlash('warning','Lead added,At least One Lead already exist');
+                    else  $this->addFlash('success','Leads Add successfully');
+                   
                 }
 
                 if($file!=null) 

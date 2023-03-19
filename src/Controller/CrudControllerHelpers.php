@@ -172,7 +172,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             }
             if($leads!=null)
             {
-                $compaign->addLeads($leads);
+                return $compaign->addUniqLeads($leads);
             }
             
             $rep->save($compaign,true);

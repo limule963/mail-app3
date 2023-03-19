@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\MailRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: MailRepository::class)]
@@ -38,6 +39,13 @@ class Mail
 
     #[ORM\Column(length: 255)]
     private ?string $date = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $textPlain = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $textHtml = null;
+
 
     public function getId(): ?int
     {
@@ -139,4 +147,30 @@ class Mail
 
         return $this;
     }
+
+    public function getTextPlain(): ?string
+    {
+        return $this->textPlain;
+    }
+
+    public function setTextPlain(?string $textPlain): self
+    {
+        $this->textPlain = $textPlain;
+
+        return $this;
+    }
+
+    public function getTextHtml(): ?string
+    {
+        return $this->textHtml;
+    }
+
+    public function setTextHtml(?string $textHtml): self
+    {
+        $this->textHtml = $textHtml;
+
+        return $this;
+    }
+
+
 }
