@@ -120,17 +120,17 @@
 
                         <div class="section-item3 d-flex align-items-center justify-content-between col-2">
 
-                            <a href="">
+                            <a href= {{ path("app_compaign_lunch", {"id" : compaign.id}) }}>
                             {% if status == "active" %}
-                                <img src={{asset('assets/images/svg/pause.svg')}} height="15px" alt="i">
+                                <img  src={{asset('assets/images/svg/pause.svg')}} height="15px" alt="i">
                             {% endif %}
 
                             {% if status == "draft" %}
-                                <img src={{asset('assets/images/svg/play.svg')}} height="15px" alt="i">
+                                <img  src={{asset('assets/images/svg/play.svg')}} height="15px" alt="i">
                             {% endif %}
 
                             {% if status == "complete" %}
-                                <img src={{asset('assets/images/svg/play_disable.svg')}} height="15px" alt="i">
+                                <img  src={{asset('assets/images/svg/play_disable.svg')}} height="15px" alt="i">
                             {% endif %}
 
                             {% if status == "paused" %}

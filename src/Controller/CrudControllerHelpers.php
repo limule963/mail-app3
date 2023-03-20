@@ -152,6 +152,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
          */
         public function updateCompaign($id,$name = null,  mixed $dsns = null, Step $step = null, Status $status =null, $leads =null, Schedule $schedule =null)
         {
+
             /**@var CompaignRepository */
             $rep = $this->em->getRepository(Compaign::class);
             /**@var Compaign */
@@ -172,7 +173,8 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             }
             if($leads!=null)
             {
-                return $compaign->addUniqLeads($leads);
+
+                 $compaign->addUniqLeads($leads);
             }
             
             $rep->save($compaign,true);

@@ -1,6 +1,7 @@
 <?php
     namespace App\AppMailer\Receiver;
 
+use App\Entity\Dsn;
 use App\AppMailer\Data\MailData;
 use Doctrine\Common\Collections\Criteria;
 
@@ -11,8 +12,8 @@ use Doctrine\Common\Collections\Criteria;
             
         }
 
-        /**@param ?Dsn[] */
-        public function save( $dsns,$compaignId,$criteria,$compaignStartTime)
+        /**@param ?Dsn[] $dsns */
+        public function save( $dsns, int $compaignId, mixed $criteria,\DateTimeImmutable $compaignStartTime)
         {
             foreach($dsns as $dsn)
             {

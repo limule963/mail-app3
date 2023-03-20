@@ -121,15 +121,16 @@ class Compaign
         {
             $this->leads->add($lead);
             $lead->setCompaign($this);
-            return true;
+        
             
         }
-        return false;
+      
     }
 
     /**@param Lead[] $leads */
     public function addUniqLeads($leads)
     {
+
         foreach($leads as $lead)
         {
             $this->addUniqLead($lead);

@@ -38,7 +38,7 @@ use App\Entity\Compaign;
             $this->compaignId = $compaign->getId();
             $this->fromm = $compaign->getSchedule()->getFromm();
             $this->too = $compaign->getSchedule()->getToo();
-            $this->compaignStartTime = $compaign->getCreateAt();
+            $this->compaignStartTime = $compaign->getSchedule()->getStartTime();
             return $this;
         }
         
@@ -53,7 +53,7 @@ use App\Entity\Compaign;
            
            
 
-            if($h < $this->fromm && $h > $this->too) return $this->getStat();
+            if($h < $this->fromm || $h > $this->too) return $this->getStat();
             //synchro mails receve
             $this->cms->save($this->dsns,$this->compaignId,1,$this->compaignStartTime);
 

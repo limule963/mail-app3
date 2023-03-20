@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Lead;
+use App\Entity\Step;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -27,7 +28,24 @@ class TrackingController extends AbstractController
             //... executes some logic to retrieve the email and mark it as opened
 
             $lead = $this->crud->getLead($id);
-            if($lead != null) $this->crud->saveLead($lead);
+            //code for lead
+            
+            $compaign = $lead->getCompaign();
+            $comptmo = $compaign->getTmo();
+            $compaign->setTmo($comptmo++);
+             /**@var Step */
+            $step = $compaign->getSteps()->getValues()[$step];
+        
+            $steptmo = $step->getTmo();
+            $step->setTmo($steptmo++);
+
+            if($lead != null) 
+            {
+                $this->crud->saveLead($lead);
+                $this->crud->saveCompaign($compaign);
+                $this->crud->saveStep($step);
+
+            }
         }
         return new TransparentPixelResponse();
         // return $this->render('tracking/index.html.twig', [
@@ -35,13 +53,28 @@ class TrackingController extends AbstractController
         // ]);
     }
 
-    #[Route('/image/{id}/papillon.png',name:'app_tracking_2')]
-    public function tracker(Lead $lead)
+    #[Route('/image/{id}/{stepkey}/papillon.png',name:'app_tracking_2')]
+    public function tracker(Lead $lead, int $stepkey)
     {
-        //making change for 
-        $leadName = $lead->getName();
-        $lead->setName($leadName."1");
+        if($lead == null) return null;
+        //making change for lead
+        // $leadName = $lead->getName();
+        // $lead->setName($leadName."1");
+
+        
+        
+        $compaign = $lead->getCompaign();
+        $comptmo = $compaign->getTmo();
+        $compaign->setTmo($comptmo++);
+        /**@var Step */
+        $step = $compaign->getSteps()->getValues()[$step];
+        
+        $steptmo = $step->getTmo();
+        $step->setTmo($steptmo++);
+        
         $this->crud->saveLead($lead);
+        $this->crud->saveCompaign($compaign);
+        $this->crud->saveStep($step);
         
 
         return $this->redirect("https://op.clemaos.com/Public/images/image.png");

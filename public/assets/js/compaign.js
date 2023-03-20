@@ -2,7 +2,7 @@ let play = document.getElementsByClassName('play');
 // let play2 = document.getElementById('play');
 
 let src1  = "/assets/images/svg/play.svg";
-let src2  = "/assets/images/svg/pause.svg";
+let src2  = "/assets/images/svg/pause_paused.svg";
 
     
     function receive(url,xhr,element,src1,src2,id){

@@ -82,19 +82,73 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
             return $this->redirectToRoute('app_compaign');
 
         }
-        #[Route('/app/compaign/lunch/{id}',name:'app_compaign_lunch')]
+        #[Route('/app/compaign/{id}/lunch',name:'app_compaign_lunch')]
         public function lunchCompaign(Compaign $compaign,CompaignLuncher $cl)
         {
-            $Status = $this->crud->getStatus(STATUS::COMPAIGN_ACTIVE);
-            $compaign->setStatus($Status);
+
+            if($compaign->getStatus()->getStatus() === STATUS::COMPAIGN_COMPLETE)
+            {
+                $this->addFlash("warning","Compaign complete");
+                $this->crud->saveCompaign($compaign);
+                return $this->redirectToRoute("app_compaign");
+            }
+            else if($compaign->getStatus()->getStatus() === STATUS::COMPAIGN_DRAFT)
+            {
+                $Status = $this->crud->getStatus(STATUS::COMPAIGN_ACTIVE);
+                
+                $dsns = $compaign->getDsns()->getValues();
+                $leads = $compaign->getLeads()->getValues();
+                $steps = $compaign->getSteps()->getValues();
+                /**@var Step */
+                $step1 = $steps[0];
+                $email1 = $step1->getEmail();
+                
+                if($dsns == null || $leads == null || $email1->getSubject() == null || $email1->getTextMessage() == null)
+                {
+                    $this->addFlash("warning","Compaign  Not Configured");
+                    return $this->redirectToRoute("app_compaign");
+
+                }
+
+                
+                $compaign->setStatus($Status);
+                $this->crud->saveCompaign($compaign);
+
+                return $this->redirectToRoute("app_compaign");
+
+            }
+            else if($compaign->getStatus()->getStatus() === STATUS::COMPAIGN_ACTIVE)
+            {
+                $Status = $this->crud->getStatus(STATUS::COMPAIGN_PAUSED);
+                $compaign->setStatus($Status);
+                $this->crud->saveCompaign($compaign);
+
+                return $this->redirectToRoute("app_compaign");                
+
+            }
+            else if($compaign->getStatus()->getStatus() === STATUS::COMPAIGN_PAUSED)
+            {
+                $Status = $this->crud->getStatus(STATUS::COMPAIGN_ACTIVE);
+                $compaign->setStatus($Status);
+                $this->crud->saveCompaign($compaign);
+                
+                return $this->redirectToRoute("app_compaign");                
+
+            }
+            else return $this->redirectToRoute("app_compaign");  
+            
+            // $Status = $this->crud->getStatus(STATUS::COMPAIGN_ACTIVE);
+            // $compaign->setStatus($Status);
 
             //appel le cron sur un lien lanceur
             //Quelques codes
-            $res = [
-                'response'=>true,
-                'message'=> 'compaign lunched successfully'
-            ];
-            return $this->json($res);
+
+            // $res = [
+            //     'response'=>true,
+            //     'message'=> 'compaign lunched successfully'
+            // ];
+
+            // return $this->json($res);
 
         }
         
@@ -144,8 +198,8 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
                 if($textleads!=null) 
                 {
-                    if($this->crud->addLeadsByString($compaign->getId(),$textleads)) $this->addFlash('warning','Lead added,At least One Lead already exist');
-                    else  $this->addFlash('success','Leads Add successfully');
+                    $this->crud->addLeadsByString($compaign->getId(),$textleads);
+                    $this->addFlash('success','Leads Add successfully');
                    
                 }
 

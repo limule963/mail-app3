@@ -82,7 +82,7 @@ use Symfony\Component\Mime\BodyRendererInterface;
                 }
 
 
-                $emailData = new EmailData($dsn,$from,$lead,$seq->email,$senderName,$seq->stepStatus,$seq->tracker);
+                $emailData = new EmailData($dsn,$from,$lead,$seq->email,$senderName,$seq->stepStatus,$seq->tracker,$seq->step->getId());
 
                 $emailResponse = $this->emailSender->send($emailData);
                 
