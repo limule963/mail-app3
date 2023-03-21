@@ -1,6 +1,9 @@
 <?php
 namespace App\Controller;
 
+use App\Entity\Mo;
+use App\Entity\Mr;
+use App\Entity\Ms;
 use App\Entity\Dsn;
 use App\Entity\Lead;
 use App\Entity\Mail;
@@ -10,6 +13,9 @@ use App\Entity\Email;
 use App\Entity\Status;
 use App\Entity\Compaign;
 use App\Entity\Schedule;
+use App\Repository\MoRepository;
+use App\Repository\MrRepository;
+use App\Repository\MsRepository;
 use App\Repository\DsnRepository;
 use App\Repository\LeadRepository;
 use App\Repository\MailRepository;
@@ -23,9 +29,9 @@ use Symfony\Component\Serializer\Encoder\CsvEncoder;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use App\AppMAiler\Exceptions\CrudControllerException;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
     class CrudControllerHelpers extends AbstractController
@@ -47,6 +53,47 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             $this->em = $doc->getManager();
         }
         
+
+
+
+//---------------------------------------------------------------------
+//               MO MR MS CRUD                                        |
+//---------------------------------------------------------------------
+public function saveMo(Mo $mo,$flush = true)
+{
+    /**@var MoRepository */
+    $rep = $this->em->getRepository(Mo::class);
+    $rep->save($mo,$flush);
+}
+
+public function saveMr(Mr $mr,$flush = true)
+{
+    /**@var MrRepository */
+    $rep = $this->em->getRepository(Mr::class);
+    $rep->save($mr,$flush);
+}
+
+public function saveMs(Ms $ms,$flush = true)
+{
+    /**@var MsRepository */
+    $rep = $this->em->getRepository(Ms::class);
+    $rep->save($ms,$flush);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //---------------------------------------------------------------------
 //               STATUS_CRUD                                          |
@@ -85,6 +132,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
             if($this->getUser() == null) return $this->redirectToRoute('app_login');
             return $this->getUser();
         }
+
 
 
         public function get_User($userId):User

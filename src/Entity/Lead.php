@@ -36,9 +36,21 @@ class Lead
     #[ORM\OneToMany(mappedBy: 'mailLead', targetEntity: Mail::class, orphanRemoval: true,cascade:['persist','remove'])]
     private Collection $mail;
 
+    #[ORM\OneToMany(mappedBy: 'ms_lead', targetEntity: Ms::class)]
+    private Collection $ms;
+
+    #[ORM\OneToMany(mappedBy: 'mo_lead', targetEntity: Mo::class)]
+    private Collection $mo;
+
+    #[ORM\OneToMany(mappedBy: 'mr_lead', targetEntity: Mr::class)]
+    private Collection $mr;
+
     public function __construct()
     {
         $this->mail = new ArrayCollection();
+        $this->ms = new ArrayCollection();
+        $this->mo = new ArrayCollection();
+        $this->mr = new ArrayCollection();
     }
 
     
@@ -155,6 +167,96 @@ class Lead
             // set the owning side to null (unless already changed)
             if ($mail->getMailLead() === $this) {
                 $mail->setMailLead(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Ms>
+     */
+    public function getMs(): Collection
+    {
+        return $this->ms;
+    }
+
+    public function addM(Ms $m): self
+    {
+        if (!$this->ms->contains($m)) {
+            $this->ms->add($m);
+            $m->setMsLead($this);
+        }
+
+        return $this;
+    }
+
+    public function removeM(Ms $m): self
+    {
+        if ($this->ms->removeElement($m)) {
+            // set the owning side to null (unless already changed)
+            if ($m->getMsLead() === $this) {
+                $m->setMsLead(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Mo>
+     */
+    public function getMo(): Collection
+    {
+        return $this->mo;
+    }
+
+    public function addMo(Mo $mo): self
+    {
+        if (!$this->mo->contains($mo)) {
+            $this->mo->add($mo);
+            $mo->setMoLead($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMo(Mo $mo): self
+    {
+        if ($this->mo->removeElement($mo)) {
+            // set the owning side to null (unless already changed)
+            if ($mo->getMoLead() === $this) {
+                $mo->setMoLead(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Mr>
+     */
+    public function getMr(): Collection
+    {
+        return $this->mr;
+    }
+
+    public function addMr(Mr $mr): self
+    {
+        if (!$this->mr->contains($mr)) {
+            $this->mr->add($mr);
+            $mr->setMrLead($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMr(Mr $mr): self
+    {
+        if ($this->mr->removeElement($mr)) {
+            // set the owning side to null (unless already changed)
+            if ($mr->getMrLead() === $this) {
+                $mr->setMrLead(null);
             }
         }
 

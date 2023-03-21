@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\AppMailer\Data\STATUS as STAT;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\StepRepository;
@@ -51,6 +53,22 @@ class Step
 
     #[ORM\Column(nullable: true)]
     private ?int $tlc = null;
+
+    #[ORM\OneToMany(mappedBy: 'step', targetEntity: Ms::class)]
+    private Collection $ms;
+
+    #[ORM\OneToMany(mappedBy: 'step', targetEntity: Mo::class)]
+    private Collection $mo;
+
+    #[ORM\OneToMany(mappedBy: 'step', targetEntity: Mr::class)]
+    private Collection $mr;
+
+    public function __construct()
+    {
+        $this->ms = new ArrayCollection();
+        $this->mo = new ArrayCollection();
+        $this->mr = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -176,6 +194,96 @@ class Step
     public function setTlc(?int $tlc): self
     {
         $this->tlc = $tlc;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Ms>
+     */
+    public function getMs(): Collection
+    {
+        return $this->ms;
+    }
+
+    public function addMs(Ms $m): self
+    {
+        if (!$this->ms->contains($m)) {
+            $this->ms->add($m);
+            $m->setStep($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMs(Ms $m): self
+    {
+        if ($this->ms->removeElement($m)) {
+            // set the owning side to null (unless already changed)
+            if ($m->getStep() === $this) {
+                $m->setStep(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Mo>
+     */
+    public function getMo(): Collection
+    {
+        return $this->mo;
+    }
+
+    public function addMo(Mo $mo): self
+    {
+        if (!$this->mo->contains($mo)) {
+            $this->mo->add($mo);
+            $mo->setStep($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMo(Mo $mo): self
+    {
+        if ($this->mo->removeElement($mo)) {
+            // set the owning side to null (unless already changed)
+            if ($mo->getStep() === $this) {
+                $mo->setStep(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Mr>
+     */
+    public function getMr(): Collection
+    {
+        return $this->mr;
+    }
+
+    public function addMr(Mr $mr): self
+    {
+        if (!$this->mr->contains($mr)) {
+            $this->mr->add($mr);
+            $mr->setStep($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMr(Mr $mr): self
+    {
+        if ($this->mr->removeElement($mr)) {
+            // set the owning side to null (unless already changed)
+            if ($mr->getStep() === $this) {
+                $mr->setStep(null);
+            }
+        }
 
         return $this;
     }

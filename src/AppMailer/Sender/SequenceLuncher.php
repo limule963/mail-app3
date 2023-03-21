@@ -5,11 +5,14 @@
 
 
 
+use App\Entity\Mo;
+use App\Entity\Mr;
+use App\Entity\Ms;
 use App\Entity\Dsn;
 use App\Entity\Lead;
 use App\Entity\Email;
-use App\AppMailer\Data\STATUS;
 use App\AppMailer\Data\FOLDER;
+use App\AppMailer\Data\STATUS;
 use App\AppMailer\Data\Sequence;
 use App\AppMailer\Data\EmailData;
 use App\AppMailer\Data\CompaignResponse;
@@ -58,6 +61,10 @@ use Symfony\Component\Mime\BodyRendererInterface;
             $tmr = 0;
             $tmo = 0;
 
+            $ms = null;
+            $mo = null;
+            $mr =null;
+
             /**@var Dsn $Dsn */
             foreach($this->dsns as $Dsn)
             {   
@@ -76,7 +83,13 @@ use Symfony\Component\Mime\BodyRendererInterface;
                 if($this->isEmailAnswered($lead)) 
                 {
                     $tmr++;
+                    $mr = (new Mr)->setSender($from)->setMrLead($lead)->setStep($seq->step)->setCompaign($seq->step->getCompaign());
+                    $this->crud->saveMr($mr,false);
+
                     $tmo++;
+                    $mo = (new Mo)->setSender($from)->setMoLead($lead)->setStep($seq->step)->setCompaign($seq->step->getCompaign());
+                    $this->crud->saveMo($mo,false);
+
                     $Status  = $this->crud->getStatus(STATUS::LEAD_COMPLETE);
                     $lead->setStatus($Status);
                     $this->crud->saveLead($lead,true);
@@ -91,6 +104,9 @@ use Symfony\Component\Mime\BodyRendererInterface;
                 if($emailResponse->succes)
                 {
                     $tms++;
+                    $ms = (new Ms)->setSender($from)->setMsLead($lead)->setStep($seq->step)->setCompaign($seq->step->getCompaign());
+                    $this->crud->saveMs($ms,false);
+
                     $Dsn->sendState = true;
                     
                     $this->prepareForNextCall($lead,$from,true);
@@ -109,7 +125,8 @@ use Symfony\Component\Mime\BodyRendererInterface;
             $seq->step->setTmr($stepTmr+$tmr);
             $seq->step->setTmo($stepTmo+$tmo);
 
-            $this->crud->saveStep($seq->step);
+            $this->crud->saveStep($seq->step,false);
+            $this->crud->em->flush();
         
             return $this->cr->setCompagneState($seq->compaignState)->setTms($tms)->setTmr($tmr)->setTmo($tmo);
             
