@@ -62,7 +62,9 @@ use App\Entity\Compaign;
             
             $tms = $this->compaign->getTms()+$cr->getTms();
             $tmr = $this->compaign->getTmr()+$cr->getTmr();
-            $this->compaign->setTms($tms)->setTmr($tmr);
+            $tmo = $this->compaign->getTmo()+$cr->getTmo();
+
+            $this->compaign->setTms($tms)->setTmr($tmr)->setTmo($tmo);
             $this->crud->saveCompaign($this->compaign);
             
             return $cr;

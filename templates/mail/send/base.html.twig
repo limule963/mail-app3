@@ -28,12 +28,13 @@
         {% block body %}{% endblock %}
 
     
-
+            
             {% if tracker == true %}
             {# https://localhost:8000/tracking/1.png #}
 
-            {# <p><img src=  {{ url('app_tracking', {'id': lead.id }) }} ></p> #}
-            <p><img src= {{ url('app_tracking_2',{'id': lead.id, 'stepkey': stepId}) }}></p>
+            {# <p><img src=  {{ url('app_tracking')~'?id={{lead.id}}'~'stepId={{step.id}}' }} ></p> #}
+
+            <p><img src= {{ url('app_tracking_2',{'id': lead.id, 'stepId': stepId}) }}></p>
             {% endif %}
 
  

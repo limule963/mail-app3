@@ -180,16 +180,20 @@
 
 
                                 <div class="row mb-2">
-                                    <div class="form-group col-md-6">
+                                    <div class="form-group col-md-4">
                                         <label class = "form-label" for="stepName_{{step.id}}">Step name</label>
                                         <input  class = "form-control" type="text" name="seqform[stepName_{{step.id}}]" id="stepName_{{step.id}}" value = "{{step.name}}">
                                     </div>
-                                    <div class="form-group col-md-6">
+                                    <div class="form-group col-md-3">
                                         {% if key != 0 %}
                                         <label class = "form-label" for="dayAfter_{{step.id}}" class ="form-label" >day After Step 1</label>
                                         <input class = "form-control" type="number" class = "form-control" value = {{step.dayAfterLastStep }} name="seqform[dayAfter_{{step.id}}]" id="dayAfter_{{step.id}}" min = "0">
                                         {% endif %}
 
+                                    </div>
+                                    <div class="form-group col-md-5">
+                                        <label class = "form-label" for="trackingLink_{{step.id}}">Tracking Link</label>
+                                        <input  class = "form-control" type="text" name="seqform[trackingLink_{{step.id}}]" id="trackingLink_{{step.id}}" value = "{{step.email.trackingLink}}">
                                     </div>
                                 </div>
 

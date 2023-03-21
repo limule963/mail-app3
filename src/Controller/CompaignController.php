@@ -331,6 +331,7 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
                     if($data[0] === 'dayAfter') $step->dayAfterLastStep = $value;
                     if($data[0] === 'subject') $email->setSubject($value);
                     if($data[0] === 'stepName') $step->setName($value);
+                    if($data[0] === 'trackingLink') $email->setTrackingLink($value);
                     if($data[0] === 'message') 
                     {
                         $email->setTextMessage($value);

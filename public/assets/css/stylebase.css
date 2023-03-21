@@ -2,3 +2,18 @@
     margin-top: 25px;
   }
 
+aside{
+  background-color: #F0F3F5;
+  color: #384659;
+}
+aside .nav-link{
+  color: #384659;
+}
+aside .nav-link:hover{
+  color: white;
+}
+
+aside .nav-item:hover{
+  background-color: #5197ff81;
+  color: white;
+}

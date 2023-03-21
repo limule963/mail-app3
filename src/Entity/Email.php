@@ -27,6 +27,9 @@ class Email
     #[ORM\Column]
     public ?string $uid = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $trackingLink = null;
+
 
     public function __construct()
     {
@@ -81,6 +84,18 @@ class Email
     public function setTextMessage(?string $textMessage): self
     {
         $this->textMessage = $textMessage;
+
+        return $this;
+    }
+
+    public function getTrackingLink(): ?string
+    {
+        return $this->trackingLink;
+    }
+
+    public function setTrackingLink(?string $trackingLink): self
+    {
+        $this->trackingLink = $trackingLink;
 
         return $this;
     }

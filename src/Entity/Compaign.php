@@ -61,6 +61,9 @@ class Compaign
     #[ORM\Column(nullable: true)]
     private ?int $tmr = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $tlc = null;
+
     // #[ORM\OneToOne(inversedBy: "compaign", cascade: ['persist', 'remove'])]
     // private ?Schedule $schedule = null;
 
@@ -356,6 +359,18 @@ class Compaign
     public function setTmr(?int $tmr): self
     {
         $this->tmr = $tmr;
+
+        return $this;
+    }
+
+    public function getTlc(): ?int
+    {
+        return $this->tlc;
+    }
+
+    public function setTlc(?int $tlc): self
+    {
+        $this->tlc = $tlc;
 
         return $this;
     }

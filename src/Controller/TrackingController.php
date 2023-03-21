@@ -23,6 +23,7 @@ class TrackingController extends AbstractController
         // dd(new TransparentPixelResponse);
         
         $id = $request->query->get('id');
+        $stepId = $request->query->get('stepId');
         // dd($id);
         if (null !== $id) {
             //... executes some logic to retrieve the email and mark it as opened
@@ -31,21 +32,20 @@ class TrackingController extends AbstractController
             //code for lead
             
             $compaign = $lead->getCompaign();
+
             $comptmo = $compaign->getTmo();
             $compaign->setTmo($comptmo++);
-             /**@var Step */
-            $step = $compaign->getSteps()->getValues()[$step];
-        
+            
+            $step = $this->crud->getStep($stepId);
             $steptmo = $step->getTmo();
             $step->setTmo($steptmo++);
 
-            if($lead != null) 
-            {
-                $this->crud->saveLead($lead);
-                $this->crud->saveCompaign($compaign);
-                $this->crud->saveStep($step);
 
-            }
+            $this->crud->saveLead($lead);
+            $this->crud->saveCompaign($compaign);
+            $this->crud->saveStep($step);
+
+            
         }
         return new TransparentPixelResponse();
         // return $this->render('tracking/index.html.twig', [
@@ -53,32 +53,40 @@ class TrackingController extends AbstractController
         // ]);
     }
 
-    #[Route('/image/{id}/{stepkey}/papillon.png',name:'app_tracking_2')]
-    public function tracker(Lead $lead, int $stepkey)
+    #[Route('/image/{id}/{stepId}/papillon.png',name:'app_tracking_2')]
+    public function tracker(Lead $lead, int $stepId)
     {
         if($lead == null) return null;
         //making change for lead
         // $leadName = $lead->getName();
         // $lead->setName($leadName."1");
-
-        
-        
-        $compaign = $lead->getCompaign();
-        $comptmo = $compaign->getTmo();
-        $compaign->setTmo($comptmo++);
-        /**@var Step */
-        $step = $compaign->getSteps()->getValues()[$step];
+        $step = $this->crud->getStep($stepId);
+        if($step == null) return null;
         
         $steptmo = $step->getTmo();
         $step->setTmo($steptmo++);
+
+
+        $compaign = $lead->getCompaign();
+        // $compaign = $step->getCompaign();
+        
+        $comptmo = $compaign->getTmo();
+        $compaign->setTmo($comptmo++);
         
         $this->crud->saveLead($lead);
         $this->crud->saveCompaign($compaign);
         $this->crud->saveStep($step);
-        
+
 
         return $this->redirect("https://op.clemaos.com/Public/images/image.png");
 
 
     }
+
+    #[Route()]
+    public function linkTracking()
+    {
+        
+    }
+    
 }

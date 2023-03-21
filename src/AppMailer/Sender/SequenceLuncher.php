@@ -56,6 +56,7 @@ use Symfony\Component\Mime\BodyRendererInterface;
             $tms = 0;
             // $tmo = 0;
             $tmr = 0;
+            $tmo = 0;
 
             /**@var Dsn $Dsn */
             foreach($this->dsns as $Dsn)
@@ -75,6 +76,7 @@ use Symfony\Component\Mime\BodyRendererInterface;
                 if($this->isEmailAnswered($lead)) 
                 {
                     $tmr++;
+                    $tmo++;
                     $Status  = $this->crud->getStatus(STATUS::LEAD_COMPLETE);
                     $lead->setStatus($Status);
                     $this->crud->saveLead($lead,true);
@@ -101,11 +103,15 @@ use Symfony\Component\Mime\BodyRendererInterface;
             }
             $stepTms = $seq->step->getTms();
             $stepTmr = $seq->step->getTmr();
+            $stepTmo = $seq->step->getTmo();
+
             $seq->step->setTms($stepTms+$tms);
             $seq->step->setTmr($stepTmr+$tmr);
+            $seq->step->setTmo($stepTmo+$tmo);
+
             $this->crud->saveStep($seq->step);
         
-            return $this->cr->setCompagneState($seq->compaignState)->setTms($tms)->setTmr($tmr);
+            return $this->cr->setCompagneState($seq->compaignState)->setTms($tms)->setTmr($tmr)->setTmo($tmo);
             
 
         }

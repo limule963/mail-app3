@@ -49,6 +49,9 @@ class Step
     #[ORM\Column(nullable: true)]
     private ?int $tmr = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $tlc = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -161,6 +164,18 @@ class Step
     public function setTmr(?int $tmr): self
     {
         $this->tmr = $tmr;
+
+        return $this;
+    }
+
+    public function getTlc(): ?int
+    {
+        return $this->tlc;
+    }
+
+    public function setTlc(?int $tlc): self
+    {
+        $this->tlc = $tlc;
 
         return $this;
     }
