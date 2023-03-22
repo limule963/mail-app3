@@ -31,8 +31,7 @@ use App\Controller\CrudControllerHelpers;
             if($mails instanceof EmailResponse) return null;
             /**@var Mail[] $mails */
 
-            $tmr = 0;
-            $tmo = 0;
+         
 
             foreach($mails as $mailarray)
             {
@@ -54,34 +53,18 @@ use App\Controller\CrudControllerHelpers;
                         $sender = $mail->getFromAddress();
 
 
-                        $tmr++;
+                      
                         $mr = (new Mr)->setSender($sender)->setMrLead($lead)->setStep($step)->setCompaign($compaign);
                         $this->crud->saveMr($mr,false);
 
-                        $tmo++;
+                      
                         $mo = (new Mo)->setSender($sender)->setMoLead($lead)->setStep($step)->setCompaign($compaign);
                         $this->crud->saveMo($mo,false);
-
-
-                        $compaign->setTmr($compaign->getTmr()+$tmr);
-                        $compaign->setTmo($compaign->getTmo()+$tmo);
                         
-
-
                     
                         $this->crud->saveLead($lead,false);
                         $this->crud->saveCompaign($compaign,false);
 
-
-                        
-
-                        // $mailIds = $this->getAllmailIds($lead);
-                        // if($mailIds==null) $lead->addMail($mail);
-                        // else
-                        // {
-                        //     if(!in_array($mail->getMailId(),$mailIds,true)) $lead->addMail($mail);
-                        // }
-                        // $this->crud->saveLead($lead,false);
 
                     }
                 }

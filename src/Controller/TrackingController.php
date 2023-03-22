@@ -31,22 +31,13 @@ class TrackingController extends AbstractController
 
             $lead = $this->crud->getLead($id);
             //code for lead
-            $step = $this->crud->getStep($stepId);
+            $step = $lead->getStep();
+            // $step = $this->crud->getStep($stepId);
             
             $compaign = $lead->getCompaign();
             $mo = (new Mo)->setSender($lead->getSender())->setMoLead($lead)->setStep($step)->setCompaign($compaign);
             $this->crud->saveMo($mo,false);
 
-            $comptmo = $compaign->getTmo();
-            $compaign->setTmo($comptmo++);
-            
-            $steptmo = $step->getTmo();
-            $step->setTmo($steptmo++);
-
-
-            $this->crud->saveLead($lead,false);
-            $this->crud->saveCompaign($compaign,false);
-            $this->crud->saveStep($step,false);
 
             $this->crud->em->flush();
 
@@ -63,30 +54,18 @@ class TrackingController extends AbstractController
     {
         if($lead == null) return null;
         //making change for lead
-        // $leadName = $lead->getName();
-        // $lead->setName($leadName."1");
-        $step = $this->crud->getStep($stepId);
+
+        $step = $lead->getStep();
+        // $step = $this->crud->getStep($stepId);
         if($step == null) return null;
         
         $compaign = $lead->getCompaign();
-        
-        $steptmo = $step->getTmo();
         
 
         $mo = (new Mo)->setSender($lead->getSender())->setMoLead($lead)->setStep($step)->setCompaign($compaign);
         $this->crud->saveMo($mo,false);
 
-        $step->setTmo($steptmo++);
 
-
-        // $compaign = $step->getCompaign();
-        
-        $comptmo = $compaign->getTmo();
-        $compaign->setTmo($comptmo++);
-        
-        $this->crud->saveLead($lead,false);
-        $this->crud->saveCompaign($compaign,false);
-        $this->crud->saveStep($step,false);
 
         $this->crud->em->flush();
 

@@ -50,24 +50,14 @@ use App\Entity\Compaign;
             $date = getdate(time());
             $h = $date['hours'];
 
-           
-           
-
             if($h < $this->fromm || $h > $this->too) return $this->getStat();
             //synchro mails receve
             $this->cms->save($this->dsns,$this->compaignId,1,$this->compaignStartTime);
 
             //lunch sequence
-            $cr = $this->sequenceLuncher->lunch($this->sequence);
+            return  $this->sequenceLuncher->lunch($this->sequence);
             
-            $tms = $this->compaign->getTms()+$cr->getTms();
-            $tmr = $this->compaign->getTmr()+$cr->getTmr();
-            $tmo = $this->compaign->getTmo()+$cr->getTmo();
-
-            $this->compaign->setTms($tms)->setTmr($tmr)->setTmo($tmo);
-            $this->crud->saveCompaign($this->compaign);
             
-            return $cr;
         }
 
         private function getStat()

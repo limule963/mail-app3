@@ -334,6 +334,12 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
                     if($data[0] === 'trackingLink') $email->setTrackingLink($value);
                     if($data[0] === 'message') 
                     {
+
+                        //Correction for message and add tracking link if active
+
+
+                        
+                        //
                         $email->setTextMessage($value);
 
                         $path = $this->getParameter('sendmail_file_directory');

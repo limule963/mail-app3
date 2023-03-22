@@ -52,17 +52,17 @@ class Compaign
     #[ORM\ManyToMany(targetEntity: Dsn::class, inversedBy: 'compaigns')]
     private Collection $dsns;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $tms = null;
+    // #[ORM\Column(nullable: true)]
+    // private ?int $tms = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $tmo = null;
+    // #[ORM\Column(nullable: true)]
+    // private ?int $tmo = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $tmr = null;
+    // #[ORM\Column(nullable: true)]
+    // private ?int $tmr = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $tlc = null;
+    // #[ORM\Column(nullable: true)]
+    // private ?int $tlc = null;
 
     #[ORM\OneToMany(mappedBy: 'compaign', targetEntity: Ms::class)]
     private Collection $ms;
@@ -72,6 +72,9 @@ class Compaign
 
     #[ORM\OneToMany(mappedBy: 'compaign', targetEntity: Mr::class)]
     private Collection $mr;
+
+    #[ORM\OneToMany(mappedBy: 'compaign', targetEntity: Lc::class)]
+    private Collection $lcs;
 
     // #[ORM\OneToOne(inversedBy: "compaign", cascade: ['persist', 'remove'])]
     // private ?Schedule $schedule = null;
@@ -85,6 +88,7 @@ class Compaign
         $this->ms = new ArrayCollection();
         $this->mo = new ArrayCollection();
         $this->mr = new ArrayCollection();
+        $this->lcs = new ArrayCollection();
         
     }
 
@@ -339,53 +343,53 @@ class Compaign
         return $this;
     }
 
-    public function getTms(): ?int
-    {
-        return $this->tms;
-    }
+    // public function getTms(): ?int
+    // {
+    //     return $this->tms;
+    // }
 
-    public function setTms(?int $tms): self
-    {
-        $this->tms = $tms;
+    // public function setTms(?int $tms): self
+    // {
+    //     $this->tms = $tms;
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
-    public function getTmo(): ?int
-    {
-        return $this->tmo;
-    }
+    // public function getTmo(): ?int
+    // {
+    //     return $this->tmo;
+    // }
 
-    public function setTmo(?int $tmo): self
-    {
-        $this->tmo = $tmo;
+    // public function setTmo(?int $tmo): self
+    // {
+    //     $this->tmo = $tmo;
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
-    public function getTmr(): ?int
-    {
-        return $this->tmr;
-    }
+    // public function getTmr(): ?int
+    // {
+    //     return $this->tmr;
+    // }
 
-    public function setTmr(?int $tmr): self
-    {
-        $this->tmr = $tmr;
+    // public function setTmr(?int $tmr): self
+    // {
+    //     $this->tmr = $tmr;
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
-    public function getTlc(): ?int
-    {
-        return $this->tlc;
-    }
+    // public function getTlc(): ?int
+    // {
+    //     return $this->tlc;
+    // }
 
-    public function setTlc(?int $tlc): self
-    {
-        $this->tlc = $tlc;
+    // public function setTlc(?int $tlc): self
+    // {
+    //     $this->tlc = $tlc;
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
     /**
      * @return Collection<int, Ms>
@@ -471,6 +475,36 @@ class Compaign
             // set the owning side to null (unless already changed)
             if ($mr->getCompaign() === $this) {
                 $mr->setCompaign(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Lc>
+     */
+    public function getLcs(): Collection
+    {
+        return $this->lcs;
+    }
+
+    public function addLc(Lc $lc): self
+    {
+        if (!$this->lcs->contains($lc)) {
+            $this->lcs->add($lc);
+            $lc->setCompaign($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLc(Lc $lc): self
+    {
+        if ($this->lcs->removeElement($lc)) {
+            // set the owning side to null (unless already changed)
+            if ($lc->getCompaign() === $this) {
+                $lc->setCompaign(null);
             }
         }
 

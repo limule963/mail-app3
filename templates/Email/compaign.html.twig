@@ -104,15 +104,15 @@
                         <div class="section-item2 d-flex align-items-center justify-content-center col">
                             
                             <div>
-                                <img class = "me-1" src={{asset('assets/images/svg/paper-plane.svg')}} height="15px" alt="I"><span> {{compaign.tms == null ? 0 : compaign.tms}} </span>
+                                <img class = "me-1" src={{asset('assets/images/svg/paper-plane.svg')}} height="15px" alt="I"><span> {{compaign.ms|length == null ? 0 : compaign.ms|length}} </span>
                             </div>
 
                             <div>
-                                <img class = "me-1" src={{asset('assets/images/svg/letter.svg')}}  height="15px" alt="I"><span> {{compaign.tmo == null ? 0 : compaign.tmo}} </span>
+                                <img class = "me-1" src={{asset('assets/images/svg/letter.svg')}}  height="15px" alt="I"><span> {{compaign.mo|length == null ? 0 : compaign.mo|length}} </span>
                             </div>
 
                             <div>
-                                <img class = "me-1" src={{asset('assets/images/svg/reply.svg')}} height="15px" alt="I"><span> {{compaign.tmr == null ? 0 : compaign.tmr}} </span>
+                                <img class = "me-1" src={{asset('assets/images/svg/reply.svg')}} height="15px" alt="I"><span> {{compaign.mr|length == null ? 0 : compaign.mr|length}} </span>
                             </div>
 
 

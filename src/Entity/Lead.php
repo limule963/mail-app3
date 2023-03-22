@@ -51,12 +51,16 @@ class Lead
     #[ORM\ManyToOne(inversedBy: 'leads')]
     private ?Step $nextStep = null;
 
+    #[ORM\OneToMany(mappedBy: 'lc_lead', targetEntity: Lc::class)]
+    private Collection $lcs;
+
     public function __construct()
     {
         $this->mail = new ArrayCollection();
         $this->ms = new ArrayCollection();
         $this->mo = new ArrayCollection();
         $this->mr = new ArrayCollection();
+        $this->lcs = new ArrayCollection();
     }
 
     
@@ -289,6 +293,36 @@ class Lead
     public function setNextStep(?Step $nextStep): self
     {
         $this->nextStep = $nextStep;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Lc>
+     */
+    public function getLcs(): Collection
+    {
+        return $this->lcs;
+    }
+
+    public function addLc(Lc $lc): self
+    {
+        if (!$this->lcs->contains($lc)) {
+            $this->lcs->add($lc);
+            $lc->setLcLead($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLc(Lc $lc): self
+    {
+        if ($this->lcs->removeElement($lc)) {
+            // set the owning side to null (unless already changed)
+            if ($lc->getLcLead() === $this) {
+                $lc->setLcLead(null);
+            }
+        }
 
         return $this;
     }

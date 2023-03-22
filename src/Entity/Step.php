@@ -69,12 +69,16 @@ class Step
     #[ORM\Column(nullable: true)]
     private ?int $stepOrder = null;
 
+    #[ORM\OneToMany(mappedBy: 'step', targetEntity: Lc::class)]
+    private Collection $lcs;
+
     public function __construct()
     {
         $this->ms = new ArrayCollection();
         $this->mo = new ArrayCollection();
         $this->mr = new ArrayCollection();
         $this->leads = new ArrayCollection();
+        $this->lcs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -333,6 +337,36 @@ class Step
     public function setStepOrder(?int $stepOrder): self
     {
         $this->stepOrder = $stepOrder;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Lc>
+     */
+    public function getLcs(): Collection
+    {
+        return $this->lcs;
+    }
+
+    public function addLc(Lc $lc): self
+    {
+        if (!$this->lcs->contains($lc)) {
+            $this->lcs->add($lc);
+            $lc->setStep($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLc(Lc $lc): self
+    {
+        if ($this->lcs->removeElement($lc)) {
+            // set the owning side to null (unless already changed)
+            if ($lc->getStep() === $this) {
+                $lc->setStep(null);
+            }
+        }
 
         return $this;
     }

@@ -57,14 +57,6 @@ use Symfony\Component\Mime\BodyRendererInterface;
             $this->sequence = $seq;
             $this->dsns = $seq->dsns;
  
-            $tms = 0;
-            // $tmo = 0;
-            $tmr = 0;
-            $tmo = 0;
-
-            $ms = null;
-            $mo = null;
-            $mr =null;
 
             /**@var Dsn $Dsn */
             foreach($this->dsns as $Dsn)
@@ -75,32 +67,12 @@ use Symfony\Component\Mime\BodyRendererInterface;
                 $from = $Dsn->getEmail();
                 $dsn = $Dsn->getDsn();
                 $senderName = $Dsn->getName();
-                
-                // if($seq->step->getStepOrder() == 0 ) $lead = $this->getNextLead();
-
-                
+            
+ 
                 $lead = $this->getNextLead();
-                // if($lead->getSender() != '') $lead = $this->getNextLead($from);
-                
+              
 
                 if($lead == null) continue;
-
-                // if($this->isEmailAnswered($lead)) 
-                // {
-                //     $tmr++;
-                //     $mr = (new Mr)->setSender($from)->setMrLead($lead)->setStep($seq->step)->setCompaign($seq->step->getCompaign());
-                //     $this->crud->saveMr($mr,false);
-
-                //     $tmo++;
-                //     $mo = (new Mo)->setSender($from)->setMoLead($lead)->setStep($seq->step)->setCompaign($seq->step->getCompaign());
-                //     $this->crud->saveMo($mo,false);
-
-                //     $Status  = $this->crud->getStatus(STATUS::LEAD_COMPLETE);
-                //     $lead->setStatus($Status);
-                //     $this->crud->saveLead($lead,true);
-                //     continue;
-                // }
-
 
                 $emailData = new EmailData($dsn,$from,$lead,$seq->email,$senderName,$seq->stepStatus,$seq->tracker,$seq->step->getId());
 
@@ -108,7 +80,7 @@ use Symfony\Component\Mime\BodyRendererInterface;
                 
                 if($emailResponse->succes)
                 {
-                    $tms++;
+                  
                     $ms = (new Ms)->setSender($from)->setMsLead($lead)->setStep($seq->step)->setCompaign($seq->step->getCompaign());
                     $this->crud->saveMs($ms,false);
 
@@ -123,18 +95,11 @@ use Symfony\Component\Mime\BodyRendererInterface;
 
             }
 
-            $stepTms = $seq->step->getTms();
-            $stepTmr = $seq->step->getTmr();
-            $stepTmo = $seq->step->getTmo();
-
-            $seq->step->setTms($stepTms+$tms);
-            $seq->step->setTmr($stepTmr+$tmr);
-            $seq->step->setTmo($stepTmo+$tmo);
 
             $this->crud->saveStep($seq->step,false);
             $this->crud->em->flush();
         
-            return $this->cr->setCompagneState($seq->compaignState)->setTms($tms)->setTmr($tmr)->setTmo($tmo);
+            return $this->cr->setCompagneState($seq->compaignState);
             
 
         }
