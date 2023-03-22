@@ -10,6 +10,7 @@ use App\Entity\Mr;
 use App\Entity\Ms;
 use App\Entity\Dsn;
 use App\Entity\Lead;
+use App\Entity\Step;
 use App\Entity\Email;
 use App\AppMailer\Data\FOLDER;
 use App\AppMailer\Data\STATUS;
@@ -75,26 +76,30 @@ use Symfony\Component\Mime\BodyRendererInterface;
                 $dsn = $Dsn->getDsn();
                 $senderName = $Dsn->getName();
                 
-                if($seq->stepStatus == STATUS::STEP_1) $lead = $this->getNextLead();
-                else $lead = $this->getNextLead($from);
+                // if($seq->step->getStepOrder() == 0 ) $lead = $this->getNextLead();
+
+                
+                $lead = $this->getNextLead();
+                // if($lead->getSender() != '') $lead = $this->getNextLead($from);
+                
 
                 if($lead == null) continue;
 
-                if($this->isEmailAnswered($lead)) 
-                {
-                    $tmr++;
-                    $mr = (new Mr)->setSender($from)->setMrLead($lead)->setStep($seq->step)->setCompaign($seq->step->getCompaign());
-                    $this->crud->saveMr($mr,false);
+                // if($this->isEmailAnswered($lead)) 
+                // {
+                //     $tmr++;
+                //     $mr = (new Mr)->setSender($from)->setMrLead($lead)->setStep($seq->step)->setCompaign($seq->step->getCompaign());
+                //     $this->crud->saveMr($mr,false);
 
-                    $tmo++;
-                    $mo = (new Mo)->setSender($from)->setMoLead($lead)->setStep($seq->step)->setCompaign($seq->step->getCompaign());
-                    $this->crud->saveMo($mo,false);
+                //     $tmo++;
+                //     $mo = (new Mo)->setSender($from)->setMoLead($lead)->setStep($seq->step)->setCompaign($seq->step->getCompaign());
+                //     $this->crud->saveMo($mo,false);
 
-                    $Status  = $this->crud->getStatus(STATUS::LEAD_COMPLETE);
-                    $lead->setStatus($Status);
-                    $this->crud->saveLead($lead,true);
-                    continue;
-                }
+                //     $Status  = $this->crud->getStatus(STATUS::LEAD_COMPLETE);
+                //     $lead->setStatus($Status);
+                //     $this->crud->saveLead($lead,true);
+                //     continue;
+                // }
 
 
                 $emailData = new EmailData($dsn,$from,$lead,$seq->email,$senderName,$seq->stepStatus,$seq->tracker,$seq->step->getId());
@@ -109,14 +114,15 @@ use Symfony\Component\Mime\BodyRendererInterface;
 
                     $Dsn->sendState = true;
                     
-                    $this->prepareForNextCall($lead,$from,true);
+                    $this->prepareForNextCall($seq->step,$lead,$from,true);
                     
                 }
-                else $this->prepareForNextCall($lead,$from,false);
+                else $this->prepareForNextCall($seq->step,$lead,$from,false);
 
                 $this->cr->setResponse($emailResponse);
 
             }
+
             $stepTms = $seq->step->getTms();
             $stepTmr = $seq->step->getTmr();
             $stepTmo = $seq->step->getTmo();
@@ -134,7 +140,7 @@ use Symfony\Component\Mime\BodyRendererInterface;
         }
 
 
-        private function prepareForNextCall(Lead $lead,$from,bool $isMailSend)
+        private function prepareForNextCall(Step $step,Lead $lead,$from,bool $isMailSend)
         {
             
             if($isMailSend) 
@@ -143,17 +149,32 @@ use Symfony\Component\Mime\BodyRendererInterface;
                 {
                     
                     $lead->setSender($from);
+                    $lead->setStatus($this->crud->getStatus(STATUS::LEAD_ONPROGRESS));
                 }
-                $status =$this->sequence->getNextLeadStatus($lead->getStatus()->getStatus());
-                $Status = $this->crud->getStatus($status);
-                $lead->setStatus($Status);
+                
+                
+                $compaign = $step->getCompaign();
+                $lead->setStep($step);
+
+                // $nextStep =$this->sequence->getNextStep();
+                $nextStep = $this->crud->getNextStep($compaign->getId(),$step->getStepOrder()+1) ;
+
+                if($nextStep == null) $lead->setStatus($this->crud->getStatus(STATUS::LEAD_COMPLETE));
+
+                $lead->setNextStep($nextStep);
+                $this->crud->saveLead($lead,false);
+
+
+                // $Status = $this->crud->getStatus($status);
+                // $lead->setStatus($Status);
             }
             else 
             {
                 $status = STATUS::LEAD_FAIL;
                 $Status = $this->crud->getStatus($status);
+                $lead->setStep($lead->getNextStep());
                 $lead->setStatus($Status);
-                $lead->setSender($from.'|Not Send');
+                $lead->setSender('Send Failed');
             }
 
             $this->crud->saveLead($lead);
@@ -164,7 +185,7 @@ use Symfony\Component\Mime\BodyRendererInterface;
 
         private function getNextLead($sender = ''):Lead|null
         {   
-            return $this->crud->getLeadBySender($this->sequence->compaignId,$this->sequence->stepStatus,$sender);
+            return $this->crud->getLeadBySender($this->sequence->compaignId,$this->sequence->step->getId(),$sender);
         }
 
 

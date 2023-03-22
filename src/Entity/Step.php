@@ -63,11 +63,18 @@ class Step
     #[ORM\OneToMany(mappedBy: 'step', targetEntity: Mr::class)]
     private Collection $mr;
 
+    #[ORM\OneToMany(mappedBy: 'step', targetEntity: Lead::class)]
+    private Collection $leads;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $stepOrder = null;
+
     public function __construct()
     {
         $this->ms = new ArrayCollection();
         $this->mo = new ArrayCollection();
         $this->mr = new ArrayCollection();
+        $this->leads = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -284,6 +291,48 @@ class Step
                 $mr->setStep(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Lead>
+     */
+    public function getLeads(): Collection
+    {
+        return $this->leads;
+    }
+
+    public function addLead(Lead $lead): self
+    {
+        if (!$this->leads->contains($lead)) {
+            $this->leads->add($lead);
+            $lead->setStep($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLead(Lead $lead): self
+    {
+        if ($this->leads->removeElement($lead)) {
+            // set the owning side to null (unless already changed)
+            if ($lead->getStep() === $this) {
+                $lead->setStep(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getStepOrder(): ?int
+    {
+        return $this->stepOrder;
+    }
+
+    public function setStepOrder(?int $stepOrder): self
+    {
+        $this->stepOrder = $stepOrder;
 
         return $this;
     }

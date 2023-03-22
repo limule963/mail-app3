@@ -5,15 +5,19 @@ namespace App\AppMailer\Sender;
 use App\Entity\Dsn;
 use App\Entity\Lead;
 use App\Entity\Email;
+use App\AppMailer\Data\FOLDER;
 use App\AppMailer\Data\EmailData;
+use App\Event\MailPreRenderEvent;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mailer\Mailer;
 use App\AppMailer\Data\EmailResponse;
-use App\AppMailer\Data\FOLDER;
+use App\Listener\MailPreRenderListener;
 use Symfony\Component\Mailer\Transport;
+use Symfony\Component\Mime\Email as Em;
 use Symfony\Component\Mime\Part\DataPart;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mime\BodyRendererInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
     class EmailSender
     {
@@ -54,6 +58,11 @@ use Symfony\Component\Mime\BodyRendererInterface;
 
             $emailAddress = $lead->getEmailAddress();
             // $tracker =$addTracker;
+            $variables = [
+                'lead' => $lead,
+                'tracker'=> $tracker,
+                'stepId'=>$stepId
+            ];
 
             $email = (new TemplatedEmail())
                 // ->to(new Address('ryan@example.com'))
@@ -65,13 +74,19 @@ use Symfony\Component\Mime\BodyRendererInterface;
                 // ->addPart((new DataPart(fopen('https://aykode.com/images/8601571909526073.png', 'r'), 'image1', 'image/png'))->asInline())
 
                 // pass variables (name => value) to the template
-                ->context([
-                    'lead' => $lead,
-                    'tracker'=> $tracker,
-                    'stepId'=>$stepId
-                ])
+
+                ->context($variables)
             ;
+            
             $this->bodyRenderer->render($email);
+
+            // $event = new MailPreRenderEvent($variables,$email->getHtmlBody());
+            // $listener = new MailPreRenderListener;
+            // $dispatcher = new EventDispatcher();
+            // $dispatcher->addListener(MailPreRenderEvent::NANE,[$listener,'onMailPreRender']);
+
+            // $dispatcher->dispatch($event,MailPreRenderEvent::NANE);
+
 
             return $email;
         }

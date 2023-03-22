@@ -39,17 +39,29 @@ use App\Entity\Step;
             return false;
         }
     
-        public function getNextLeadStatus($lastStatus):string
+        public function getNextStep()
         {   
+
+            $stepsCollection = $this->step->getCompaign()->getSteps();
+            $index = $stepsCollection->indexOf($this->step);
+            $newStep = $stepsCollection->get($index);
+
+            $stepsCollection->next();
+            $nextStep = $stepsCollection->current();
+
+            return $nextStep;
+
             // if($lastStatus ='') return STAT::LEAD_STEP_1;
-            $tab =$this->leadStatusTable($this->step->getCompaign()->getSteps()->getValues());
-            $count = count($tab);
-            $key=$this->contains($tab,$lastStatus);
+
+
+            // $tab =$this->leadStatusTable($this->step->getCompaign()->getSteps()->getValues());
+            // $count = count($tab);
+            // $key=$this->contains($tab,$lastStatus);
             
-            $key++;
+            // $key++;
     
-            if($key >= $count ) return STATUS::LEAD_COMPLETE;
-            return $tab[$key];
+            // if($key >= $count ) return STATUS::LEAD_COMPLETE;
+            // return $tab[$key];
     
     
         }

@@ -9,12 +9,15 @@ namespace App\AppMailer\Data;
         public const
             LEAD_COMPLETE = 'lead.complete',
             LEAD_FAIL = 'lead.fail',
+            LEAD_ONHOLD = 'lead.onhold',
+            LEAD_ONPROGRESS = 'lead.onprogress',
+
 
 
             STEP_DRAFT  = 'step.draft',
             STEP_COMPLETE = 'step.complete',
             STEP_ACTIVE = 'step.active',
-            STEP_1  = 'step.1',
+            STEP_ONHOLD = 'step.onhold',
             STEP_2  = 'step.2',
             STEP_3  = 'step.3',
             STEP_4  = 'step.4',

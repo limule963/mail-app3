@@ -46,7 +46,8 @@ use Symfony\Component\Mime\BodyRendererInterface;
             // {
                 //     $steps = array_reverse($steps);
                 // }  
-                
+            
+            $this->stepsActivator($steps);
             $steps =  $this->stepManager($steps,$compaign->newStepPriority);
 
 
@@ -54,8 +55,9 @@ use Symfony\Component\Mime\BodyRendererInterface;
             {
                 // $lead = $this->crud->getLeadsByStatus($compaign->getId(),$step->getStatus()->getStatus(),1);
                 // if(empty($lead)) continue;
-                if($step->stepState == STAT::STEP_COMPLETE) continue;
+                if($step->getStatus()->getStatus() == STAT::STEP_COMPLETE) continue;
                 if(!$this->isStepDoJob($step)) continue;
+
                 else
                 {
                     $this->step = $step;
@@ -77,9 +79,9 @@ use Symfony\Component\Mime\BodyRendererInterface;
 
         private function isStepDoJob(Step $step)
         {
-            $lead = $this->crud->getLeadsByStatus($this->compaignId,$step->getStatus()->getStatus(),1);
-            $active = $this->isStepActive($step);
-            if(empty($lead) && $active == true) return false;
+            $lead = $this->crud->getLeadsByStep($this->compaignId,$step->getId(),1);
+            // $active = $this->isStepActive($step);
+            if(empty($lead) && $step->getStatus()->getStatus() == STAT::STEP_ACTIVE) return false;
             return true;
 
         }
@@ -89,23 +91,30 @@ use Symfony\Component\Mime\BodyRendererInterface;
         {
             foreach ($steps as $key => $step)
             {
-                if($step->stepState === STAT::STEP_COMPLETE) continue;
+                if($step->getStatus()->getStatus() === STAT::STEP_COMPLETE) continue;
                 
                 $doJob = $this->isStepDoJob($step);
                 
-                if($step->getStatus()->getStatus()==STAT::STEP_1 && $doJob == false)
+                if($key == 0)
                 {
-                    $step->stepState = STAT::STEP_COMPLETE;
-                    $this->crud->saveStep($step);
+                    if($doJob == false)
+                    {
+
+                        $Status = $this->crud->getStatus(STAT::STEP_COMPLETE);
+                        $step->setStatus($Status);
+                        $this->crud->saveStep($step);
+                    }
+
                     continue;
                 }
-                if($key == 0) continue;
                 
                 if($newStepPriority == true) $key++;
                 else $key--;
-                if($steps[$key]->stepState == STAT::STEP_COMPLETE && $doJob == false) 
+
+                if($steps[$key]->getStatus()->getStatus() == STAT::STEP_COMPLETE && $doJob == false) 
                 {
-                    $step->stepState = STAT::STEP_COMPLETE;
+                    $Status = $this->crud->getStatus(STAT::STEP_COMPLETE);
+                    $step->setStatus($Status);
                     $this->crud->saveStep($step);
                 }
 
@@ -135,6 +144,29 @@ use Symfony\Component\Mime\BodyRendererInterface;
 
              if(time() > $startTime) return true;
             return false;
+        }
+
+        /**@param Step[] $steps */
+        private function stepsActivator($steps)
+        {
+
+            $schedule = $this->schedule;
+
+            foreach($steps as $step)
+            {
+                if($step->getStatus()->getStatus() == STAT::STEP_ACTIVE) continue;
+
+                $startTime =$schedule->getStartTime()->getTimestamp() + $step->dayAfterLastStep*3600;
+                
+                if(time() > $startTime)
+                {
+                    $status = $this->crud->getStatus(STAT::STEP_ACTIVE);
+                    $step->setStatus($status);
+                    $this->crud->saveStep($step,false);
+                }
+            }
+            $this->crud->em>flush();
+
         }
 
     

@@ -80,4 +80,15 @@ class StepRepository extends ServiceEntityRepository
             ->getOneOrNullResult()
         ;
     }
+    public function findOneByStepOrder($compaignId,int $stepOrder): ?Step
+    {
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.compaign = :val')
+            ->andWhere('s.stepOrder = :val2')
+            ->setParameter('val', $compaignId)
+            ->setParameter('val2', $stepOrder)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
 }

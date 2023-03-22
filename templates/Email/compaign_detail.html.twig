@@ -142,7 +142,7 @@
                                             </div>
 
 
-                                            <p class="card-text"> {{step.status.status}} </p>
+                                            <p class="card-text"> Step {{step.stepOrder}} </p>
 
                                             {% if key == 0 %} 
                                             <button class="btn btn-outline-primary {{link2 == null or link2 == step.id ? 'active'}}" id="v-pills-{{step.id}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{step.id}}" type="button" role="tab" aria-controls="v-pills-{{step.id}}" aria-selected=" {{link2 == null or link2 == step.id ? 'true' : 'false'}}">Config</button>

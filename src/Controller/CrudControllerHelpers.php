@@ -104,8 +104,15 @@ public function saveMs(Ms $ms,$flush = true)
         public function getStatus($status):Status
         {
             $Status = $this->isStatusExist($status);
+        
             if($Status != null) return $Status;
-            return (new Status)->setStatus($status);
+            else{
+
+                $Status = (new Status)->setStatus($status);
+                $this->em->persist($Status);
+                $this->em->flush();
+                return $Status;
+            }
            
         }
 
@@ -221,12 +228,19 @@ public function saveMs(Ms $ms,$flush = true)
             }
             if($leads!=null)
             {
+                $steps = $compaign->getSteps()->getValues();
+                $step = $steps[0];
+
+                foreach($leads as $lead)
+                {
+                    $lead->setNextStep($step);
+                }
 
                  $compaign->addUniqLeads($leads);
             }
             
             $rep->save($compaign,true);
-            $this->leadStatusOrding($compaign->getId());
+            $this->stepOrding($compaign->getId());
 
 
         }
@@ -236,7 +250,7 @@ public function saveMs(Ms $ms,$flush = true)
             /**@var CompaignRepository */
             $rep = $this->em->getRepository(Compaign::class);
             $rep->save($compaign,$flush);
-            $this->leadStatusOrding($compaign->getId());
+            $this->stepOrding($compaign->getId());
 
 
         }
@@ -304,9 +318,10 @@ public function saveMs(Ms $ms,$flush = true)
 
 
 
-        public function createLead($name,$emailAddress,$status = STAT::STEP_1):Lead
+        public function createLead($name,$emailAddress,$status = STAT::LEAD_ONHOLD):Lead
         {
             $sta = $this->getStatus($status);
+            
             return (new Lead)->setStatus($sta)->setName($name)->setEmailAddress($emailAddress);
         }
 
@@ -362,7 +377,10 @@ public function saveMs(Ms $ms,$flush = true)
             {
                 /**@var Lead */
                 $leadTemp = $od->denormalize($lead,Lead::class);
-                $leadTemp->setStatus($this->getStatus(STAT::STEP_1));
+
+                $Status = $this->getStatus(STAT::LEAD_ONHOLD);
+                
+                $leadTemp->setStatus($this->getStatus(STAT::LEAD_ONHOLD));
 
                 $leadsOb[] = $leadTemp;
             }
@@ -387,7 +405,7 @@ public function saveMs(Ms $ms,$flush = true)
             {
                 /**@var Lead */
                 $leadTemp = $od->denormalize($lead,Lead::class);
-                $leadTemp->setStatus($this->getStatus(STAT::STEP_1));
+                $leadTemp->setStatus($this->getStatus(STAT::LEAD_ONHOLD));
 
                 $leads[] = $leadTemp;
 
@@ -456,20 +474,20 @@ public function saveMs(Ms $ms,$flush = true)
             return $leads;
         }
 
-        public function getLeadBySender($compaignId,$leadStatus,$sender):Lead|null
+        public function getLeadBySender($compaignId,$nextStepId,$sender):Lead|null
         {
             /**@var LeadRepository */
             $rep = $this->em->getRepository(Lead::class);      
-            $leads = $rep->findBySender($compaignId,$leadStatus,$sender,1);
+            $leads = $rep->findBySender($compaignId,$nextStepId,$sender,1);
             if( $leads == null) return null;
             else  return $leads[0];
         }
         
-        public function getLeadsBySender($compaignId,$leadStatus,$sender,$number)
+        public function getLeadsBySender($compaignId,$stepId,$sender,$number)
         {
             /**@var LeadRepository */
             $rep = $this->em->getRepository(Lead::class);      
-            return  $rep->findBySender($compaignId,$leadStatus,$sender,$number);
+            return  $rep->findBySender($compaignId,$stepId,$sender,$number);
         }
 
         public function getLead($id)
@@ -479,12 +497,27 @@ public function saveMs(Ms $ms,$flush = true)
             return $rep->find($id);  
         }
 
+        /**@var Lead */
         public function getLeadByEmailAddress($compaignId,$emailAddress):?Lead
         {
             /**@var LeadRepository */
             $rep = $this->em->getRepository(Lead::class);
-            return $rep->findOneByEmailAddress($compaignId,$emailAddress);
+            $leads = $rep->findOneByEmailAddress($compaignId,$emailAddress);
+            if($leads == null) return null;
+            else return $leads[0];
+           
         }
+
+        public function getLeadsByStep($compaignId,$stepId,$n)
+        {
+            /**@var LeadRepository */
+            $rep = $this->em->getRepository(Lead::class);     
+            $leads = $rep->findByStep($compaignId,$stepId,$n);
+            
+            if($leads == null) return null;
+            else return $leads;
+        }
+        
 
         public function deleteLead(Lead $lead)
         {
@@ -516,7 +549,7 @@ public function saveMs(Ms $ms,$flush = true)
         public function createStep($name,$subject,$linkToEmail):Step
         {
 
-            $status = $this->getStatus(STAT::STEP_1);
+            $status = $this->getStatus(STAT::STEP_ONHOLD);
             $email = $this->createEmail($subject,$linkToEmail);
             return (new Step)
                 ->setName($name)
@@ -545,7 +578,7 @@ public function saveMs(Ms $ms,$flush = true)
             $step = $this->createStep($name,$subject,$linkToEmail);
             $this->updateCompaign($compaignId,null,null,$step);
 
-            $this->leadStatusOrding($compaignId);
+            $this->stepOrding($compaignId);
 
         }
 
@@ -569,7 +602,7 @@ public function saveMs(Ms $ms,$flush = true)
         }
         /**@var Step[] $steps */
 
-        public function leadStatusOrding($compaignId)
+        public function stepOrding($compaignId)
         {
             /**@var StepRepository */
             $rep = $this->em->getRepository(Step::class);
@@ -578,12 +611,9 @@ public function saveMs(Ms $ms,$flush = true)
             if(!empty($steps))
             {
                 foreach ($steps as $key => $step) {
-                    $key2 = $key+1;
-                    $status = 'step.'.$key2;
-                    $Status = $this->getStatus($status);
-                    $step->setStatus($Status);
+                    $key++;
+                    $step->setStepOrder($key);
                     $rep->save($step);
-                    
                 } 
                 $this->em->flush();
             }
@@ -612,6 +642,15 @@ public function saveMs(Ms $ms,$flush = true)
 
             return $rep->find($id);
         }
+
+        public function getNextStep($compaignId,$stepOrder)
+        {
+            /**@var StepRepository */
+            $rep = $this->em->getRepository(Step::class);
+            
+            return $rep->findOneByStepOrder($compaignId,$stepOrder);
+        }
+        
 
 
 

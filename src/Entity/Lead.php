@@ -36,14 +36,20 @@ class Lead
     #[ORM\OneToMany(mappedBy: 'mailLead', targetEntity: Mail::class, orphanRemoval: true,cascade:['persist','remove'])]
     private Collection $mail;
 
-    #[ORM\OneToMany(mappedBy: 'ms_lead', targetEntity: Ms::class)]
+    #[ORM\OneToMany(mappedBy: 'ms_lead', targetEntity: Ms::class,orphanRemoval:true)]
     private Collection $ms;
 
-    #[ORM\OneToMany(mappedBy: 'mo_lead', targetEntity: Mo::class)]
+    #[ORM\OneToMany(mappedBy: 'mo_lead', targetEntity: Mo::class,orphanRemoval:true)]
     private Collection $mo;
 
-    #[ORM\OneToMany(mappedBy: 'mr_lead', targetEntity: Mr::class)]
+    #[ORM\OneToMany(mappedBy: 'mr_lead', targetEntity: Mr::class,orphanRemoval:true)]
     private Collection $mr;
+
+    #[ORM\ManyToOne]
+    private ?Step $step = null;
+
+    #[ORM\ManyToOne(inversedBy: 'leads')]
+    private ?Step $nextStep = null;
 
     public function __construct()
     {
@@ -259,6 +265,30 @@ class Lead
                 $mr->setMrLead(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getStep(): ?Step
+    {
+        return $this->step;
+    }
+
+    public function setStep(?Step $step): self
+    {
+        $this->step = $step;
+
+        return $this;
+    }
+
+    public function getNextStep(): ?Step
+    {
+        return $this->nextStep;
+    }
+
+    public function setNextStep(?Step $nextStep): self
+    {
+        $this->nextStep = $nextStep;
 
         return $this;
     }

@@ -61,6 +61,24 @@ class LeadRepository extends ServiceEntityRepository
    /**
     * @return Lead[] Returns an array of Lead objects
     */
+   public function findByStep($compaignId,$nextStepId,$n = 1000): array
+   {
+       return $this->createQueryBuilder('l')
+            // ->select('l','s')
+            ->andWhere('l.compaign = :val2')
+            ->andWhere('s.id = :val')
+            ->join('l.nextStep','s')
+            ->setParameter('val', $nextStepId)
+            ->setParameter('val2', $compaignId)
+            ->orderBy('l.id', 'ASC')
+            ->setMaxResults($n)
+            ->getQuery()
+            ->getResult()
+       ;
+   }
+   /**
+    * @return Lead[] Returns an array of Lead objects
+    */
    public function findByCompaignId($id,$number = 10): array
    {
        return $this->createQueryBuilder('l')
@@ -110,15 +128,20 @@ class LeadRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-        public function findOneByEmailAddress($compaignId,$emailAddress): ?Lead
+
+        /**@return Lead[] */
+        public function findOneByEmailAddress($compaignId,$emailAddress): mixed
         {
             return $this->createQueryBuilder('l')
                 ->andWhere('l.compaign = :val2')
                 ->andWhere('l.emailAddress = :val3')
                 ->setParameter('val2', $compaignId)
                 ->setParameter('val3', $emailAddress)
+                ->orderBy('l.id', 'ASC')
+                ->setMaxResults(1)
                 ->getQuery()
-                ->getOneOrNullResult()
+                ->getResult();
+                // ->getOneOrNullResult()
             ;
         }
     // public function findOneByStatus($compaignId,$stepLeadStatus): ?Lead
@@ -136,15 +159,15 @@ class LeadRepository extends ServiceEntityRepository
     // }
 
 
-    public function findBySender($compaignId,$stepLeadStatus,$sender, $number = 10)
+    public function findBySender($compaignId,$nextStepId,$sender, $number = 10)
     {
         $query = $this->createQueryBuilder('l')
             // ->select('l','s')
             ->andWhere('l.compaign = :val2')
-            ->andWhere('s.status = :val3')
-            ->join('l.status','s')
+            ->andWhere('s.id = :val3')
+            ->join('l.nextStep','s')
             ->setParameter('val2', $compaignId)
-            ->setParameter('val3', $stepLeadStatus)
+            ->setParameter('val3', $nextStepId)
             ->setMaxResults($number)
             ;
         if($sender !='')

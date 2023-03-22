@@ -36,7 +36,7 @@
       <td class = "align-middle"> {{lead.name}} </td>
       <td class = "align-middle" > {{lead.emailAddress}} </td>
       <td> not set </td>
-      <td class = "align-middle" > <span class="badge bg-secondary">Not set</span> </td>
+      <td class = "align-middle" > <span class="badge bg-secondary">{{ lead.status.status|slice('5') }}</span> </td>
       <td class = "align-middle" >
         <form action = {{ path('app_compaign_leads_delete', {'id': lead.id}) }} method = "post">
           <input type="hidden" name="token" value ={{ csrf_token("delete_lead") }} >

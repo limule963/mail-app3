@@ -2,13 +2,16 @@
     
     namespace App\AppMailer\Receiver;
 
-use App\AppMailer\Data\EmailResponse;
+use App\Entity\Mo;
+use App\Entity\Mr;
 use App\Entity\Dsn;
 use App\Entity\Lead;
 use App\Entity\Mail;
 use App\AppMailer\Data\FOLDER;
-use App\AppMailer\Data\MailData;
+use App\AppMailer\Data\STATUS;
 
+use App\AppMailer\Data\MailData;
+use App\AppMailer\Data\EmailResponse;
 use function PHPSTORM_META\elementType;
 use App\Controller\CrudControllerHelpers;
 
@@ -27,6 +30,10 @@ use App\Controller\CrudControllerHelpers;
             if($mails == null) return null;
             if($mails instanceof EmailResponse) return null;
             /**@var Mail[] $mails */
+
+            $tmr = 0;
+            $tmo = 0;
+
             foreach($mails as $mailarray)
             {
                 /**@var Mail $mail */
@@ -37,8 +44,36 @@ use App\Controller\CrudControllerHelpers;
                     if($lead == null) continue;
                     else
                     {
+                        $Status = $this->crud->getStatus(STATUS::LEAD_COMPLETE);
+                        $lead->setStatus($Status);
+                        $lead->setNextStep(null);
                         $lead->addUniqMail($mail);
+
+                        $step = $lead->getStep();
+                        $compaign = $lead->getCompaign();
+                        $sender = $mail->getFromAddress();
+
+
+                        $tmr++;
+                        $mr = (new Mr)->setSender($sender)->setMrLead($lead)->setStep($step)->setCompaign($compaign);
+                        $this->crud->saveMr($mr,false);
+
+                        $tmo++;
+                        $mo = (new Mo)->setSender($sender)->setMoLead($lead)->setStep($step)->setCompaign($compaign);
+                        $this->crud->saveMo($mo,false);
+
+
+                        $compaign->setTmr($compaign->getTmr()+$tmr);
+                        $compaign->setTmo($compaign->getTmo()+$tmo);
+                        
+
+
+                    
                         $this->crud->saveLead($lead,false);
+                        $this->crud->saveCompaign($compaign,false);
+
+
+                        
 
                         // $mailIds = $this->getAllmailIds($lead);
                         // if($mailIds==null) $lead->addMail($mail);
@@ -53,7 +88,7 @@ use App\Controller\CrudControllerHelpers;
 
                 
             }
-            if($lead!=null) $this->crud->saveLead($lead);
+            if($lead!=null) $this->crud->em->flush();
 
         }
 
