@@ -52,7 +52,7 @@ use App\Entity\Compaign;
 
             if($h < $this->fromm || $h > $this->too) return $this->getStat();
             //synchro mails receve
-            $this->cms->save($this->dsns,$this->compaignId,1,$this->compaignStartTime);
+            $this->cms->save($this->compaign);
 
             //lunch sequence
             return  $this->sequenceLuncher->lunch($this->sequence);

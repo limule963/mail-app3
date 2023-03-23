@@ -18,7 +18,7 @@
                 {% for dsn in dsns %} 
                     <div class="section-item row mb-3 ms-1" id ={{dsn.id}}>
                         <div class="section-item1 d-flex align-items-center justify-content-start col-4">
-                            <span class = "me-auto ">{{dsn.email}}</span><img class="push" src={{asset('assets/images/svg/paper-plane.svg')}} height="15px" alt="I"><span >0</span>
+                            <span class = "me-auto ">{{dsn.email}}</span><img class="push" src={{asset('assets/images/svg/paper-plane.svg')}} height="15px" alt="I"><span >{{dsn.ms|length}} </span>
                         </div>
                         <div class="section-item2 d-flex align-items-center justify-content-center col">
                             <div>

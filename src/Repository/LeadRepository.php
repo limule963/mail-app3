@@ -61,7 +61,7 @@ class LeadRepository extends ServiceEntityRepository
    /**
     * @return Lead[] Returns an array of Lead objects
     */
-   public function findByStep($compaignId,$nextStepId,$n = 1000): array
+   public function findByStep($compaignId,$nextStepId,$n): array
    {
        return $this->createQueryBuilder('l')
             // ->select('l','s')
@@ -159,7 +159,7 @@ class LeadRepository extends ServiceEntityRepository
     // }
 
 
-    public function findBySender($compaignId,$nextStepId,$sender, $number = 10)
+    public function findBySender2($compaignId,$nextStepId,$dsnId, $number = 1)
     {
         $query = $this->createQueryBuilder('l')
             // ->select('l','s')
@@ -170,10 +170,11 @@ class LeadRepository extends ServiceEntityRepository
             ->setParameter('val3', $nextStepId)
             ->setMaxResults($number)
             ;
-        if($sender !='')
+        if($dsnId != null)
         {
-            $query->andWhere('l.sender = :val')
-                ->setParameter('val', $sender);
+            $query->andWhere('d.id = :val')
+                ->join('l.dsn','d')
+                ->setParameter('val', $dsnId);
         }
         
         return $query->getQuery()

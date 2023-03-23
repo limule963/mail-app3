@@ -63,16 +63,20 @@ use Symfony\Component\Mime\BodyRendererInterface;
             {   
                 
                 if($Dsn->sendState == true) continue;
+
+                $lead = $this->getNextLead();
+
+                if($lead == null) continue;
+                
+                if($lead->getDsn() != null) $Dsn = $lead->getDsn();
                 
                 $from = $Dsn->getEmail();
                 $dsn = $Dsn->getDsn();
                 $senderName = $Dsn->getName();
             
  
-                $lead = $this->getNextLead();
-              
 
-                if($lead == null) continue;
+
 
                 $emailData = new EmailData($dsn,$from,$lead,$seq->email,$senderName,$seq->stepStatus,$seq->tracker,$seq->step->getId());
 
@@ -81,15 +85,15 @@ use Symfony\Component\Mime\BodyRendererInterface;
                 if($emailResponse->succes)
                 {
                   
-                    $ms = (new Ms)->setSender($from)->setMsLead($lead)->setStep($seq->step)->setCompaign($seq->step->getCompaign());
+                    $ms = (new Ms)->setDsn($Dsn)->setSender($from)->setMsLead($lead)->setStep($seq->step)->setCompaign($seq->step->getCompaign());
                     $this->crud->saveMs($ms,false);
 
                     $Dsn->sendState = true;
                     
-                    $this->prepareForNextCall($seq->step,$lead,$from,true);
+                    $this->prepareForNextCall($Dsn,$seq->step,$lead,$from,true);
                     
                 }
-                else $this->prepareForNextCall($seq->step,$lead,$from,false);
+                else $this->prepareForNextCall($Dsn,$seq->step,$lead,$from,false);
 
                 $this->cr->setResponse($emailResponse);
 
@@ -105,7 +109,7 @@ use Symfony\Component\Mime\BodyRendererInterface;
         }
 
 
-        private function prepareForNextCall(Step $step,Lead $lead,$from,bool $isMailSend)
+        private function prepareForNextCall(Dsn $dsn,Step $step,Lead $lead,$from,bool $isMailSend)
         {
             
             if($isMailSend) 
@@ -115,6 +119,11 @@ use Symfony\Component\Mime\BodyRendererInterface;
                     
                     $lead->setSender($from);
                     $lead->setStatus($this->crud->getStatus(STATUS::LEAD_ONPROGRESS));
+                }
+                
+                if($lead->getDsn() == null)
+                {
+                    $lead->setDsn($dsn);
                 }
                 
                 
@@ -148,9 +157,9 @@ use Symfony\Component\Mime\BodyRendererInterface;
         
 
 
-        private function getNextLead($sender = ''):Lead|null
+        private function getNextLead():Lead|null
         {   
-            return $this->crud->getLeadBySender($this->sequence->compaignId,$this->sequence->step->getId(),$sender);
+            return $this->crud->getLeadByNextStep($this->sequence->compaignId,$this->sequence->step->getId());
         }
 
 

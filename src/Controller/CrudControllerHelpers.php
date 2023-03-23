@@ -197,6 +197,8 @@ public function saveMs(Ms $ms,$flush = true)
             /**@var UserRepository */
             $rep= $this->em->getRepository(User::class);
             $rep->save($user,true);
+            $this->stepOrding($compaign->getId());
+
             return $compaign;
         }
 
@@ -474,11 +476,11 @@ public function saveMs(Ms $ms,$flush = true)
             return $leads;
         }
 
-        public function getLeadBySender($compaignId,$nextStepId,$sender):Lead|null
+        public function getLeadByNextStep($compaignId,$nextStepId):Lead|null
         {
             /**@var LeadRepository */
             $rep = $this->em->getRepository(Lead::class);      
-            $leads = $rep->findBySender($compaignId,$nextStepId,$sender,1);
+            $leads = $rep->findByStep($compaignId,$nextStepId,1);
             if( $leads == null) return null;
             else  return $leads[0];
         }

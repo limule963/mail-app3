@@ -9,7 +9,7 @@ namespace App\AppMailer\Data;
         public const
             LEAD_COMPLETE = 'lead.complete',
             LEAD_FAIL = 'lead.fail',
-            LEAD_ONHOLD = 'lead.onhold',
+            LEAD_ONHOLD = 'lead.pending',
             LEAD_ONPROGRESS = 'lead.onprogress',
 
 
@@ -17,7 +17,7 @@ namespace App\AppMailer\Data;
             STEP_DRAFT  = 'step.draft',
             STEP_COMPLETE = 'step.complete',
             STEP_ACTIVE = 'step.active',
-            STEP_ONHOLD = 'step.onhold',
+            STEP_ONHOLD = 'step.pending',
             STEP_2  = 'step.2',
             STEP_3  = 'step.3',
             STEP_4  = 'step.4',
@@ -34,7 +34,7 @@ namespace App\AppMailer\Data;
             COMPAIGN_ACTIVE = 'compaign.active',
             COMPAIGN_PAUSED = 'compaign.paused',
 
-            SEQUENCE_ONHOLD ='sequence.onhold',
+            SEQUENCE_ONHOLD ='sequence.pending',
             SEQUENCE_COMPLETE = 'sequence.complete'
             ;
 

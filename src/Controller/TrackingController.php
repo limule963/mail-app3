@@ -35,7 +35,9 @@ class TrackingController extends AbstractController
             // $step = $this->crud->getStep($stepId);
             
             $compaign = $lead->getCompaign();
-            $mo = (new Mo)->setSender($lead->getSender())->setMoLead($lead)->setStep($step)->setCompaign($compaign);
+            $dsn = $lead->getDsn();
+
+            $mo = (new Mo)->setDsn($dsn)->setSender($lead->getSender())->setMoLead($lead)->setStep($step)->setCompaign($compaign);
             $this->crud->saveMo($mo,false);
 
 
@@ -60,9 +62,10 @@ class TrackingController extends AbstractController
         if($step == null) return null;
         
         $compaign = $lead->getCompaign();
+        $dsn = $lead->getDsn();
         
 
-        $mo = (new Mo)->setSender($lead->getSender())->setMoLead($lead)->setStep($step)->setCompaign($compaign);
+        $mo = (new Mo)->setDsn($dsn)->setSender($lead->getSender())->setMoLead($lead)->setStep($step)->setCompaign($compaign);
         $this->crud->saveMo($mo,false);
 
 

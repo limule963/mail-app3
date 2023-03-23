@@ -14,6 +14,11 @@ aside .nav-link:hover{
 }
 
 aside .nav-item:hover{
-  background-color: #5197ff81;
+  background-color: #0d6dfdad;
   color: white;
+}
+
+#logo{
+  font-size: x-large;
+  color: #0D6EFD;
 }

@@ -26,6 +26,9 @@ class Mo
     #[ORM\ManyToOne(inversedBy: 'mo')]
     private ?Compaign $compaign = null;
 
+    #[ORM\ManyToOne(inversedBy: 'mo')]
+    private ?Dsn $dsn = null;
+
     #[ORM\Column(length: 255)]
     private ?string $sender = null;
 
@@ -98,5 +101,17 @@ class Mo
         $this->sender = $sender;
 
         return $this;
+    }
+
+    public function setDsn(?Dsn $dsn): self
+    {
+        $this->dsn = $dsn;
+
+        return $this;
+    }
+
+    public function getDsn(): ?Dsn
+    {
+        return $this->dsn;
     }
 }

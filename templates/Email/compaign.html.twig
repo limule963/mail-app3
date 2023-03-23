@@ -75,11 +75,11 @@
                         
                         <div class="section-item1 d-flex align-items-center justify-content-start col-4 " >
                         
-                            <a class = "me-auto btn compname" href = {{ path('app_compaign_leads', {'id': compaign.id}) }} >
-                                <div >{{compaign.name}}</div>
+                            <div class = "me-auto"  >
+                                <div class = "h6" >{{compaign.name}}</div>
                                 <div>{{compaign.createAt|ago}}</div>
 
-                            </a>
+                            </div>
 
                             {% if status == 'active' %}
                                 {% set status2 = "success" %}

@@ -453,11 +453,7 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
             // return $this->json(["url"=>'https://localhost:8000/assets/images/mail/'.$filename,"href"=>'https://localhost:8000/assets/images/mail/'.$filename]);
             return $this->json([],204);
         }
-        #[Route(path:"/compaign/{id}/analytics",name:"app_compaign_analytics")]
-        public function compaignAnalytics(Compaign $compaign)
-        {
-            return $this-> render('Email/compaign_analytics.html.twig');
-        }
+
         
         
 

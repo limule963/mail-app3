@@ -48,17 +48,18 @@ use App\Controller\CrudControllerHelpers;
                         $lead->setNextStep(null);
                         $lead->addUniqMail($mail);
 
+                        $dsn = $lead->getDsn();
                         $step = $lead->getStep();
                         $compaign = $lead->getCompaign();
                         $sender = $mail->getFromAddress();
 
 
                       
-                        $mr = (new Mr)->setSender($sender)->setMrLead($lead)->setStep($step)->setCompaign($compaign);
+                        $mr = (new Mr)->setDsn($dsn)->setSender($sender)->setMrLead($lead)->setStep($step)->setCompaign($compaign);
                         $this->crud->saveMr($mr,false);
 
                       
-                        $mo = (new Mo)->setSender($sender)->setMoLead($lead)->setStep($step)->setCompaign($compaign);
+                        $mo = (new Mo)->setDsn($dsn)->setSender($sender)->setMoLead($lead)->setStep($step)->setCompaign($compaign);
                         $this->crud->saveMo($mo,false);
                         
                     

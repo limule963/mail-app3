@@ -21,6 +21,9 @@ class Ms
     private ?string $sender = null;
 
     #[ORM\ManyToOne(inversedBy: 'ms')]
+    private ?Dsn $dsn = null;
+
+    #[ORM\ManyToOne(inversedBy: 'ms')]
     private ?Lead $ms_lead = null;
 
     #[ORM\ManyToOne(inversedBy: 'ms')]
@@ -99,5 +102,17 @@ class Ms
         $this->compaign = $compaign;
 
         return $this;
+    }
+
+    public function setDsn(?Dsn $dsn): self
+    {
+        $this->dsn = $dsn;
+
+        return $this;
+    }
+
+    public function getDsn(): ?Dsn
+    {
+        return $this->dsn;
     }
 }

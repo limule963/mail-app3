@@ -23,18 +23,14 @@ use Symfony\Component\Routing\Annotation\Route;
 
             if($h < $from || $h > $to)
             {
-                $dsns = $compaign->getDsns()->getValues();
-                $compaignId = $compaign->getId();
-                $compaignStartTime = $compaign->getSchedule()->getStartTime();
-
-
-    
-                $cms->save($dsns,$compaignId,1,$compaignStartTime);
+                $cms->save($compaign);
                 return null;
             } 
 
 
             $cl->sequence($compaign)->lunch();
         }
+
+
         
     }

@@ -2,6 +2,10 @@
 
 namespace App\AppMailer\Sender;
 
+use App\AppMailer\Data\STATUS;
+use App\AppMailer\Receiver\CompaignMailSaver;
+use App\Entity\Compaign;
+
 
 
     class BulkCompaignLuncher
@@ -11,11 +15,17 @@ namespace App\AppMailer\Sender;
             
         }
 
-        public function lunch(array $compaigns)
+        /**@param Compaign[] $compaigns */
+        public function lunch(?array $compaigns)
         {
+            if($compaigns == null) return null;
             foreach($compaigns as $compaign) 
             {
-                $this->compaignLuncher->lunch($compaign);
+                $status = $compaign->getStatus()->getStatus();
+
+
+                if($status != STATUS::COMPAIGN_ACTIVE ) continue;
+                $this->compaignLuncher->sequence($compaign)->lunch();
             }
         }
 }

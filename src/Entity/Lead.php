@@ -54,6 +54,9 @@ class Lead
     #[ORM\OneToMany(mappedBy: 'lc_lead', targetEntity: Lc::class)]
     private Collection $lcs;
 
+    #[ORM\ManyToOne(inversedBy: 'leads')]
+    private ?Dsn $dsn = null;
+
     public function __construct()
     {
         $this->mail = new ArrayCollection();
@@ -323,6 +326,18 @@ class Lead
                 $lc->setLcLead(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDsn(): ?Dsn
+    {
+        return $this->dsn;
+    }
+
+    public function setDsn(?Dsn $dsn): self
+    {
+        $this->dsn = $dsn;
 
         return $this;
     }

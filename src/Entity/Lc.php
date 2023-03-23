@@ -29,6 +29,8 @@ class Lc
     #[ORM\ManyToOne(inversedBy: 'lcs')]
     private ?Lead $lc_lead = null;
 
+    #[ORM\ManyToOne(inversedBy: 'lcs')]
+    private ?Dsn $dsn = null;
 
     public function __construct()
     {
@@ -100,4 +102,18 @@ class Lc
 
         return $this;
     }
+
+
+    public function setDsn(?Dsn $dsn): self
+    {
+        $this->dsn = $dsn;
+
+        return $this;
+    }
+
+    public function getDsn(): ?Dsn
+    {
+        return $this->dsn;
+    }
+
 }

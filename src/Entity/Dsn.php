@@ -67,13 +67,32 @@ class Dsn
     #[ORM\ManyToMany(targetEntity: Compaign::class, mappedBy: 'dsns')]
     private Collection $compaigns;
 
+    #[ORM\OneToMany(mappedBy: 'dsn', targetEntity: Ms::class)]
+    private Collection $ms;
 
+    #[ORM\OneToMany(mappedBy: 'dsn', targetEntity: Mr::class)]
+    private Collection $mr;
+
+    #[ORM\OneToMany(mappedBy: 'dsn', targetEntity: Mo::class)]
+    private Collection $mo;
+
+    #[ORM\OneToMany(mappedBy: 'dsn', targetEntity: Lc::class)]
+    private Collection $lcs;
+
+    #[ORM\OneToMany(mappedBy: 'dsn', targetEntity: Lead::class)]
+    private Collection $leads;
 
     public function __construct()
     {
         // $this->compaigns = new ArrayCollection()
         if($this->createAt == '') $this->createAt = new DateTimeImmutable();
         $this->mails = new ArrayCollection();
+        $this->ms = new ArrayCollection();
+        $this->mo = new ArrayCollection();
+        $this->mr = new ArrayCollection();
+        $this->lcs = new ArrayCollection();
+        $this->leads = new ArrayCollection();
+
 
 
     }
@@ -339,7 +358,153 @@ class Dsn
 
         return $this;
     }
-    
+
+    /**
+     * @return Collection<int, Ms>
+     */
+    public function getMs(): Collection
+    {
+        return $this->ms;
+    }
+
+    public function addMs(Ms $m): self
+    {
+        if (!$this->ms->contains($m)) {
+            $this->ms->add($m);
+            $m->setDsn($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMs(Ms $m): self
+    {
+        if ($this->ms->removeElement($m)) {
+            // set the owning side to null (unless already changed)
+            if ($m->getDsn() === $this) {
+                $m->setDsn(null);
+            }
+        }
+
+        return $this;
+    }    
+    /**
+     * @return Collection<int, Ms>
+     */
+    public function getMr(): Collection
+    {
+        return $this->mr;
+    }
+
+    public function addMr(Mr $m): self
+    {
+        if (!$this->mr->contains($m)) {
+            $this->mr->add($m);
+            $m->setDsn($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMr(Mr $m): self
+    {
+        if ($this->mr->removeElement($m)) {
+            // set the owning side to null (unless already changed)
+            if ($m->getDsn() === $this) {
+                $m->setDsn(null);
+            }
+        }
+
+        return $this;
+    }    
+    /**
+     * @return Collection<int, Ms>
+     */
+    public function getLcs(): Collection
+    {
+        return $this->lcs;
+    }
+
+    public function addLc(Lc $m): self
+    {
+        if (!$this->lcs->contains($m)) {
+            $this->lcs->add($m);
+            $m->setDsn($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLc(Lc $m): self
+    {
+        if ($this->lcs->removeElement($m)) {
+            // set the owning side to null (unless already changed)
+            if ($m->getDsn() === $this) {
+                $m->setDsn(null);
+            }
+        }
+
+        return $this;
+    }    
+    /**
+     * @return Collection<int, Ms>
+     */
+    public function getMo(): Collection
+    {
+        return $this->mo;
+    }
+
+    public function addMo(Mo $m): self
+    {
+        if (!$this->mo->contains($m)) {
+            $this->mo->add($m);
+            $m->setDsn($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMo(Mo $m): self
+    {
+        if ($this->mo->removeElement($m)) {
+            // set the owning side to null (unless already changed)
+            if ($m->getDsn() === $this) {
+                $m->setDsn(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Lead>
+     */
+    public function getLeads(): Collection
+    {
+        return $this->leads;
+    }
+
+    public function addLead(Lead $lead): self
+    {
+        if (!$this->leads->contains($lead)) {
+            $this->leads->add($lead);
+            $lead->setDsn($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLead(Lead $lead): self
+    {
+        if ($this->leads->removeElement($lead)) {
+            // set the owning side to null (unless already changed)
+            if ($lead->getDsn() === $this) {
+                $lead->setDsn(null);
+            }
+        }
+
+        return $this;
+    }    
 
 
 }
