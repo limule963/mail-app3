@@ -49,42 +49,12 @@ class HomeController extends AbstractController
     #[Route('/', name: 'app_home')]
     public function index( Request $request,Receiver $rec,Connexion $con,LeadRepository $rep): Response
     {
-        $user = $this->getUser();
-        $userId = $user->getId();
-        $dsns = $this->crud->getUserDsns($userId,3);
-        $dsn = $dsns[0];
-        $compaign = $this->crud->getCompaign($userId,80);
-
-        $lead = $this->crud->getLeadByEmailAddress($compaign->getId(),'alice.brunet44@gmail.com');
-        $lead2 = $this->crud->getLeadByEmailAddress($compaign->getId(),'kofazia@gmail.com');
-
-        dd($lead,$lead2);
 
 
-
-
-
-        $compaign = $this->crud->getCompaign($userId,7);
-
-        $leads = $compaign->getLeads();
-        $lead = $this->crud->getLead(104);    
-
-        $lead3 = clone($lead);
 
  
-        
-        $res = $leads->exists(function($key,$element) use($lead3){
-            return $element->getEmailAddress() == $lead3->getEmailAddress();
-        });
-
-        dd($res,$lead,$lead3);
-        // $compaign->addLead($lead3);
-        // $compaign->addLead($lead4);
-        // $compaign->addLead($lead5);
-        // $this->crud->saveCompaign($compaign);
 
 
-        dd($lead);
         return $this->render('home/index.html.twig', [
             'controller_name' => 'HomeController',
             'cr'=>''

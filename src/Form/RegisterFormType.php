@@ -18,7 +18,7 @@ class RegisterFormType extends AbstractType
             ->add('email',EmailType::class)
             // ->add('roles')
             ->add('password',PasswordType::class)
-            ->add('submit',SubmitType::class,['label'=>'Send']);
+            ->add('submit',SubmitType::class,['label'=>'Submit']);
         ;
     }
 
