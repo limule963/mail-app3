@@ -118,7 +118,7 @@
 
                         </div>
 
-                        <div class="section-item3 d-flex align-items-center justify-content-between col-2">
+                        <div class="section-item3 d-flex align-items-center justify-content-between col-2" onclick = "event.stopPropagation()">
 
                             <a href= {{ path("app_compaign_lunch", {"id" : compaign.id}) }}>
                             {% if status == "active" %}

@@ -54,13 +54,19 @@ class MoRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?Mo
-//    {
-//        return $this->createQueryBuilder('m')
-//            ->andWhere('m.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+
+/**@return null|Mo[] */
+    public function findOneByStepAndLead($compaignId,$stepId,$leadId)
+    {
+        return $this->createQueryBuilder('m')
+            ->andWhere('m.compaign = :val')
+            ->andWhere('m.step = :val2')
+            ->andWhere('m.lead = :val3')
+            ->setParameter('val', $compaignId)
+            ->setParameter('val2', $stepId)
+            ->setParameter('val3', $$leadId)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }

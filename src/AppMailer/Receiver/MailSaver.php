@@ -54,13 +54,19 @@ use App\Controller\CrudControllerHelpers;
                         $sender = $mail->getFromAddress();
 
 
-                      
-                        $mr = (new Mr)->setDsn($dsn)->setSender($sender)->setMrLead($lead)->setStep($step)->setCompaign($compaign);
-                        $this->crud->saveMr($mr,false);
+                        $mr = $lead->getMr()->getValues();
 
-                      
-                        $mo = (new Mo)->setDsn($dsn)->setSender($sender)->setMoLead($lead)->setStep($step)->setCompaign($compaign);
-                        $this->crud->saveMo($mo,false);
+                        if($mr = null)
+                        {
+                            $mr = (new Mr)->setDsn($dsn)->setSender($sender)->setMrLead($lead)->setStep($step)->setCompaign($compaign);
+                            $this->crud->saveMr($mr,false);
+
+                            $mo = $this->crud->getMoByStepAndLead($compaign->getId(),$step->getId(),$lead->getId());
+                            $mo = (new Mo)->setDsn($dsn)->setSender($sender)->setMoLead($lead)->setStep($step)->setCompaign($compaign);
+                            $this->crud->saveMo($mo,false);
+                        }
+
+                        
                         
                     
                         $this->crud->saveLead($lead,false);

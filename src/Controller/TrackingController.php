@@ -31,17 +31,21 @@ class TrackingController extends AbstractController
 
             $lead = $this->crud->getLead($id);
             //code for lead
-            $step = $lead->getStep();
-            // $step = $this->crud->getStep($stepId);
+            // $step = $lead->getStep();
+            $step = $this->crud->getStep($stepId);
             
             $compaign = $lead->getCompaign();
             $dsn = $lead->getDsn();
+            
+            $mo = $this->crud->getMoByStepAndLead($compaign->getId(),$stepId,$id);
+            if($mo == null) 
+            {
+                $mo = (new Mo)->setDsn($dsn)->setSender($lead->getSender())->setMoLead($lead)->setStep($step)->setCompaign($compaign);
+                $this->crud->saveMo($mo,false);
+                $this->crud->em->flush();
+            }
 
-            $mo = (new Mo)->setDsn($dsn)->setSender($lead->getSender())->setMoLead($lead)->setStep($step)->setCompaign($compaign);
-            $this->crud->saveMo($mo,false);
 
-
-            $this->crud->em->flush();
 
             
         }
@@ -57,14 +61,14 @@ class TrackingController extends AbstractController
         if($lead == null) return null;
         //making change for lead
 
-        $step = $lead->getStep();
+        $step = $this->crud->getStep($stepId);
         // $step = $this->crud->getStep($stepId);
-        if($step == null) return null;
+        if($step = null) return null;
         
         $compaign = $lead->getCompaign();
         $dsn = $lead->getDsn();
         
-
+      
         $mo = (new Mo)->setDsn($dsn)->setSender($lead->getSender())->setMoLead($lead)->setStep($step)->setCompaign($compaign);
         $this->crud->saveMo($mo,false);
 
@@ -73,7 +77,7 @@ class TrackingController extends AbstractController
         $this->crud->em->flush();
 
 
-        return $this->redirect("https://op.clemaos.com/Public/images/image.png");
+        return $this->redirect("https://app.clemaos.com/images/transparent.png");
 
 
     }

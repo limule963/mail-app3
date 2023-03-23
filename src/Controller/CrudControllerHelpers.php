@@ -27,7 +27,6 @@ use App\Repository\ScheduleRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
-use App\AppMAiler\Exceptions\CrudControllerException;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -78,6 +77,13 @@ public function saveMs(Ms $ms,$flush = true)
     /**@var MsRepository */
     $rep = $this->em->getRepository(Ms::class);
     $rep->save($ms,$flush);
+}
+public function getMoByStepAndLead($compaignId,$stepId,$leadId)
+{
+    /**@var MoRepository */
+    $rep = $this->em->getRepository(Mo::class);
+    $mo = $rep->findOneByStepAndLead($compaignId,$stepId,$leadId);
+    return $mo[0];
 }
 
 

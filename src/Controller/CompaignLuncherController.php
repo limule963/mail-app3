@@ -8,6 +8,7 @@ use App\AppMailer\Data\STATUS;
 use App\AppMailer\Sender\BulkCompaignLuncher;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
 
 class CompaignLuncherController extends AbstractController
 {
@@ -15,9 +16,11 @@ class CompaignLuncherController extends AbstractController
     {
         
     }
-    #[Route('/compaign/lunch/cron/user/{id}',name:"app_compaign_cron_lunch")]
+    #[Route('/compaign/user/{id}/lunch',name:"app_compaign_cron_lunch")]
     public function lunchCompaign(User $user)
     {
+
+        if($user == null)  return new Response('done');
         /**@var Compaign[] */
         $compaigns = $user->getCompaigns()->getValues();
 
@@ -33,6 +36,7 @@ class CompaignLuncherController extends AbstractController
         }
 
         $this->bcl->lunch($compaigns);
+        return new Response('done');
 
     }
     
