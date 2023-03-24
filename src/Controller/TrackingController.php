@@ -50,8 +50,8 @@ class TrackingController extends AbstractController
     #[Route('/image/{id}/{stepId}/papillon.png',name:'app_tracking_2')]
     public function tracker(Lead $lead, int $stepId)
     {
+        
         $step = $this->crud->getStep($stepId);
-       
 
         if($lead == null) return null;
         if($step == null) return null;
@@ -60,10 +60,8 @@ class TrackingController extends AbstractController
         $dsn = $lead->getDsn();
         
         $mo = $this->crud->getMoByStepAndLead($compaign->getId(),$step->getId(),$lead->getId());
-        
         if($mo == null)
         {
-           
             $mo = (new Mo)->setDsn($dsn)->setSender($lead->getSender())->setMoLead($lead)->setStep($step)->setCompaign($compaign);
             $this->crud->saveMo($mo,true);
 

@@ -35,8 +35,7 @@
 
                 {# <p><img src=  {{ url('app_tracking')~'?id={{lead.id}}'~'stepId={{step.id}}' }} width = "50" ></p> #}
 
-                <p><img src= {{ url('app_tracking_2',{'id': lead.id, 'stepId': stepId}) }} width = "50" ></p>
-                
+                <p><img src= {{ url('app_tracking_2',{'id': lead.id, 'stepId': stepId}) }} width = "50"></p>
                 {% endif %}
 
              {% endif %}

@@ -20,6 +20,8 @@ class CompaignLuncherController extends AbstractController
     public function lunchCompaign(User $user)
     {
         
+        
+        
         if($user == null)  return new Response('done');
         /**@var Compaign[] */
         $compaigns = $user->getCompaigns()->getValues();
@@ -31,12 +33,13 @@ class CompaignLuncherController extends AbstractController
             
             if($status == STATUS::COMPAIGN_COMPLETE || $status == STATUS::COMPAIGN_PAUSED)
             {
-              
+                
                 $this->cms->save($compaign);
             }
             if($status != STATUS::COMPAIGN_ACTIVE) continue;
         }
-
+        
+    
         $this->bcl->lunch($compaigns);
         return new Response('done');
 

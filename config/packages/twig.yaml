@@ -3,8 +3,6 @@ twig:
     form_themes: ['bootstrap_5_layout.html.twig']
     # cache: false
 
-
-
     paths: 
         '%kernel.project_dir%/public/assets/mail/css': styles
         '%kernel.project_dir%/public/assets/mail/images': images

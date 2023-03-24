@@ -34,7 +34,7 @@ use Symfony\Component\Mime\BodyRendererInterface;
         /**
          * @var Sequence
          */
-        private $sequence;
+        private $seq;
 
         /**
          * @var EmailSender
@@ -54,7 +54,7 @@ use Symfony\Component\Mime\BodyRendererInterface;
         public function lunch(?Sequence $seq)
         {
             if($seq == null) return null;
-            $this->sequence = $seq;
+            $this->seq = $seq;
             $this->dsns = $seq->dsns;
  
 
@@ -62,9 +62,9 @@ use Symfony\Component\Mime\BodyRendererInterface;
             foreach($this->dsns as $Dsn)
             {   
                 
-                if($Dsn->sendState == true) continue;
+                // if($Dsn->sendState == true) continue;
 
-                $lead = $this->getNextLead();
+                $lead = $this->getNextLead($Dsn);
 
                 if($lead == null) continue;
                 
@@ -75,9 +75,6 @@ use Symfony\Component\Mime\BodyRendererInterface;
                 $senderName = $Dsn->getName();
             
  
-
-
-
                 $emailData = new EmailData($dsn,$from,$lead,$seq->email,$senderName,$seq->stepStatus,$seq->tracker,$seq->step->getId());
 
                 $emailResponse = $this->emailSender->send($emailData);
@@ -88,7 +85,7 @@ use Symfony\Component\Mime\BodyRendererInterface;
                     $ms = (new Ms)->setDsn($Dsn)->setSender($from)->setMsLead($lead)->setStep($seq->step)->setCompaign($seq->step->getCompaign());
                     $this->crud->saveMs($ms,false);
 
-                    $Dsn->sendState = true;
+                    // $Dsn->sendState = true;
                     
                     $this->prepareForNextCall($Dsn,$seq->step,$lead,$from,true);
                     
@@ -123,20 +120,18 @@ use Symfony\Component\Mime\BodyRendererInterface;
                     $lead->setDsn($dsn);
                 }
                 
-
-                
                 
                 $compaign = $step->getCompaign();
                 $lead->setStep($step);
 
-                // $nextStep =$this->sequence->getNextStep();
+                // $nextStep =$this->seq->getNextStep();
                 $nextStep = $this->crud->getNextStep($compaign->getId(),$step->getStepOrder()+1) ;
 
                 if($nextStep == null) 
                 {
                     $lead->setStatus($this->crud->getStatus(STATUS::LEAD_COMPLETE));
                 }
-                
+
                 $lead->setNextStep($nextStep);
                 $this->crud->saveLead($lead,false);
 
@@ -160,9 +155,10 @@ use Symfony\Component\Mime\BodyRendererInterface;
         
 
 
-        private function getNextLead():Lead|null
+        private function getNextLead(Dsn $dsn):?Lead
         {   
-            return $this->crud->getLeadByNextStep($this->sequence->compaignId,$this->sequence->step->getId());
+            if($this->seq->step->getStepOrder() == 1) return $this->crud->getLeadByNextStep($this->seq->compaignId,$this->seq->step->getId());
+            return $this->crud->getLeadByNextStepAndDsn($this->seq->compaignId,$this->seq->step->getId(),$dsn->getId());
         }
 
 

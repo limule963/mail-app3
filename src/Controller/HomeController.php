@@ -64,17 +64,18 @@ class HomeController extends AbstractController
     }
 
 
-    #[Route('pp',name:'app_pp')]
+    #[Route('/pp',name:'app_pp')]
     public function pp(CompaignLuncher $cl)
     {
         /**@var User $user */
-        $user = $this->getUser();
-        $userId = $user->getId();
-        $compaign = $this->crud->getCompaign($user->getId(),80);
+        // $user = $this->getUser();
+        // $userId = $user->getId();
+        
+        $compaign = $this->crud->getCompaign(1,6);
 
         
         // dd($compaign);
-        $compaign->setStatus($this->crud->getStatus(STATUS::COMPAIGN_ACTIVE));
+        // $compaign->setStatus($this->crud->getStatus(STATUS::COMPAIGN_ACTIVE));
         $cr = $cl->sequence($compaign)->lunch();
 
 

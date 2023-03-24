@@ -79,6 +79,27 @@ class LeadRepository extends ServiceEntityRepository
    /**
     * @return Lead[] Returns an array of Lead objects
     */
+   public function findByStepAndDsn($compaignId,$nextStepId,$dsnId,$n): array
+   {
+       return $this->createQueryBuilder('l')
+            // ->select('l','s')
+            ->andWhere('l.compaign = :val2')
+            ->andWhere('l.nextStep = :val')
+            ->andWhere('l.dsn = :val3')
+            // ->join('l.nextStep','s')
+            // ->join('l.dsn','d')
+            ->setParameter('val', $nextStepId)
+            ->setParameter('val2', $compaignId)
+            ->setParameter('val3', $dsnId)
+            ->orderBy('l.id', 'ASC')
+            ->setMaxResults($n)
+            ->getQuery()
+            ->getResult()
+       ;
+   }
+   /**
+    * @return Lead[] Returns an array of Lead objects
+    */
    public function findByCompaignId($id,$number = 10): array
    {
        return $this->createQueryBuilder('l')
