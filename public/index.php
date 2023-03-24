@@ -2,7 +2,8 @@
 
 use App\Kernel;
 
-set_time_limit(60);
+date_default_timezone_set('UTC');
+set_time_limit(200);
 require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
 
 return function (array $context) {

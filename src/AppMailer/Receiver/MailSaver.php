@@ -25,8 +25,12 @@ use App\Controller\CrudControllerHelpers;
 
         public function saveMails(MailData $md)
         {
+             
+             
             $lead = null;
             $mails = $this->allrec->receive($md->dsn,$md->criteria,$md->compaignStartTime);
+            
+    
             if($mails == null) return null;
             if($mails instanceof EmailResponse) return null;
             /**@var Mail[] $mails */
@@ -54,23 +58,29 @@ use App\Controller\CrudControllerHelpers;
                         $sender = $mail->getFromAddress();
 
 
-                        $mr = $lead->getMr()->getValues();
+                        // $mr = $lead->getMr()->getValues();
+                        $mr = $this->crud->getMrByStepAndLead($compaign->getId(),$step->getId(),$lead->getId());
 
-                        if($mr = null)
+
+                        if($mr == null)
                         {
                             $mr = (new Mr)->setDsn($dsn)->setSender($sender)->setMrLead($lead)->setStep($step)->setCompaign($compaign);
-                            $this->crud->saveMr($mr,false);
+                            $this->crud->saveMr($mr,true);
 
                             $mo = $this->crud->getMoByStepAndLead($compaign->getId(),$step->getId(),$lead->getId());
-                            $mo = (new Mo)->setDsn($dsn)->setSender($sender)->setMoLead($lead)->setStep($step)->setCompaign($compaign);
-                            $this->crud->saveMo($mo,false);
+                            if($mo == null )
+                            {
+                                $mo = (new Mo)->setDsn($dsn)->setSender($sender)->setMoLead($lead)->setStep($step)->setCompaign($compaign);
+                                $this->crud->saveMo($mo,true);
+
+                            }
                         }
 
                         
                         
                     
-                        $this->crud->saveLead($lead,false);
-                        $this->crud->saveCompaign($compaign,false);
+                        $this->crud->saveLead($lead,true);
+                        // $this->crud->saveCompaign($compaign,false);
 
 
                     }
@@ -78,31 +88,31 @@ use App\Controller\CrudControllerHelpers;
 
                 
             }
-            if($lead!=null) $this->crud->em->flush();
+            // if($lead!=null) $this->crud->em->flush();
 
         }
 
 
-        /**@param Dsn $dsn */
-        public function getMails(Dsn $dsn,mixed $criteria =1,$compaignStartTime)
-        {
+        // /**@param Dsn $dsn */
+        // public function getMails(Dsn $dsn,mixed $criteria =1,$compaignStartTime)
+        // {
 
-            return $this->allrec->receive($dsn,$criteria,$compaignStartTime);
+        //     return $this->allrec->receive($dsn,$criteria,$compaignStartTime);
 
-        }
+        // }
 
-        /**@param Lead $lead */
-        private function getAllmailIds($lead)
-        {
+        // /**@param Lead $lead */
+        // private function getAllmailIds($lead)
+        // {
             
-            /**@var Mail[] */
-            $mails = $lead->getMail()->getValues();
-            if($mails == null) return null;
-            foreach($mails as $mail)
-            {
-                $mailIds[] = $mail->getMailId();
-            }
-            return $mailIds;
-        }
+        //     /**@var Mail[] */
+        //     $mails = $lead->getMail()->getValues();
+        //     if($mails == null) return null;
+        //     foreach($mails as $mail)
+        //     {
+        //         $mailIds[] = $mail->getMailId();
+        //     }
+        //     return $mailIds;
+        // }
         
     }

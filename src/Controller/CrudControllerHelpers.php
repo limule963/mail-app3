@@ -83,7 +83,19 @@ public function getMoByStepAndLead($compaignId,$stepId,$leadId)
     /**@var MoRepository */
     $rep = $this->em->getRepository(Mo::class);
     $mo = $rep->findOneByStepAndLead($compaignId,$stepId,$leadId);
+    if($mo == null)return null;
+
     return $mo[0];
+}
+
+public function getMrByStepAndLead($compaignId,$stepId,$leadId)
+{
+    /**@var MrRepository */
+    $rep = $this->em->getRepository(Mr::class);
+    $mr = $rep->findOneByStepAndLead($compaignId,$stepId,$leadId);
+    if($mr == null)return null;
+
+    return $mr[0];
 }
 
 

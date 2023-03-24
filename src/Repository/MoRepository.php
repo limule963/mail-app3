@@ -55,16 +55,16 @@ class MoRepository extends ServiceEntityRepository
 //    }
 
 
-/**@return null|Mo[] */
+/**@return Mo[] */
     public function findOneByStepAndLead($compaignId,$stepId,$leadId)
     {
         return $this->createQueryBuilder('m')
             ->andWhere('m.compaign = :val')
             ->andWhere('m.step = :val2')
-            ->andWhere('m.lead = :val3')
+            ->andWhere('m.mo_lead = :val3')
             ->setParameter('val', $compaignId)
             ->setParameter('val2', $stepId)
-            ->setParameter('val3', $$leadId)
+            ->setParameter('val3', $leadId)
             ->getQuery()
             ->getResult()
         ;

@@ -63,4 +63,28 @@ class MrRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
+
+
+
+
+/**@return Mr[] */
+public function findOneByStepAndLead($compaignId,$stepId,$leadId)
+{
+    return $this->createQueryBuilder('m')
+        ->andWhere('m.compaign = :val')
+        ->andWhere('m.step = :val2')
+        ->andWhere('m.mr_lead = :val3')
+        ->setParameter('val', $compaignId)
+        ->setParameter('val2', $stepId)
+        ->setParameter('val3', $leadId)
+        ->getQuery()
+        ->getResult()
+    ;
+}
+
+
+
+
+
 }

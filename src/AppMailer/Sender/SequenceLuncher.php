@@ -114,17 +114,16 @@ use Symfony\Component\Mime\BodyRendererInterface;
             
             if($isMailSend) 
             {
-                if($lead->getSender() == '') 
+                
+                if($lead->getDsn() == null) 
                 {
                     
                     $lead->setSender($from);
                     $lead->setStatus($this->crud->getStatus(STATUS::LEAD_ONPROGRESS));
-                }
-                
-                if($lead->getDsn() == null)
-                {
                     $lead->setDsn($dsn);
                 }
+                
+
                 
                 
                 $compaign = $step->getCompaign();
@@ -133,8 +132,11 @@ use Symfony\Component\Mime\BodyRendererInterface;
                 // $nextStep =$this->sequence->getNextStep();
                 $nextStep = $this->crud->getNextStep($compaign->getId(),$step->getStepOrder()+1) ;
 
-                if($nextStep == null) $lead->setStatus($this->crud->getStatus(STATUS::LEAD_COMPLETE));
-
+                if($nextStep == null) 
+                {
+                    $lead->setStatus($this->crud->getStatus(STATUS::LEAD_COMPLETE));
+                }
+                
                 $lead->setNextStep($nextStep);
                 $this->crud->saveLead($lead,false);
 
@@ -149,6 +151,7 @@ use Symfony\Component\Mime\BodyRendererInterface;
                 $lead->setStep($lead->getNextStep());
                 $lead->setStatus($Status);
                 $lead->setSender('Send Failed');
+                $this->crud->saveLead($lead,false);
             }
 
             $this->crud->saveLead($lead);

@@ -35,6 +35,7 @@ use App\AppMailer\Data\EmailResponse;
             
             /**@var Mailbox */
             $con = $imap->get($dsn->getConnexionName());
+            
 
             // $stamp = $dsn->getCreateAt()->getTimestamp();
             // $date =getdate($stamp);
@@ -80,7 +81,9 @@ use App\AppMailer\Data\EmailResponse;
         }
 
         public function receive(Connexion $connexion)
-        {
+        {   
+            
+            
             $dsn = $connexion->dsn;
             $folder = $connexion->folder;
             $criteria = $connexion->criteria;
@@ -88,14 +91,18 @@ use App\AppMailer\Data\EmailResponse;
 
             $test = $imap->testConnection($dsn->getConnexionName());
             
+            
+            
             if(!$test) return new EmailResponse(false,'Connexion fail',$dsn->getEmail(),'');
             
             $con = $imap->get($dsn->getConnexionName());
-            
+         
             
             try
             {
                 $mailIds = $con->switchMailbox($folder)->sortMails(searchCriteria:$criteria);
+             
+                
                 if($mailIds == null) return null;
                 foreach($mailIds as $id)
                 {

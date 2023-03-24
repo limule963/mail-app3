@@ -81,7 +81,7 @@ use Symfony\Component\Mime\BodyRendererInterface;
         {
             $lead = $this->crud->getLeadsByStep($this->compaignId,$step->getId(),1);
             // $active = $this->isStepActive($step);
-            if(empty($lead) && $step->getStatus()->getStatus() == STAT::STEP_ACTIVE) return false;
+            if(empty($lead)) return false;
             return true;
 
         }
@@ -91,7 +91,9 @@ use Symfony\Component\Mime\BodyRendererInterface;
         {
             foreach ($steps as $key => $step)
             {
-                if($step->getStatus()->getStatus() === STAT::STEP_COMPLETE) continue;
+                $stepStatus = $step->getStatus()->getStatus();
+                // if( $stepStatus ==  STAT::STEP_COMPLETE) continue;
+                if( $stepStatus !=  STAT::STEP_ACTIVE) continue;
                 
                 $doJob = $this->isStepDoJob($step);
                 
@@ -155,8 +157,9 @@ use Symfony\Component\Mime\BodyRendererInterface;
             foreach($steps as $step)
             {
                 if($step->getStatus()->getStatus() == STAT::STEP_ACTIVE) continue;
+                if($step->getStatus()->getStatus() == STAT::STEP_COMPLETE) continue;
 
-                $startTime =$schedule->getStartTime()->getTimestamp() + $step->dayAfterLastStep*3600;
+                $startTime =$schedule->getStartTime()->getTimestamp() + $step->dayAfterLastStep*86400;
                 
                 if(time() > $startTime)
                 {

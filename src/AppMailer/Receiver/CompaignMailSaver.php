@@ -20,15 +20,19 @@ use Doctrine\Common\Collections\Criteria;
 
         /**@param ?Dsn[] $dsns */
         public function save( Compaign $compaign, mixed $criteria = 1)
-        { 
+        {
+        
             $dsns = $compaign->getDsns()->getValues();
             $compaignId = $compaign->getId();
             $compaignStartTime = $compaign->getSchedule()->getStartTime();
-
+            
+            
             foreach($dsns as $dsn)
             {
+               
 
                 $mailData = $this->md->set($dsn,$compaignId,$criteria,$compaignStartTime);
+              
                 $this->ms->saveMails($mailData);
             }
         }

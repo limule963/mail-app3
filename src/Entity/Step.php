@@ -21,7 +21,7 @@ class Step
     private ?string $name = null;
 
     #[ORM\Column]
-    public int $dayAfterLastStep = 1;
+    public int $dayAfterLastStep = 0;
 
     // #[ORM\Column]
     // public ?int $startTime = null;
@@ -63,7 +63,7 @@ class Step
     #[ORM\OneToMany(mappedBy: 'step', targetEntity: Mr::class)]
     private Collection $mr;
 
-    #[ORM\OneToMany(mappedBy: 'step', targetEntity: Lead::class)]
+    #[ORM\OneToMany(mappedBy: 'nextStep', targetEntity: Lead::class)]
     private Collection $leads;
 
     #[ORM\Column(nullable: true)]

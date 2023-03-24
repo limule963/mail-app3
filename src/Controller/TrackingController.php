@@ -21,34 +21,26 @@ class TrackingController extends AbstractController
     #[Route('/track.gif', name: 'app_tracking')]
     public function index(Request $request): Response
     {
-        // dd(new TransparentPixelResponse);
         
         $id = $request->query->get('id');
         $stepId = $request->query->get('stepId');
-        // dd($id);
-        if (null !== $id) {
-            //... executes some logic to retrieve the email and mark it as opened
 
-            $lead = $this->crud->getLead($id);
-            //code for lead
-            // $step = $lead->getStep();
-            $step = $this->crud->getStep($stepId);
-            
-            $compaign = $lead->getCompaign();
-            $dsn = $lead->getDsn();
-            
-            $mo = $this->crud->getMoByStepAndLead($compaign->getId(),$stepId,$id);
-            if($mo == null) 
-            {
-                $mo = (new Mo)->setDsn($dsn)->setSender($lead->getSender())->setMoLead($lead)->setStep($step)->setCompaign($compaign);
-                $this->crud->saveMo($mo,false);
-                $this->crud->em->flush();
-            }
-
-
-
-            
+        $id = intval($id);
+        $stepId = intval($stepId);
+ 
+        $lead = $this->crud->getLead($id);
+        $step = $this->crud->getStep($stepId);
+        
+        $compaign = $lead->getCompaign();
+        $dsn = $lead->getDsn();
+        
+        $mo = $this->crud->getMoByStepAndLead($compaign->getId(),$stepId,$id);
+        if($mo == null) 
+        {
+            $mo = (new Mo)->setDsn($dsn)->setSender($lead->getSender())->setMoLead($lead)->setStep($step)->setCompaign($compaign);
+            $this->crud->saveMo($mo,true);
         }
+
         return new TransparentPixelResponse();
         // return $this->render('tracking/index.html.twig', [
         //     'controller_name' => 'TrackingController',
@@ -58,26 +50,27 @@ class TrackingController extends AbstractController
     #[Route('/image/{id}/{stepId}/papillon.png',name:'app_tracking_2')]
     public function tracker(Lead $lead, int $stepId)
     {
-        if($lead == null) return null;
-        //making change for lead
-
         $step = $this->crud->getStep($stepId);
-        // $step = $this->crud->getStep($stepId);
-        if($step = null) return null;
+       
+
+        if($lead == null) return null;
+        if($step == null) return null;
         
         $compaign = $lead->getCompaign();
         $dsn = $lead->getDsn();
         
-      
-        $mo = (new Mo)->setDsn($dsn)->setSender($lead->getSender())->setMoLead($lead)->setStep($step)->setCompaign($compaign);
-        $this->crud->saveMo($mo,false);
+        $mo = $this->crud->getMoByStepAndLead($compaign->getId(),$step->getId(),$lead->getId());
+        
+        if($mo == null)
+        {
+           
+            $mo = (new Mo)->setDsn($dsn)->setSender($lead->getSender())->setMoLead($lead)->setStep($step)->setCompaign($compaign);
+            $this->crud->saveMo($mo,true);
+
+        }
 
 
-
-        $this->crud->em->flush();
-
-
-        return $this->redirect("https://app.clemaos.com/images/transparent.png");
+        return $this->redirect("https://app.clemaos.com/assets/images/transparent.png");
 
 
     }

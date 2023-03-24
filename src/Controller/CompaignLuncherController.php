@@ -19,7 +19,7 @@ class CompaignLuncherController extends AbstractController
     #[Route('/compaign/user/{id}/lunch',name:"app_compaign_cron_lunch")]
     public function lunchCompaign(User $user)
     {
-
+        
         if($user == null)  return new Response('done');
         /**@var Compaign[] */
         $compaigns = $user->getCompaigns()->getValues();
@@ -27,9 +27,11 @@ class CompaignLuncherController extends AbstractController
         foreach($compaigns as $compaign)
         {
             $status = $compaign->getStatus()->getStatus();
+    
             
             if($status == STATUS::COMPAIGN_COMPLETE || $status == STATUS::COMPAIGN_PAUSED)
             {
+              
                 $this->cms->save($compaign);
             }
             if($status != STATUS::COMPAIGN_ACTIVE) continue;
