@@ -54,7 +54,7 @@ use App\Controller\CrudControllerHelpers;
                         $compaign = $lead->getCompaign();
                         $sender = $mail->getFromAddress();
 
-                        
+
                         // $mr = $lead->getMr()->getValues();
                         $mr = $this->crud->getMrByStepAndLead($compaign->getId(),$step->getId(),$lead->getId());
 

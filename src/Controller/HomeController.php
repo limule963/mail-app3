@@ -118,29 +118,17 @@ class HomeController extends AbstractController
             'cr'=>''
         ]);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
+
+    #[Route('/ms',name:'app_ms')]
+    public function ms(CompaignMailSaver $ms)
+    {
+        $compaign = $this->crud->getCompaign(1,6);
+        $res = $ms->save($compaign);
+        return new  Response('done');
+    }
+    
+
 
 
 }

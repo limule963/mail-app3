@@ -50,7 +50,12 @@ use App\Entity\Compaign;
             $date = getdate(time());
             $h = $date['hours'];
 
-            if($h < $this->fromm || $h > $this->too) return $this->getStat();
+            $fromm = $this->fromm;
+            $too = $this->too;
+
+            if($too == 0) $too = 24;
+
+            if($h < $fromm || $h >= $too) return $this->getStat();
             //synchro mails receve
             $this->cms->save($this->compaign);
 
