@@ -7,6 +7,7 @@ use App\AppMailer\Data\CompaignResponse;
 use App\AppMailer\Data\Sequence;
 use App\AppMailer\Data\STATUS;
 use App\AppMailer\Receiver\AllFolderReceiver;
+use App\AppMailer\Receiver\BulkCompaignMailSaver;
 use App\AppMailer\Receiver\CompaignMailSaver;
 use App\Entity\Compaign;
 
@@ -22,7 +23,13 @@ use App\Entity\Compaign;
         private \DateTimeImmutable $compaignStartTime;
         private ?Compaign $compaign;
         
-        public function __construct(private CompaignMailSaver $cms, private AllFolderReceiver $allrec,private Sequencer $sequencer,private SequenceLuncher $sequenceLuncher,private CrudControllerHelpers $crud)
+        public function __construct(
+            private CompaignMailSaver $cms,
+            private AllFolderReceiver $allrec,
+            private Sequencer $sequencer,
+            private SequenceLuncher $sequenceLuncher,
+            private CrudControllerHelpers $crud,
+            )
         {
             
         }
@@ -57,7 +64,7 @@ use App\Entity\Compaign;
 
             if($h < $fromm || $h >= $too) return $this->getStat();
             //synchro mails receve
-            $this->cms->save($this->compaign);
+            // $this->cms->save($this->compaign);
 
             //lunch sequence
             return  $this->sequenceLuncher->lunch($this->sequence);

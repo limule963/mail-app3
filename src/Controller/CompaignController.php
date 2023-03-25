@@ -15,6 +15,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use App\AppMailer\Receiver\BulkCompaignMailSaver;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
@@ -39,6 +40,7 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
             private CrudControllerHelpers $crud,
             private SluggerInterface $slugger,
             private PaginatorInterface $paginator,
+            private BulkCompaignMailSaver $bcms
             )
         {
             
@@ -629,6 +631,13 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
         private function test(string $path)
         {
             return $path;
+        }
+
+        private function getAllMessages()
+        {
+            $user = $this->getUser();
+            $compaigns = $user->getCompaigns()->getValues();
+            $this->bcms->saveAll($compaigns);
         }
         
 
