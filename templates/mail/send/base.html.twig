@@ -33,9 +33,9 @@
                 {% if tracker == true %}
                 {# https://localhost:8000/tracking/1.png #}
 
-                {# <p><img src=  {{ url('app_tracking')~'?id={{lead.id}}'~'stepId={{step.id}}' }} width = "50" ></p> #}
+                 <p><img src=  {{ url('app_tracking')~'?id={{lead.id}}'~'stepId={{step.id}}' }} ></p> 
 
-                <p><img src= {{ url('app_tracking_2',{'id': lead.id, 'stepId': stepId}) }} width = "50"></p>
+                {#<p><img src= {{ url('app_tracking_2',{'id': lead.id, 'stepId': stepId}) }} width = "50"></p>#}
                 {% endif %}
 
              {% endif %}

@@ -3,7 +3,7 @@ RewriteBase /
 
 RewriteCond %{HTTPS} !=on
 RewriteCond %{HTTP:X-Forwarded-Proto} !https
-RewriteCond %{HTTP_HOST} ^(?:mm\.)?clemaos\.com(?:.*)$ [nc]
+RewriteCond %{HTTP_HOST} ^(?:app\.)?clemaos\.com(?:.*)$ [nc]
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [redirect=301,L]
 
 

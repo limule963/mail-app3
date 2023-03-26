@@ -1,0 +1,13 @@
+{% extends "mail/send/base.html.twig" %}
+{% block body %}
+
+
+<p>Good Morning mr&nbsp;<strong style="color: green;">{{lead.name}}</strong>.</p>
+<p>Je vous avais contact&eacute; sur l'email {{lead.emailAddress}} pour vous annoncer que nous allons lancer notre service d'abonnement tres prochainement.</p>
+<p>&nbsp;</p>
+<div style="display: flex;">
+<div style="color: red;"><img src="https://jardinage.lemonde.fr/images/dossiers/2017-05/fuchsia-181052.jpg" alt="yo" width="94" height="62">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; item2</div>
+</div>
+<p style="color: maroon;">Coordialement</p>
+
+{% endblock %}
