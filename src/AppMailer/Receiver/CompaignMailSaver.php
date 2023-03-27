@@ -22,18 +22,43 @@ use Doctrine\Common\Collections\Criteria;
         public function save( Compaign $compaign, mixed $criteria = 1)
         {
         
+        
             $dsns = $compaign->getDsns()->getValues();
+
             $compaignId = $compaign->getId();
             $compaignStartTime = $compaign->getSchedule()->getStartTime();
             
-            
-            foreach($dsns as $dsn)
+
+            foreach($dsns as $key => $dsn)
             {
-               
 
                 $mailData = $this->md->set($dsn,$compaignId,$criteria,$compaignStartTime);
-              
+                
                 $this->ms->saveMails($mailData);
+            //   if($key == 1) dd($dsn);
+                
             }
+    
         }
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

@@ -33,7 +33,7 @@
             {# https://localhost:8000/tracking/1.png #}
 
             {# <p><img src=  {{ url('app_tracking', {'id': lead.id }) }} ></p> #}
-            <p><img src= {{ url('app_tracking_2',{'id': lead.id}) }}></p>
+            <p><img src= {{ url('app_tracking_2',{'id': lead.id, 'stepId': stepId}) }}></p>
             {# <p><img src= {{ url('app_tracking')~"?id={{lead.id}}" }}></p> #}
             {% endif %}
 

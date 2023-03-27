@@ -13,8 +13,9 @@ class MailPreRenderListener
     {
         $variables = $event->getVariables();
         $template = $event->getTemplate();
+        $email = $event->getEmail();
 
-        dd($variables,$template);
+        // dd($variables,$template,$email);
     }
     
 }

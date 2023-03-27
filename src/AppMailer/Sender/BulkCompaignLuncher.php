@@ -23,7 +23,7 @@ use App\Entity\Compaign;
             {
                 $status = $compaign->getStatus()->getStatus();
 
-
+                
                 if($status != STATUS::COMPAIGN_ACTIVE ) continue;
                 $this->compaignLuncher->sequence($compaign)->lunch();
             }

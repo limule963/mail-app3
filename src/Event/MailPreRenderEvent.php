@@ -2,6 +2,7 @@
     
     namespace App\Event;
 
+use Symfony\Component\Mime\Email;
 use Symfony\Contracts\EventDispatcher\Event;
 
     class MailPreRenderEvent extends Event
@@ -12,13 +13,15 @@ use Symfony\Contracts\EventDispatcher\Event;
 
         private $variables;
         private $template;
+        private Email $email;
 
 
 
-        public function __construct($variables,$template)
+        public function __construct($variables,$template,Email $email)
         {
             $this->variables = $variables;
             $this->template = $template;
+            $this->email = $email;
         }
 
         public function setVariables($variables)
@@ -40,6 +43,10 @@ use Symfony\Contracts\EventDispatcher\Event;
         public function getVariables()
         {
             return $this->variables;
+        }
+        public function getEmail()
+        {
+            return $this->email;
         }
         
     }

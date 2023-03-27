@@ -25,8 +25,10 @@ use App\Controller\CrudControllerHelpers;
 
         public function saveMails(MailData $md)
         {
+          
             $lead = null;
             $mails = $this->allrec->receive($md->dsn,$md->criteria,$md->compaignStartTime);
+          
             if($mails == null) return null;
             if($mails instanceof EmailResponse) return null;
             /**@var Mail[] $mails */
@@ -58,7 +60,7 @@ use App\Controller\CrudControllerHelpers;
                         // $mr = $lead->getMr()->getValues();
                         $mr = $this->crud->getMrByStepAndLead($compaign->getId(),$step->getId(),$lead->getId());
 
-                        if($mr == null)
+                        if($mr == null || $mr->getCompaign()->getId() != $compaign->getId())
                         {
                             $mr = (new Mr)->setDsn($dsn)->setSender($sender)->setMrLead($lead)->setStep($step)->setCompaign($compaign);
                             $this->crud->saveMr($mr,true);
@@ -71,6 +73,7 @@ use App\Controller\CrudControllerHelpers;
 
                             }
                         }
+             
 
                         
                         

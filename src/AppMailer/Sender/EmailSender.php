@@ -61,7 +61,8 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
             $variables = [
                 'lead' => $lead,
                 'tracker'=> $tracker,
-                'stepId'=>$stepId
+                'stepId'=>$stepId,
+                'emailId'=>$email->getId()
             ];
 
             $email = (new TemplatedEmail())
@@ -80,7 +81,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
             
             $this->bodyRenderer->render($email);
 
-            // $event = new MailPreRenderEvent($variables,$email->getHtmlBody());
+            // $event = new MailPreRenderEvent($variables,$email->getHtmlBody(),$email);
             // $listener = new MailPreRenderListener;
             // $dispatcher = new EventDispatcher();
             // $dispatcher->addListener(MailPreRenderEvent::NANE,[$listener,'onMailPreRender']);
