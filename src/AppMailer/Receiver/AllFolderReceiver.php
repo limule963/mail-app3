@@ -19,7 +19,7 @@ use App\AppMailer\Data\EmailResponse;
         {
         }
 
-        public function receive(Dsn $dsn,mixed $criteria='',\DateTimeImmutable $startTime)
+        public function receive(Dsn $dsn,\DateTimeImmutable $startTime,mixed $criteria='',)
         {
             if($criteria == '') $criteria = $this->getCriteria($startTime);
             if($criteria == 1) $criteria = $this->getCriteria($startTime);

@@ -108,10 +108,13 @@ class HomeController extends AbstractController
     }
 
     #[Route('/imap',name:'app_imap')]
-    public function imap()
+    public function imap(Receiver $rec)
     {
-   
- 
+        $dsn = $this->crud->getUserDsn(1,4);
+        $imap = new Imap($dsn->getConnexion());
+        $test = $imap->testConnection($dsn->getConnexionName());
+        dd($dsn,$imap,$test);
+        
 
         return $this->render('home/index.html.twig',[
             "controller_name"=>'HomeController',

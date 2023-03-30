@@ -24,21 +24,24 @@
 
 
     <body>
+        <div class="container">
+            {% block body %}{% endblock %}
+            <samp style = "width:{{stepId}};"></samp>
+            {# <div style = "width:{{stepId}};" ></div> #}
 
-        {% block body %}{% endblock %}
+                {% if tracker is defined %}
 
-        {% if tracker is defined %}
+                    {% if tracker == true %}
+                    {# https://localhost:8000/tracking/1.png #}
 
-            {% if tracker == true %}
-            {# https://localhost:8000/tracking/1.png #}
+                    <p><img  src=  {{ url('app_tracking',{'leadId':lead.id, 'stepId': stepId })}}  ></p> 
 
-            {# <p><img src=  {{ url('app_tracking', {'id': lead.id }) }} ></p> #}
-            <p><img src= {{ url('app_tracking_2',{'id': lead.id, 'stepId': stepId}) }}></p>
-            {# <p><img src= {{ url('app_tracking')~"?id={{lead.id}}" }}></p> #}
+                    {#<p><img src= {{ url('app_tracking_2',{'id': lead.id, 'stepId': stepId}) }} width = "50"></p>#}
+                    {% endif %}
+
             {% endif %}
 
-        {% endif %}
-
+        </div>
 
 
     </body>
