@@ -20,7 +20,7 @@ class Compaign
     private ?string $name = null;
     
     #[ORM\Column]
-    public ?bool $newStepPriority = true;
+    public ?bool $newStepPriority = false;
 
     #[ORM\ManyToOne(inversedBy: 'compaigns')]
     private ?User $user = null;

@@ -37,6 +37,8 @@ use Symfony\Component\Mime\BodyRendererInterface;
         public function sequence(Compaign $compaign):?Sequence
         {
             $steps = $compaign->getSteps()->getValues();
+            
+            
             // $this->steps = $steps;
             $this->schedule = $compaign->getSchedule();
             $this->compaignId = $compaign->getId();
@@ -49,7 +51,8 @@ use Symfony\Component\Mime\BodyRendererInterface;
             
             $this->stepsStatusActivator($steps);
             $steps =  $this->stepsStatusCompleter($steps,$compaign->newStepPriority);
-
+            
+            
 
 
             if($this->isAllStepsComplete($steps))
@@ -188,13 +191,16 @@ use Symfony\Component\Mime\BodyRendererInterface;
         {
 
             $schedule = $this->schedule;
-
+            
+            
             foreach($steps as $step)
             {
                 if($step->getStatus()->getStatus() == STAT::STEP_ACTIVE) continue;
                 if($step->getStatus()->getStatus() == STAT::STEP_COMPLETE) continue;
 
                 $startTime =$schedule->getStartTime()->getTimestamp() + $step->dayAfterLastStep*86400;
+                
+                //dd($startTime,time(),$step);
                 
                 if(time() > $startTime)
                 {

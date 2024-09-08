@@ -101,6 +101,7 @@ use App\Entity\Compaign;
 
 
             $this->sequence = $this->sequencer->sequence($compaign);
+            //dd($this->sequence);
             return $this;
 
         }

@@ -22,9 +22,11 @@ use App\Entity\Compaign;
             foreach($compaigns as $compaign) 
             {
                 $status = $compaign->getStatus()->getStatus();
-
+                
                 
                 if($status != STATUS::COMPAIGN_ACTIVE ) continue;
+                
+                //dd($status,$compaign);
                 $this->compaignLuncher->sequence($compaign)->lunch();
             }
         }

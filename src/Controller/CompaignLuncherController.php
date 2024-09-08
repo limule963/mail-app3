@@ -45,16 +45,17 @@ class CompaignLuncherController extends AbstractController
 
 
 
-        if($user == null)  return new Response('done');
+        if($user == null)  return new Response('not user');
 
         /**@var Compaign[] */
         $compaigns = $user->getCompaigns()->getValues();
+        
         // dd($compaigns);
         $this->bcms->saveall($compaigns);
         
 
         $this->bcl->lunch($compaigns);
-        return new Response('done');
+        return new Response(' cron done');
 
 
 

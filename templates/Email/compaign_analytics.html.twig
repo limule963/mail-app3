@@ -33,7 +33,7 @@
           
             <div class="col-xl-3 col-lg-6">
               <div class="card card-stats mb-4 mb-xl-0">
-                <div class="card-header">Step {{step.stepOrder}} </div>
+                <div class="card-header">Step {{step.stepOrder}} - <strong>{{step.name}}</strong></div>
                 <div class="card-body">
                   <div class="row">
                     <div class="col">
@@ -52,11 +52,14 @@
                     <div class="text-nowrap">Linked: {{step.lcs|length}} </div>
                     {% set dividende = step.ms|length %}
                     {% set pourcentage   = 0 %}
+                    {% set pourcentage2   = 0 %}
 
                     {% if dividende != 0 %}
                       {% set pourcentage = (step.mr|length / dividende) * 100 %}
+                      {% set pourcentage2 = (step.mo|length / dividende) * 100 %}
                     {% endif %}
-                    <span class="text-success mr-2"><i class="fa fa-arrow-up"></i> {{pourcentage|number_format(2)}} %</span>
+                    <span class="text-success me-1"><i class="fa fa-arrow-up"></i> {{pourcentage2|number_format(1)}} %</span>
+                    <span class="text-primary me-1"><i class="fa fa-arrow-up"></i> {{pourcentage|number_format(1)}} %</span>
                   </p>
                 </div>
               </div>
